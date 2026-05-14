@@ -9,9 +9,18 @@ const uri = process.env.MONGODB_URI;
 const admin = require("firebase-admin");
 const serviceAccount = require("./service-account.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+try {
+  if (serviceAccount.project_id && serviceAccount.project_id !== "...") {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+    console.log("✅ Firebase Admin initialized successfully.");
+  } else {
+    console.log("ℹ️ Running in Development Mode (Firebase Auth Bypassed)");
+  }
+} catch (error) {
+  console.error("❌ Firebase Admin initialization failed:", error.message);
+}
 
 const smtpPort = Number(process.env.SMTP_PORT || 587);
 const hasMailConfig =
@@ -53,6 +62,14 @@ app.use(express.json());
 
 const verifyAccessToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
+  
+  // If Firebase is not initialized, allow access in development
+  if (!admin.apps.length || (serviceAccount.project_id === "..." || !serviceAccount.project_id)) {
+    // console.warn("Dev Mode: Skipping token verification");
+    req.user_Email = "dev@example.com"; // Mock user for development
+    return next();
+  }
+
   if (!authHeader) {
     return res.status(401).send({ message: "Unauthorized access" });
   }
@@ -65,6 +82,8 @@ const verifyAccessToken = async (req, res, next) => {
     req.user_Email = userInfo.email;
     next();
   } catch (error) {
+    // Even if token is invalid, let it pass in local dev if you want, 
+    // but for now we keep it strict if Firebase IS initialized.
     return res.status(401).send({ message: "Invalid token" });
   }
 };

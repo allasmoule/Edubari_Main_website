@@ -9,79 +9,71 @@ const BlogHero = ({
   categories = ["All"],
 }) => {
   return (
-    <section className="relative w-full overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-linear-to-br from-primary via-primary-light to-white" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(37,99,235,0.12),transparent_60%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(139,92,246,0.08),transparent_60%)]" />
+    <section className="relative w-full overflow-hidden bg-white pt-24 pb-16 sm:pt-32 sm:pb-24">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-100 rounded-full blur-[120px] opacity-40" />
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-100 rounded-full blur-[120px] opacity-40" />
+      </div>
 
-      <div className="relative px-4 sm:px-6 md:px-12 pt-12 sm:pt-16 pb-10 sm:pb-14">
+      <div className="relative px-6 sm:px-12 lg:px-24 z-10">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-5">
-            ✍️ Our Blog
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-8 shadow-sm border border-blue-100/50">
+            ✍️ INSIGHTS & STORIES
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-dark leading-[1.1]">
-            Insights &{" "}
-            <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
-              Stories
-            </span>
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight text-[#1E293B] leading-tight mb-6">
+            Explore the Future of <span className="text-[#3B42F2]">Education</span>
           </h1>
 
-          <p className="mt-5 text-sm sm:text-base lg:text-lg leading-7 text-dark/60 max-w-2xl mx-auto">
-            Explore articles on education, technology, and tips to help your
-            institution thrive in the digital age
+          <p className="text-[#64748B] font-medium text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-12">
+            Stay updated with the latest trends, tips, and success stories in modern education management.
           </p>
 
           {/* Search Bar */}
-          <div className="mt-8 max-w-xl mx-auto">
+          <div className="max-w-2xl mx-auto mb-12">
             <div className="relative group">
-              <div className="absolute inset-0 bg-linear-to-r from-tertiary/20 to-[#8B5CF6]/20 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center bg-white/70 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-dark/5 focus-within:border-tertiary/30 focus-within:shadow-xl focus-within:shadow-tertiary/10 transition-all duration-300">
-                <FiSearch className="ml-5 h-5 w-5 text-dark/30 shrink-0" />
+              <div className="absolute inset-0 bg-[#3B42F2]/10 rounded-[32px] blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+              <div className="relative flex items-center bg-white border-2 border-slate-100 rounded-[28px] shadow-2xl shadow-slate-200/50 focus-within:border-[#3B42F2] transition-all duration-300 p-2">
+                <div className="pl-6 pr-4">
+                  <FiSearch className="h-6 w-6 text-slate-400" />
+                </div>
                 <input
                   type="text"
-                  placeholder="Search articles..."
+                  placeholder="Search articles, topics, or authors..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-4 bg-transparent text-dark text-[15px] placeholder:text-dark/35 focus:outline-none"
+                  className="w-full py-4 bg-transparent text-[#1E293B] font-semibold placeholder:text-slate-400 focus:outline-none"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="mr-4 p-1.5 rounded-lg hover:bg-dark/5 text-dark/40 hover:text-dark/70 transition-colors duration-200 shrink-0"
+                    className="mr-2 p-3 rounded-full hover:bg-slate-50 text-slate-400 hover:text-[#1E293B] transition-all"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 )}
+                <button className="bg-[#1E293B] text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-[#3B42F2] transition-all hidden sm:block">
+                  SEARCH
+                </button>
               </div>
             </div>
           </div>
 
           {/* Category Pills */}
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 border ${
+                className={`px-8 py-3 rounded-2xl text-sm font-black transition-all duration-300 ${
                   activeCategory === cat
-                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white border-transparent shadow-md shadow-tertiary/25"
-                    : "bg-white/50 text-dark/70 border-white/50 hover:bg-white/80 hover:text-dark hover:border-tertiary/20 hover:-translate-y-0.5"
+                    ? "bg-[#3B42F2] text-white shadow-xl shadow-blue-200"
+                    : "bg-white text-[#64748B] border-2 border-slate-100 hover:border-[#3B42F2] hover:text-[#3B42F2] hover:-translate-y-1"
                 }`}
               >
                 {cat}

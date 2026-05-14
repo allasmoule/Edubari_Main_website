@@ -10,32 +10,28 @@ import {
 const infoCards = [
     {
         icon: <FiMapPin className="h-6 w-6" />,
-        title: "Our Office",
+        title: "Visit Our Office",
         lines: ["Botbari, Dhaka", "Bangladesh"],
-        color: "text-tertiary",
-        bg: "bg-tertiary/10",
-        border: "group-hover:border-tertiary/30",
-        glow: "group-hover:shadow-tertiary/10",
+        color: "text-[#3B42F2]",
+        bg: "bg-blue-50",
     },
     {
         icon: <FiPhone className="h-6 w-6" />,
-        title: "Call / WhatsApp",
+        title: "Let's Talk",
         lines: ["+880 XXXX-XXXXXX"],
         extra: (
             <a
                 href="https://wa.me/880"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-[#25D366] hover:underline"
+                className="mt-4 inline-flex items-center gap-2 text-xs font-black text-[#22C55E] uppercase tracking-widest hover:text-[#16a34a] transition-colors"
             >
-                <FiMessageCircle className="h-3.5 w-3.5" />
-                Chat on WhatsApp
+                <FiMessageCircle className="h-4 w-4" />
+                WHATSAPP
             </a>
         ),
-        color: "text-[#25D366]",
-        bg: "bg-[#25D366]/10",
-        border: "group-hover:border-[#25D366]/30",
-        glow: "group-hover:shadow-[#25D366]/10",
+        color: "text-[#22C55E]",
+        bg: "bg-green-50",
     },
     {
         icon: <FiMail className="h-6 w-6" />,
@@ -44,63 +40,67 @@ const infoCards = [
         extra: (
             <a
                 href="mailto:contact@edubari.com"
-                className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-[#8B5CF6] hover:underline"
+                className="mt-4 inline-flex items-center gap-2 text-xs font-black text-[#6366F1] uppercase tracking-widest hover:text-[#4f46e5] transition-colors"
             >
-                <FiMail className="h-3.5 w-3.5" />
-                Send an Email
+                <FiMail className="h-4 w-4" />
+                SEND MAIL
             </a>
         ),
-        color: "text-[#8B5CF6]",
-        bg: "bg-[#8B5CF6]/10",
-        border: "group-hover:border-[#8B5CF6]/30",
-        glow: "group-hover:shadow-[#8B5CF6]/10",
+        color: "text-[#6366F1]",
+        bg: "bg-indigo-50",
     },
     {
         icon: <FiClock className="h-6 w-6" />,
-        title: "Business Hours",
-        lines: ["Sat – Thu: 10 AM – 8 PM", "Friday: Closed"],
-        color: "text-secondary",
-        bg: "bg-secondary/10",
-        border: "group-hover:border-secondary/30",
-        glow: "group-hover:shadow-secondary/10",
+        title: "Working Hours",
+        lines: ["Sat – Thu: 10AM – 8PM", "Friday: Closed"],
+        color: "text-[#F59E0B]",
+        bg: "bg-amber-50",
     },
 ];
 
 const ContactInfo = () => {
     return (
-        <section className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-14">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
-                {infoCards.map((card) => (
-                    <div
-                        key={card.title}
-                        className={`group relative rounded-2xl border border-white/40 bg-white/70 backdrop-blur-md p-6 text-center transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl ${card.border} ${card.glow}`}
-                    >
-                        {/* Icon */}
+        <section className="w-full px-6 sm:px-12 lg:px-24 py-12 sm:py-16 bg-white">
+            <div className="max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {infoCards.map((card) => (
                         <div
-                            className={`inline-flex h-14 w-14 items-center justify-center rounded-xl ${card.bg} ${card.color} transition-transform duration-300 group-hover:scale-110`}
+                            key={card.title}
+                            className="group relative rounded-[40px] border border-slate-50 bg-white p-10 text-center transition-all duration-500 hover:-translate-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)]"
                         >
-                            {card.icon}
-                        </div>
-
-                        {/* Title */}
-                        <h3 className="mt-4 text-base font-bold text-dark">
-                            {card.title}
-                        </h3>
-
-                        {/* Info Lines */}
-                        {card.lines.map((line, i) => (
-                            <p
-                                key={i}
-                                className="mt-1 text-sm text-dark/55 font-medium leading-relaxed"
+                            {/* Icon */}
+                            <div
+                                className={`inline-flex h-16 w-16 items-center justify-center rounded-2xl ${card.bg} ${card.color} transition-transform duration-500 group-hover:scale-110 shadow-sm`}
                             >
-                                {line}
-                            </p>
-                        ))}
+                                {card.icon}
+                            </div>
 
-                        {/* Optional Extra */}
-                        {card.extra && card.extra}
-                    </div>
-                ))}
+                            {/* Title */}
+                            <h3 className="mt-6 text-xl font-black text-[#1E293B]">
+                                {card.title}
+                            </h3>
+
+                            {/* Info Lines */}
+                            <div className="mt-3 space-y-1">
+                                {card.lines.map((line, i) => (
+                                    <p
+                                        key={i}
+                                        className="text-slate-500 font-medium text-[15px] leading-relaxed"
+                                    >
+                                        {line}
+                                    </p>
+                                ))}
+                            </div>
+
+                            {/* Optional Extra */}
+                            {card.extra && (
+                                <div className="flex justify-center">
+                                    {card.extra}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
         </section>
     );

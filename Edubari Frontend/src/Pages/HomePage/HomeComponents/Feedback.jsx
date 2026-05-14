@@ -128,54 +128,57 @@ const Stars = ({ count = 5 }) => (
 
 /* ──── Single testimonial card ──── */
 const TestimonialCard = ({ item }) => (
-    <div className="group flex-none w-[300px] sm:w-[340px] px-2">
-        <div className="h-full rounded-2xl border border-white/40 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-dark/5 hover:bg-white/80 flex flex-col">
-            {/* Header — avatar + name + source icon */}
-            <div className="flex items-center gap-3">
-                <img
-                    src={item.avatar}
-                    alt={`${item.name} avatar`}
-                    className="h-11 w-11 rounded-full object-cover ring-2 ring-white/60 shadow-sm"
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                />
-                <div className="min-w-0 flex-1">
-                    <p className="text-[15px] font-bold text-dark leading-snug truncate">
-                        {item.name}
-                    </p>
-                    <p className="text-xs text-dark/50 truncate">
-                        {item.role}
-                        {item.company && ` · ${item.company}`}
-                    </p>
-                </div>
-                {sourceIcons[item.source] && (
-                    <div className="flex-none opacity-60 group-hover:opacity-100 transition-opacity">
-                        {sourceIcons[item.source]}
-                    </div>
-                )}
+    <div className="flex-none w-[320px] sm:w-[380px] px-3">
+        <div className="h-full rounded-[40px] bg-white border border-slate-100 p-8 sm:p-10 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200 group flex flex-col">
+            {/* Quote Icon */}
+            <div className="mb-6 text-[#3B42F2] opacity-20 group-hover:opacity-40 transition-opacity">
+                <svg className="h-10 w-10" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21L14.017 18C14.017 16.899 14.918 16 16.017 16H19.017C19.568 16 20.017 15.551 20.017 15V9C20.017 8.449 19.568 8 19.017 8H16.017C15.466 8 15.017 8.449 15.017 9V12H13.017V9C13.017 7.346 14.363 6 16.017 6H19.017C20.671 6 22.017 7.346 22.017 9V15C22.017 16.654 20.671 18 19.017 18H17.017V21H14.017ZM3.017 21V18C3.017 16.899 3.918 16 5.017 16H8.017C8.568 16 9.017 15.551 9.017 15V9C9.017 8.449 8.568 8 8.017 8H5.017C4.466 8 4.017 8.449 4.017 9V12H2.017V9C2.017 7.346 3.363 6 5.017 6H8.017C9.671 6 11.017 7.346 11.017 9V15C11.017 16.654 9.671 18 8.017 18H6.017V21H3.017Z" />
+                </svg>
             </div>
 
             {/* Stars */}
-            <div className="mt-3">
+            <div className="mb-6">
                 <Stars count={item.rating} />
             </div>
 
             {/* Review text */}
-            <p className="mt-3 text-sm leading-relaxed text-dark/70 flex-1 line-clamp-5">
-                {item.text}
+            <p className="text-[#475569] font-medium text-lg leading-relaxed flex-1 mb-8 italic">
+                "{item.text}"
             </p>
+
+            {/* Footer — avatar + name + source icon */}
+            <div className="flex items-center gap-4 pt-6 border-t border-slate-50">
+                <div className="relative">
+                    <img
+                        src={item.avatar}
+                        alt={`${item.name} avatar`}
+                        className="h-14 w-14 rounded-full object-cover border-2 border-[#3B42F2]/10 p-0.5"
+                        loading="lazy"
+                    />
+                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
+                        {sourceIcons[item.source]}
+                    </div>
+                </div>
+                <div className="min-w-0">
+                    <p className="text-lg font-black text-[#1E293B] leading-none mb-1">
+                        {item.name}
+                    </p>
+                    <p className="text-sm font-bold text-[#3B42F2]">
+                        {item.role} {item.company && ` · ${item.company}`}
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 );
 
-/* ──── Main Feedback section ──── */
 const Feedback = () => {
     const trackRef = useRef(null);
     const [isPaused, setIsPaused] = useState(false);
     const posRef = useRef(0);
-    const speedRef = useRef(0.5); // px per frame
+    const speedRef = useRef(0.4);
 
-    /* Duplicate cards for seamless loop */
     const cards = [...testimonials, ...testimonials];
 
     useEffect(() => {
@@ -186,7 +189,6 @@ const Feedback = () => {
         const step = () => {
             if (!isPaused) {
                 posRef.current += speedRef.current;
-                // Reset when first set scrolls out
                 const halfWidth = track.scrollWidth / 2;
                 if (posRef.current >= halfWidth) {
                     posRef.current -= halfWidth;
@@ -201,75 +203,64 @@ const Feedback = () => {
     }, [isPaused]);
 
     return (
-        <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-24 bg-primary/40">
-            <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
-                <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-12 sm:py-14">
-                    {/* ── Header ── */}
-                    <div className="max-w-3xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-                            <FiMessageCircle className="h-3.5 w-3.5" />
-                            Testimonials
-                        </div>
-
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-dark leading-tight">
-                            Trusted by{" "}
-                            <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
-                                Institutions
-                            </span>
-                        </h2>
-
-                        <p className="mt-5 text-sm sm:text-[15px] lg:text-base leading-7 text-dark/70 max-w-2xl mx-auto">
-                            See what educators and administrators say about
-                            their experience with EduBari
-                        </p>
+        <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-28 bg-[#F8FAFC] overflow-hidden">
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm border border-blue-100/50">
+                        <FiMessageCircle className="h-3.5 w-3.5" />
+                        TESTIMONIALS
                     </div>
 
-                    {/* ── Marquee carousel ── */}
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#1E293B] leading-tight mb-4">
+                        Trusted by <span className="text-[#3B42F2]">Leading Institutions</span>
+                    </h2>
+
+                    <p className="mt-4 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-relaxed">
+                        See what educators and administrators say about their journey with EduBari.
+                    </p>
+                </div>
+
+                {/* Marquee carousel */}
+                <div
+                    className="relative overflow-hidden group"
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
+                >
+                    {/* Gradient Masks */}
+                    <div className="absolute inset-y-0 left-0 w-32 bg-linear-to-r from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
+                    <div className="absolute inset-y-0 right-0 w-32 bg-linear-to-l from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
+
                     <div
-                        className="mt-12 lg:mt-14 relative overflow-hidden"
-                        style={{
-                            maskImage:
-                                "linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%)",
-                            WebkitMaskImage:
-                                "linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%)",
-                        }}
-                        onMouseEnter={() => setIsPaused(true)}
-                        onMouseLeave={() => setIsPaused(false)}
+                        ref={trackRef}
+                        className="flex will-change-transform gap-4 py-6"
+                        style={{ width: "max-content" }}
                     >
-                        <div
-                            ref={trackRef}
-                            className="flex will-change-transform"
-                            style={{ width: "max-content" }}
-                        >
-                            {cards.map((item, index) => (
-                                <TestimonialCard
-                                    key={`${item.id}-${index}`}
-                                    item={item}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* ── Summary stats bar ── */}
-                    <div className="mt-10 flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-                        {[
-                            { value: "50+", label: "Institutions" },
-                            { value: "4.9", label: "Avg. Rating" },
-                            { value: "100%", label: "Satisfaction" },
-                        ].map((stat) => (
-                            <div
-                                key={stat.label}
-                                className="text-center"
-                            >
-                                <p className="text-2xl sm:text-3xl font-black text-dark tracking-tight">
-                                    {stat.value}
-                                </p>
-                                <p className="mt-1 text-xs sm:text-sm font-medium text-dark/50">
-                                    {stat.label}
-                                </p>
-                            </div>
+                        {cards.map((item, index) => (
+                            <TestimonialCard
+                                key={`${item.id}-${index}`}
+                                item={item}
+                            />
                         ))}
                     </div>
+                </div>
+
+                {/* Summary stats bar */}
+                <div className="mt-16 flex flex-wrap items-center justify-center gap-12 sm:gap-24">
+                    {[
+                        { value: "50+", label: "Institutions" },
+                        { value: "4.9", label: "Avg. Rating" },
+                        { value: "100%", label: "Satisfaction" },
+                    ].map((stat) => (
+                        <div key={stat.label} className="text-center group">
+                            <p className="text-4xl sm:text-5xl font-black text-[#1E293B] tracking-tight mb-1 group-hover:text-[#3B42F2] transition-colors duration-300">
+                                {stat.value}
+                            </p>
+                            <p className="text-[#64748B] font-black text-xs uppercase tracking-widest">
+                                {stat.label}
+                            </p>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>

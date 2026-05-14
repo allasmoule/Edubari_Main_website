@@ -7,166 +7,101 @@ const Footer = () => {
     const [language, setLanguage] = useState("EN");
 
     return (
-        <footer className="w-full bg-primary/95 backdrop-blur-sm px-4 sm:px-6 md:px-12 py-10 border-t border-white/20">
-            <div className="w-full">
-                <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
-                    <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-10 sm:py-12">
-                        {/* Top Grid */}
-                        <div className="grid gap-10 lg:grid-cols-[1.2fr_auto_1fr_1fr] items-start">
-                            {/* Brand */}
-                            <div className="text-center lg:text-left">
-                                <NavLink
-                                    to="/"
-                                    className="inline-flex items-center cursor-pointer group select-none"
-                                >
-                                    <h2 className="text-[24px] sm:text-[28px] font-black tracking-tighter sm:group-hover:tracking-tight flex items-center transition-all duration-300">
-                                        <span className="text-dark sm:group-hover:text-tertiary transition-colors duration-300">
-                                            Edu
-                                        </span>
-                                        <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] sm:group-hover:from-secondary sm:group-hover:to-secondary-light transition-all duration-500 drop-shadow-sm sm:group-hover:drop-shadow-md">
-                                            Bari
-                                        </span>
-                                    </h2>
-                                </NavLink>
+    <footer className="w-full bg-[#1E293B] pt-20 pb-10 px-6 sm:px-12 lg:px-24 text-white overflow-hidden relative">
+        {/* Background Decorative Gradient */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-[#3B42F2] to-transparent opacity-30" />
+        
+        <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 items-start mb-20">
+                {/* Brand Column */}
+                <div className="lg:col-span-4 space-y-8">
+                    <NavLink to="/" className="inline-block group">
+                        <h2 className="text-3xl font-black tracking-tight flex items-center transition-all duration-300">
+                            <span className="text-white">Edu</span>
+                            <span className="text-[#3B42F2]">Bari</span>
+                        </h2>
+                    </NavLink>
+                    
+                    <p className="text-slate-400 font-medium text-base leading-relaxed max-w-sm">
+                        Empowering educational institutions across Bangladesh with smart digital management solutions. One platform, infinite possibilities.
+                    </p>
 
-                                <p className="mt-4 text-sm sm:text-[15px] leading-7 text-dark/70 max-w-sm mx-auto lg:mx-0">
-                                    A modern learning platform built for students with
-                                    smart digital learning, accessible resources, and a
-                                    seamless online experience.
-                                </p>
+                    <div className="flex items-center gap-4">
+                        <a href="https://facebook.com" target="_blank" rel="noreferrer" className="h-10 w-10 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-[#3B42F2] hover:-translate-y-1 transition-all duration-300 group shadow-lg">
+                            <FiFacebook className="text-lg text-slate-400 group-hover:text-white transition-colors" />
+                        </a>
+                        <a href="https://twitter.com" target="_blank" rel="noreferrer" className="h-10 w-10 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-[#3B42F2] hover:-translate-y-1 transition-all duration-300 group shadow-lg">
+                            <FiTwitter className="text-lg text-slate-400 group-hover:text-white transition-colors" />
+                        </a>
+                        <a href="https://instagram.com" target="_blank" rel="noreferrer" className="h-10 w-10 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-[#3B42F2] hover:-translate-y-1 transition-all duration-300 group shadow-lg">
+                            <FiInstagram className="text-lg text-slate-400 group-hover:text-white transition-colors" />
+                        </a>
+                    </div>
+                </div>
 
-                                <p className="mt-4 text-sm text-dark/65 font-medium">
-                                    Learn smarter. Grow faster.
-                                </p>
-                            </div>
+                {/* Quick Links Column */}
+                <div className="lg:col-span-2 space-y-6">
+                    <h4 className="text-lg font-black tracking-widest uppercase text-white">Platform</h4>
+                    <ul className="space-y-4">
+                        <li><NavLink to="/" className="text-slate-400 hover:text-white font-semibold transition-colors">Home</NavLink></li>
+                        <li><NavLink to="/#features" className="text-slate-400 hover:text-white font-semibold transition-colors">Features</NavLink></li>
+                        <li><NavLink to="/#pricing" className="text-slate-400 hover:text-white font-semibold transition-colors">Pricing</NavLink></li>
+                        <li><NavLink to="/work-proof" className="text-slate-400 hover:text-white font-semibold transition-colors">Implementations</NavLink></li>
+                    </ul>
+                </div>
 
-                            {/* Vertical Divider */}
-                            <div className="hidden lg:block h-full w-px justify-self-center bg-white/20" />
+                {/* Support Column */}
+                <div className="lg:col-span-2 space-y-6">
+                    <h4 className="text-lg font-black tracking-widest uppercase text-white">Support</h4>
+                    <ul className="space-y-4">
+                        <li><NavLink to="/contact" className="text-slate-400 hover:text-white font-semibold transition-colors">Contact Us</NavLink></li>
+                        <li><NavLink to="/privacy-policy" className="text-slate-400 hover:text-white font-semibold transition-colors">Privacy Policy</NavLink></li>
+                        <li><NavLink to="/terms-of-service" className="text-slate-400 hover:text-white font-semibold transition-colors">Terms of Service</NavLink></li>
+                        <li><NavLink to="/cookies" className="text-slate-400 hover:text-white font-semibold transition-colors">Cookie Policy</NavLink></li>
+                    </ul>
+                </div>
 
-                            {/* Quick Links */}
-                            <div className="text-center lg:text-left">
-                                <h3 className="text-[18px] font-bold text-dark mb-5">
-                                    Quick Links
-                                </h3>
-
-                                <ul className="space-y-3">
-                                    <li>
-                                        <NavLink
-                                            to="/privacy-policy"
-                                            className="relative inline-flex items-center text-[15px] text-dark/75 hover:text-secondary font-medium transition-all duration-300"
-                                        >
-                                            Privacy Policy
-                                        </NavLink>
-                                    </li>
-                                    <li>
-                                        <NavLink
-                                            to="/terms-of-service"
-                                            className="relative inline-flex items-center text-[15px] text-dark/75 hover:text-secondary font-medium transition-all duration-300"
-                                        >
-                                            Terms of Service
-                                        </NavLink>
-                                    </li>
-                                    <li>
-                                        <NavLink
-                                            to="/contact"
-                                            className="relative inline-flex items-center text-[15px] text-dark/75 hover:text-secondary font-medium transition-all duration-300"
-                                        >
-                                            Contact Us
-                                        </NavLink>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            {/* Social */}
-                            <div className="text-center lg:text-left">
-                                <h3 className="text-[18px] font-bold text-dark mb-5">
-                                    Follow Us
-                                </h3>
-
-                                <p className="text-sm text-dark/65">
-                                    Stay connected on social media
-                                </p>
-
-                                <div className="mt-4 flex items-center justify-center lg:justify-start gap-3">
-                                    <a
-                                        href="https://facebook.com"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        aria-label="Facebook"
-                                        className="group h-10 w-10 rounded-full border border-white/30 bg-white/40 hover:bg-secondary/80 hover:border-white flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
-                                    >
-                                        <FiFacebook className="text-[18px] text-dark group-hover:text-white transition-colors duration-300" />
-                                    </a>
-
-                                    <a
-                                        href="https://twitter.com"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        aria-label="Twitter"
-                                        className="group h-10 w-10 rounded-full border border-white/30 bg-white/40 hover:bg-secondary/80 hover:border-white flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
-                                    >
-                                        <FiTwitter className="text-[18px] text-dark group-hover:text-white transition-colors duration-300" />
-                                    </a>
-
-                                    <a
-                                        href="https://instagram.com"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        aria-label="Instagram"
-                                        className="group h-10 w-10 rounded-full border border-white/30 bg-white/40 hover:bg-secondary/80 hover:border-white flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
-                                    >
-                                        <FiInstagram className="text-[18px] text-dark group-hover:text-white transition-colors duration-300" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Divider */}
-                        <div className="my-8 sm:my-10 h-px bg-white/20" />
-
-                        {/* Bottom Row */}
-                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto] items-center text-center lg:text-left">
-                            <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-dark/65">
-                                <FiClock className="h-4 w-4" />
-                                <span>Copyright © {year} EduBari. All rights reserved by Botbari.</span>
-                            </div>
-
-                            <div className="text-sm text-dark/65">
-                                <NavLink
-                                    to="/cookies"
-                                    className="text-sm font-medium text-dark/75 hover:text-secondary transition-colors duration-300"
-                                >
-                                    Cookies
-                                </NavLink>
-                            </div>
-
-                            <div className="text-sm text-dark/65">
-                                <NavLink
-                                    to="/sitemap"
-                                    className="text-sm font-medium text-dark/75 hover:text-secondary transition-colors duration-300"
-                                >
-                                    Sitemap
-                                </NavLink>
-                            </div>
-
-                            <div className="flex items-center justify-center gap-2 text-sm text-dark/65">
-                                <FiGlobe className="h-4 w-4" />
-                                <span className="font-medium text-dark/75">Language:</span>
-
-                                <select
-                                    value={language}
-                                    onChange={(e) => setLanguage(e.target.value)}
-                                    className="rounded-full border border-white/30 bg-white/40 px-3 py-1.5 text-dark/80 transition-all duration-300 hover:bg-white/60 hover:text-secondary focus:outline-none cursor-pointer"
-                                >
-                                    <option value="EN">EN</option>
-                                    <option value="BN">BN</option>
-                                </select>
-                            </div>
-                        </div>
+                {/* Newsletter Column */}
+                <div className="lg:col-span-4 space-y-6">
+                    <h4 className="text-lg font-black tracking-widest uppercase text-white">Newsletter</h4>
+                    <p className="text-slate-400 font-medium text-sm">Stay updated with the latest digital education trends and product updates.</p>
+                    <div className="relative group">
+                        <input 
+                            type="email" 
+                            placeholder="Email address" 
+                            className="w-full bg-slate-800 border border-slate-700 rounded-2xl px-6 py-4 text-sm font-semibold focus:outline-none focus:border-[#3B42F2] transition-all"
+                        />
+                        <button className="absolute right-2 top-2 bottom-2 bg-[#3B42F2] text-white px-6 rounded-xl font-black text-xs hover:bg-blue-700 transition-all">
+                            JOIN
+                        </button>
                     </div>
                 </div>
             </div>
-        </footer>
+
+            {/* Bottom Footer */}
+            <div className="pt-10 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-3 text-slate-500 font-bold text-xs uppercase tracking-[0.2em]">
+                    <FiClock className="h-4 w-4" />
+                    <span>© {year} EduBari — Proudly Made by Botbari.</span>
+                </div>
+
+                <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2 text-slate-500 font-black text-xs uppercase tracking-widest">
+                        <FiGlobe className="h-4 w-4" />
+                        <span>Language:</span>
+                        <select
+                            value={language}
+                            onChange={(e) => setLanguage(e.target.value)}
+                            className="bg-transparent border-none outline-none cursor-pointer text-slate-300 hover:text-white transition-colors"
+                        >
+                            <option value="EN">English</option>
+                            <option value="BN">Bangla</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
     );
 };
 

@@ -261,21 +261,21 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
 
   if (isSubmitted) {
     return (
-      <div className="rounded-3xl border border-white/30 bg-white/60 backdrop-blur-sm p-8 sm:p-10 text-center">
-        <div className="w-20 h-20 mx-auto rounded-full bg-linear-to-r from-green-400 to-emerald-500 flex items-center justify-center mb-6 shadow-lg shadow-green-500/25">
-          <FiCheck className="h-10 w-10 text-white stroke-[2.5]" />
+      <div className="rounded-[40px] border border-slate-100 bg-white p-12 text-center shadow-[0_30px_70px_rgba(0,0,0,0.05)]">
+        <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500 flex items-center justify-center mb-8 shadow-lg shadow-emerald-500/20">
+          <FiCheck className="h-10 w-10 text-white stroke-[3]" />
         </div>
-        <h3 className="text-2xl sm:text-3xl font-black text-dark tracking-tight">
+        <h3 className="text-3xl font-black text-[#1E293B] tracking-tight mb-4">
           Order Confirmed! 🎉
         </h3>
-        <p className="mt-4 text-sm sm:text-[15px] text-dark/60 leading-7 max-w-md mx-auto">
+        <p className="text-slate-500 font-medium text-base leading-relaxed max-w-md mx-auto mb-8">
           Thank you, <strong>{formData.fullName}</strong>! Your{" "}
           <strong>{selectedPlan?.name}</strong> plan order has been received.
           We'll reach out to you at <strong>{formData.email}</strong> within 24
           hours.
         </p>
-        <div className="mt-6 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-green-50 text-green-600 text-xs font-bold border border-green-200">
-          <FiCheck className="h-3.5 w-3.5 stroke-3" /> Payment Verification In
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+          <FiCheck className="h-3.5 w-3.5" /> Payment Verification In
           Progress
         </div>
       </div>
@@ -283,15 +283,15 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
   }
 
   const inputBase =
-    "w-full rounded-xl border bg-white/70 backdrop-blur-sm px-4 py-3 text-sm font-medium text-dark placeholder:text-dark/35 outline-none transition-all duration-300 focus:ring-2 focus:ring-tertiary/30 focus:border-tertiary/50 focus:bg-white";
+    "w-full rounded-2xl border bg-slate-50 px-6 py-4 text-sm font-bold text-[#1E293B] placeholder:text-slate-400 outline-none transition-all duration-300 focus:ring-4 focus:ring-[#3B42F2]/5 focus:border-[#3B42F2] focus:bg-white";
 
   return (
-    <div className="rounded-3xl border border-white/30 bg-white/60 backdrop-blur-sm overflow-hidden shadow-lg shadow-dark/5">
+    <div className="rounded-[40px] border border-slate-100 bg-white overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.05)]">
       {/* Header */}
-      <div className="bg-linear-to-r from-secondary to-secondary-light px-6 py-4">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+      <div className="bg-[#1E293B] px-8 py-6">
+        <h3 className="text-sm font-black text-white flex items-center gap-2 uppercase tracking-widest">
           <svg
-            className="w-5 h-5"
+            className="w-5 h-5 text-[#3B42F2]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -307,102 +307,102 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
         </h3>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="p-10 space-y-8">
         {/* Institution Name */}
         <div>
-          <label className="block text-xs font-bold text-dark/60 mb-1.5 uppercase tracking-wider">
-            Institution Name <span className="text-red-400">*</span>
+          <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
+            Institution Name <span className="text-rose-500">*</span>
           </label>
           <input
             id="institution-name"
             type="text"
             placeholder="e.g. Sunrise Coaching Center"
-            className={`${inputBase} ${errors.institutionName ? "border-red-400 ring-2 ring-red-400/20" : "border-dark/10"}`}
+            className={`${inputBase} ${errors.institutionName ? "border-rose-400 ring-4 ring-rose-400/5 bg-rose-50/10" : "border-slate-100"}`}
             value={formData.institutionName}
             onChange={(e) => handleChange("institutionName", e.target.value)}
           />
           {errors.institutionName && (
-            <p className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
-              <FiAlertCircle className="h-3 w-3" /> {errors.institutionName}
+            <p className="mt-2 text-xs text-rose-500 font-bold flex items-center gap-1.5">
+              <FiAlertCircle className="h-3.5 w-3.5" /> {errors.institutionName}
             </p>
           )}
         </div>
 
         {/* Full Name & Email */}
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-8">
           <div>
-            <label className="block text-xs font-bold text-dark/60 mb-1.5 uppercase tracking-wider">
-              Full Name <span className="text-red-400">*</span>
+            <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
+              Full Name <span className="text-rose-500">*</span>
             </label>
             <input
               id="full-name"
               type="text"
               placeholder="Your full name"
-              className={`${inputBase} ${errors.fullName ? "border-red-400 ring-2 ring-red-400/20" : "border-dark/10"}`}
+              className={`${inputBase} ${errors.fullName ? "border-rose-400 ring-4 ring-rose-400/5 bg-rose-50/10" : "border-slate-100"}`}
               value={formData.fullName}
               onChange={(e) => handleChange("fullName", e.target.value)}
             />
             {errors.fullName && (
-              <p className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
-                <FiAlertCircle className="h-3 w-3" /> {errors.fullName}
+              <p className="mt-2 text-xs text-rose-500 font-bold flex items-center gap-1.5">
+                <FiAlertCircle className="h-3.5 w-3.5" /> {errors.fullName}
               </p>
             )}
           </div>
           <div>
-            <label className="block text-xs font-bold text-dark/60 mb-1.5 uppercase tracking-wider">
-              Email <span className="text-red-400">*</span>
+            <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
+              Email <span className="text-rose-500">*</span>
             </label>
             <input
               id="email"
               type="email"
               placeholder="you@example.com"
-              className={`${inputBase} ${errors.email ? "border-red-400 ring-2 ring-red-400/20" : "border-dark/10"}`}
+              className={`${inputBase} ${errors.email ? "border-rose-400 ring-4 ring-rose-400/5 bg-rose-50/10" : "border-slate-100"}`}
               value={formData.email}
               onChange={(e) => handleChange("email", e.target.value)}
             />
             {errors.email && (
-              <p className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
-                <FiAlertCircle className="h-3 w-3" /> {errors.email}
+              <p className="mt-2 text-xs text-rose-500 font-bold flex items-center gap-1.5">
+                <FiAlertCircle className="h-3.5 w-3.5" /> {errors.email}
               </p>
             )}
           </div>
         </div>
 
         {/* Phone & Address */}
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-8">
           <div>
-            <label className="block text-xs font-bold text-dark/60 mb-1.5 uppercase tracking-wider">
-              Phone <span className="text-red-400">*</span>
+            <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
+              Phone <span className="text-rose-500">*</span>
             </label>
             <input
               id="phone"
               type="tel"
               placeholder="+880 1XXX-XXXXXX"
-              className={`${inputBase} ${errors.phone ? "border-red-400 ring-2 ring-red-400/20" : "border-dark/10"}`}
+              className={`${inputBase} ${errors.phone ? "border-rose-400 ring-4 ring-rose-400/5 bg-rose-50/10" : "border-slate-100"}`}
               value={formData.phone}
               onChange={(e) => handleChange("phone", e.target.value)}
             />
             {errors.phone && (
-              <p className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
-                <FiAlertCircle className="h-3 w-3" /> {errors.phone}
+              <p className="mt-2 text-xs text-rose-500 font-bold flex items-center gap-1.5">
+                <FiAlertCircle className="h-3.5 w-3.5" /> {errors.phone}
               </p>
             )}
           </div>
           <div>
-            <label className="block text-xs font-bold text-dark/60 mb-1.5 uppercase tracking-wider">
-              Address / City <span className="text-red-400">*</span>
+            <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
+              Address / City <span className="text-rose-500">*</span>
             </label>
             <input
               id="address"
               type="text"
               placeholder="City, District"
-              className={`${inputBase} ${errors.address ? "border-red-400 ring-2 ring-red-400/20" : "border-dark/10"}`}
+              className={`${inputBase} ${errors.address ? "border-rose-400 ring-4 ring-rose-400/5 bg-rose-50/10" : "border-slate-100"}`}
               value={formData.address}
               onChange={(e) => handleChange("address", e.target.value)}
             />
             {errors.address && (
-              <p className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
-                <FiAlertCircle className="h-3 w-3" /> {errors.address}
+              <p className="mt-2 text-xs text-rose-500 font-bold flex items-center gap-1.5">
+                <FiAlertCircle className="h-3.5 w-3.5" /> {errors.address}
               </p>
             )}
           </div>
@@ -410,38 +410,37 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
 
         {/* Preferred Domain */}
         <div>
-          <label className="block text-xs font-bold text-dark/60 mb-1.5 uppercase tracking-wider">
-            Preferred Domain <span className="text-red-400">*</span>
+          <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">
+            Preferred Domain <span className="text-rose-500">*</span>
           </label>
           <input
             id="preferred-domain"
             type="text"
             placeholder="e.g. sunrise-coaching or sunrise-coaching.com"
-            className={`${inputBase} ${errors.preferredDomain ? "border-red-400 ring-2 ring-red-400/20" : "border-dark/10"}`}
+            className={`${inputBase} ${errors.preferredDomain ? "border-rose-400 ring-4 ring-rose-400/5 bg-rose-50/10" : "border-slate-100"}`}
             value={formData.preferredDomain}
             onChange={(e) => handlePreferredDomainChange(e.target.value)}
           />
           {formData.preferredDomain.trim() && !errors.preferredDomain && (
             <p
-              className={`mt-1.5 text-xs font-medium flex items-center gap-1 ${
-                domainStatus === "available"
-                  ? "text-green-600"
-                  : domainStatus === "taken"
-                    ? "text-red-500"
-                    : domainStatus === "checking"
-                      ? "text-amber-600"
-                      : "text-dark/50"
-              }`}
+              className={`mt-2 text-xs font-bold flex items-center gap-1.5 ${domainStatus === "available"
+                ? "text-emerald-500"
+                : domainStatus === "taken"
+                  ? "text-rose-500"
+                  : domainStatus === "checking"
+                    ? "text-amber-500"
+                    : "text-slate-400"
+                }`}
             >
               {domainStatus === "available" && (
-                <FiCheck className="h-3.5 w-3.5" />
+                <FiCheck className="h-4 w-4" />
               )}
               {domainStatus === "taken" && (
-                <FiAlertCircle className="h-3.5 w-3.5" />
+                <FiAlertCircle className="h-4 w-4" />
               )}
               {domainStatus === "checking" && (
                 <svg
-                  className="h-3.5 w-3.5 animate-spin"
+                  className="h-4 w-4 animate-spin"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
@@ -464,18 +463,18 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
             </p>
           )}
           {errors.preferredDomain && (
-            <p className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
-              <FiAlertCircle className="h-3 w-3" /> {errors.preferredDomain}
+            <p className="mt-2 text-xs text-rose-500 font-bold flex items-center gap-1.5">
+              <FiAlertCircle className="h-3.5 w-3.5" /> {errors.preferredDomain}
             </p>
           )}
         </div>
 
         {/* Payment Method */}
         <div>
-          <label className="block text-xs font-bold text-dark/60 mb-2.5 uppercase tracking-wider">
-            Payment Method <span className="text-red-400">*</span>
+          <label className="block text-[10px] font-black text-slate-400 mb-4 uppercase tracking-widest">
+            Payment Method <span className="text-rose-500">*</span>
           </label>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-4">
             {paymentMethods.map((method) => {
               const isActive = formData.paymentMethod === method.id;
               return (
@@ -483,15 +482,14 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
                   key={method.id}
                   type="button"
                   onClick={() => handleChange("paymentMethod", method.id)}
-                  className={`relative flex flex-col items-center gap-1.5 px-3 py-4 rounded-xl border text-center transition-all duration-300 cursor-pointer hover:-translate-y-0.5 ${
-                    isActive ? method.activeColor : method.color
-                  }`}
+                  className={`relative flex flex-col items-center gap-3 px-4 py-6 rounded-2xl border-2 text-center transition-all duration-300 cursor-pointer hover:-translate-y-1 ${isActive ? "border-[#3B42F2] bg-blue-50/50 shadow-lg shadow-[#3B42F2]/5" : "border-slate-100 bg-slate-50/50"
+                    }`}
                 >
-                  <span className="text-xl">{method.icon}</span>
-                  <span className="text-xs font-bold">{method.name}</span>
+                  <span className="text-2xl">{method.icon}</span>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${isActive ? "text-[#3B42F2]" : "text-slate-500"}`}>{method.name}</span>
                   {isActive && (
-                    <div className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-tertiary flex items-center justify-center">
-                      <FiCheck className="h-3 w-3 text-white stroke-3" />
+                    <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-[#3B42F2] flex items-center justify-center shadow-lg shadow-[#3B42F2]/20">
+                      <FiCheck className="h-3 w-3 text-white stroke-[3]" />
                     </div>
                   )}
                 </button>
@@ -499,78 +497,77 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
             })}
           </div>
           {errors.paymentMethod && (
-            <p className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
-              <FiAlertCircle className="h-3 w-3" /> {errors.paymentMethod}
+            <p className="mt-2 text-xs text-rose-500 font-bold flex items-center gap-1.5">
+              <FiAlertCircle className="h-3.5 w-3.5" /> {errors.paymentMethod}
             </p>
           )}
         </div>
 
         {/* Transaction ID — only show after payment method selected */}
         {formData.paymentMethod && (
-          <div className="animate-[fadeInUp_0.3s_ease-out]">
-            <label className="block text-xs font-bold text-dark/60 mb-1.5 uppercase tracking-wider">
-              Transaction ID <span className="text-red-400">*</span>
+          <div className="animate-[fadeInUp_0.3s_ease-out] p-6 rounded-3xl bg-blue-50/30 border border-blue-100/50">
+            <label className="block text-[10px] font-black text-[#3B42F2] mb-3 uppercase tracking-widest">
+              Transaction ID <span className="text-rose-500">*</span>
             </label>
             <input
               id="transaction-id"
               type="text"
               placeholder={`Enter your ${paymentMethods.find((m) => m.id === formData.paymentMethod)?.name} Transaction ID`}
-              className={`${inputBase} ${errors.transactionId ? "border-red-400 ring-2 ring-red-400/20" : "border-dark/10"}`}
+              className={`${inputBase} ${errors.transactionId ? "border-rose-400 ring-4 ring-rose-400/5" : "border-blue-100"}`}
               value={formData.transactionId}
               onChange={(e) => handleChange("transactionId", e.target.value)}
             />
             {errors.transactionId && (
-              <p className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
-                <FiAlertCircle className="h-3 w-3" /> {errors.transactionId}
+              <p className="mt-2 text-xs text-rose-500 font-bold flex items-center gap-1.5">
+                <FiAlertCircle className="h-3.5 w-3.5" /> {errors.transactionId}
               </p>
             )}
-            <p className="mt-2 text-xs text-dark/40 leading-5">
+            <p className="mt-4 text-[10px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">
               Send{" "}
-              <strong className="text-tertiary">
+              <strong className="text-[#3B42F2]">
                 {selectedPlan?.priceLabel || "the total amount"}
               </strong>{" "}
               to our{" "}
-              <strong>
+              <strong className="text-[#3B42F2]">
                 {
                   paymentMethods.find((m) => m.id === formData.paymentMethod)
                     ?.name
                 }
               </strong>{" "}
-              number <strong className="text-dark/70">01XXXXXXXXX</strong> and
+              number <strong className="text-[#1E293B]">01XXXXXXXXX</strong> and
               enter the Transaction ID above.
             </p>
           </div>
         )}
 
         {/* Terms & Conditions */}
-        <div className="flex items-start gap-3 pt-2">
+        <div className="flex items-start gap-4 pt-2">
           <button
             type="button"
             onClick={() => handleChange("agreeTerms", !formData.agreeTerms)}
-            className={`mt-0.5 shrink-0 h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200 cursor-pointer ${
-              formData.agreeTerms
-                ? "bg-tertiary border-tertiary"
-                : errors.agreeTerms
-                  ? "border-red-400"
-                  : "border-dark/20 hover:border-tertiary/50"
-            }`}
+            className={`mt-0.5 shrink-0 h-6 w-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 cursor-pointer ${formData.agreeTerms
+              ? "bg-[#3B42F2] border-[#3B42F2] shadow-lg shadow-[#3B42F2]/20"
+              : errors.agreeTerms
+                ? "border-rose-400"
+                : "border-slate-200 hover:border-[#3B42F2]/50"
+              }`}
           >
             {formData.agreeTerms && (
-              <FiCheck className="h-3 w-3 text-white stroke-3" />
+              <FiCheck className="h-3.5 w-3.5 text-white stroke-[3]" />
             )}
           </button>
-          <p className="text-xs text-dark/55 leading-5">
+          <p className="text-xs font-bold text-slate-500 leading-relaxed">
             I agree to the{" "}
             <a
               href="/terms"
-              className="text-tertiary font-semibold hover:underline"
+              className="text-[#3B42F2] hover:underline"
             >
               Terms & Conditions
             </a>{" "}
             and{" "}
             <a
               href="/privacy"
-              className="text-tertiary font-semibold hover:underline"
+              className="text-[#3B42F2] hover:underline"
             >
               Privacy Policy
             </a>
@@ -578,8 +575,8 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
           </p>
         </div>
         {errors.agreeTerms && (
-          <p className="text-xs text-red-500 font-medium flex items-center gap-1 -mt-2">
-            <FiAlertCircle className="h-3 w-3" /> {errors.agreeTerms}
+          <p className="text-xs text-rose-500 font-bold flex items-center gap-1.5 -mt-4">
+            <FiAlertCircle className="h-3.5 w-3.5" /> {errors.agreeTerms}
           </p>
         )}
 
@@ -591,14 +588,13 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
             !selectedPlan ||
             (formData.preferredDomain.trim() && domainStatus !== "available")
           }
-          className={`w-full mt-2 inline-flex items-center justify-center gap-2.5 rounded-xl px-6 py-4 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 ${
-            selectedPlan
-              ? "bg-linear-to-r from-secondary to-secondary-light text-white shadow-lg shadow-secondary/30 hover:shadow-xl hover:shadow-secondary/40 cursor-pointer"
-              : "bg-dark/10 text-dark/40 cursor-not-allowed"
-          } ${isSubmitting ? "opacity-75 pointer-events-none" : ""}`}
+          className={`w-full rounded-[20px] py-6 text-xs font-black uppercase tracking-widest transition-all duration-500 hover:-translate-y-1 ${selectedPlan
+            ? "bg-[#3B42F2] text-white shadow-xl shadow-[#3B42F2]/20 hover:bg-blue-600 cursor-pointer"
+            : "bg-slate-100 text-slate-400 cursor-not-allowed"
+            } ${isSubmitting ? "opacity-75 pointer-events-none" : ""}`}
         >
           {isSubmitting ? (
-            <>
+            <div className="flex items-center justify-center gap-3">
               <svg
                 className="animate-spin h-4 w-4"
                 fill="none"
@@ -618,19 +614,19 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "" }) => {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              Processing...
-            </>
+              <span>Processing...</span>
+            </div>
           ) : (
-            <>
-              Confirm Order
+            <div className="flex items-center justify-center gap-3">
+              <span>Confirm Order</span>
               <FiArrowRight className="h-4 w-4" />
-            </>
+            </div>
           )}
         </button>
 
         {errors.submit && (
-          <p className="text-xs text-red-500 font-medium flex items-center gap-1 justify-center">
-            <FiAlertCircle className="h-3 w-3" /> {errors.submit}
+          <p className="text-xs text-rose-500 font-bold flex items-center gap-1.5 justify-center">
+            <FiAlertCircle className="h-3.5 w-3.5" /> {errors.submit}
           </p>
         )}
       </form>

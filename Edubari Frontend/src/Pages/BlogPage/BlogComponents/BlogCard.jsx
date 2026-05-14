@@ -11,74 +11,70 @@ const categoryColors = {
 };
 
 const BlogCard = ({ post }) => {
-  const colors = categoryColors[post.category] || categoryColors.Education;
   const postPath = post?.slug || post?._id || "";
-  const authorName = post?.author?.name || "Unknown Author";
-  const authorAvatar =
-    post?.author?.avatar || authorName.slice(0, 2).toUpperCase();
+  const authorName = post?.author?.name || "Anonymous";
+  const authorAvatar = post?.author?.avatar || `https://ui-avatars.com/api/?name=${authorName}&background=3B42F2&color=fff`;
 
   return (
     <Link
       to={`/blog/${postPath}`}
-      className="group relative flex flex-col rounded-2xl border border-white/40 bg-white/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-dark/8 hover:bg-white/80 hover:border-tertiary/20"
+      className="group flex flex-col bg-white rounded-[40px] border border-slate-50 overflow-hidden transition-all duration-700 hover:-translate-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)]"
     >
       {/* Thumbnail */}
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-64 overflow-hidden">
         <img
           src={post.image}
           alt={post.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-dark/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
 
         {/* Category Badge */}
-        <span
-          className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold ${colors.text} ${colors.bg} backdrop-blur-sm border border-white/20`}
-        >
-          {post.category}
-        </span>
+        <div className="absolute top-6 left-6">
+          <span className="px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase bg-white/90 backdrop-blur-md text-[#3B42F2] shadow-sm">
+            {post.category}
+          </span>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex flex-col grow p-5 sm:p-6">
-        {/* Date & ReadTime */}
-        <div className="flex items-center gap-3 text-xs text-dark/45 font-medium">
-          <span>{post.date}</span>
-          <span className="h-1 w-1 rounded-full bg-dark/20" />
-          <span className="flex items-center gap-1">
-            <FiClock className="h-3 w-3" />
-            {post.readTime}
-          </span>
+      <div className="flex flex-col grow p-8">
+        {/* Meta Info */}
+        <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
+            <FiClock className="h-3.5 w-3.5" />
+            <span>{post.readTime}</span>
+          </div>
+          <div className="h-1 w-1 rounded-full bg-slate-200" />
+          <span className="text-xs font-bold text-slate-400">{post.date}</span>
         </div>
 
         {/* Title */}
-        <h3 className="mt-3 text-lg font-bold text-dark leading-snug line-clamp-2 group-hover:text-tertiary transition-colors duration-300">
+        <h3 className="text-xl font-black text-[#1E293B] leading-tight mb-4 group-hover:text-[#3B42F2] transition-colors duration-300 line-clamp-2">
           {post.title}
         </h3>
 
         {/* Excerpt */}
-        <p className="mt-2.5 text-sm leading-relaxed text-dark/55 line-clamp-3">
+        <p className="text-slate-500 font-medium text-sm leading-relaxed line-clamp-3 mb-8">
           {post.excerpt}
         </p>
 
         {/* Footer */}
-        <div className="mt-auto pt-5 flex items-center justify-between">
-          {/* Author */}
-          <div className="flex items-center gap-2.5">
-            <div
-              className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white bg-linear-to-br from-tertiary to-[#8B5CF6]`}
-            >
-              {authorAvatar}
-            </div>
-            <span className="text-sm font-semibold text-dark/70">
+        <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img 
+              src={authorAvatar} 
+              alt={authorName} 
+              className="h-8 w-8 rounded-full border border-slate-100 p-0.5"
+            />
+            <span className="text-sm font-bold text-[#1E293B]">
               {authorName}
             </span>
           </div>
 
-          {/* Arrow */}
-          <div className="h-8 w-8 rounded-full flex items-center justify-center bg-dark/5 text-dark/40 group-hover:bg-tertiary group-hover:text-white transition-all duration-300">
-            <FiArrowRight className="h-3.5 w-3.5 transform group-hover:translate-x-0.5 transition-transform duration-300" />
+          <div className="flex items-center gap-2 text-[#3B42F2] font-black text-xs tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-2 group-hover:translate-x-0">
+            READ <FiArrowRight className="h-3.5 w-3.5" />
           </div>
         </div>
       </div>

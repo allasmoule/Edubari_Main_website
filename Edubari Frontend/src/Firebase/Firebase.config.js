@@ -14,6 +14,19 @@ export const firebaseConfig = {
   appId: import.meta.env.VITE_appId,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+// Initialize Firebase only if apiKey exists
+let app;
+let auth;
+
+if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "") {
+  try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+  } catch (error) {
+    console.error("Firebase initialization failed:", error);
+  }
+} else {
+  console.warn("Firebase API Key is missing. Auth features will not work.");
+}
+
+export { auth };

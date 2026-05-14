@@ -12,132 +12,116 @@ import {
 
 const features = [
     {
-        icon: <FiBookOpen className="h-5 w-5" />,
+        icon: <FiBookOpen className="h-6 w-6" />,
         title: "Student Management",
-        description:
-            "Complete student profiles, enrollment, and academic records",
-        color: "text-tertiary",
-        bg: "bg-tertiary/8",
-        border: "group-hover:border-tertiary/25",
+        description: "Complete student profiles, enrollment, and digital academic records for easy access.",
+        color: "text-blue-600",
+        bg: "bg-blue-50",
     },
     {
-        icon: <FiUsers className="h-5 w-5" />,
+        icon: <FiUsers className="h-6 w-6" />,
         title: "Teacher Panel",
-        description:
-            "Dedicated dashboard for teachers to manage classes and grades",
-        color: "text-secondary",
-        bg: "bg-secondary/8",
-        border: "group-hover:border-secondary/25",
+        description: "Dedicated dashboard for teachers to manage their classes, grades, and attendance.",
+        color: "text-indigo-600",
+        bg: "bg-indigo-50",
     },
     {
-        icon: <FiCheckSquare className="h-5 w-5" />,
+        icon: <FiCheckSquare className="h-6 w-6" />,
         title: "Attendance Tracking",
-        description:
-            "Digital attendance system with reports and analytics",
-        color: "text-[#8B5CF6]",
-        bg: "bg-[#8B5CF6]/8",
-        border: "group-hover:border-[#8B5CF6]/25",
+        description: "Digital attendance system with automated reports and real-time analytics for parents.",
+        color: "text-violet-600",
+        bg: "bg-violet-50",
     },
     {
-        icon: <FiBarChart2 className="h-5 w-5" />,
-        title: "Result & Grade Management",
-        description:
-            "Automated grading, report cards, and result publishing",
-        color: "text-tertiary",
-        bg: "bg-tertiary/8",
-        border: "group-hover:border-tertiary/25",
+        icon: <FiBarChart2 className="h-6 w-6" />,
+        title: "Result Management",
+        description: "Automated grading system, digital report cards, and instant result publishing.",
+        color: "text-rose-600",
+        bg: "bg-rose-50",
     },
     {
-        icon: <FiFileText className="h-5 w-5" />,
+        icon: <FiFileText className="h-6 w-6" />,
         title: "Online Exam System",
-        description:
-            "Create and conduct online exams with auto-marking",
-        color: "text-[#10B981]",
-        bg: "bg-[#10B981]/8",
-        border: "group-hover:border-[#10B981]/25",
+        description: "Create and conduct secure online exams with automated marking and performance tracking.",
+        color: "text-emerald-600",
+        bg: "bg-emerald-50",
     },
     {
-        icon: <FiDollarSign className="h-5 w-5" />,
+        icon: <FiDollarSign className="h-6 w-6" />,
         title: "Fee Management",
-        description:
-            "Track fee collection, generate receipts, and manage payments",
-        color: "text-[#F59E0B]",
-        bg: "bg-[#F59E0B]/8",
-        border: "group-hover:border-[#F59E0B]/25",
+        description: "Track fee collection, generate digital receipts, and manage student payments seamlessly.",
+        color: "text-amber-600",
+        bg: "bg-amber-50",
     },
     {
-        icon: <FiBell className="h-5 w-5" />,
+        icon: <FiBell className="h-6 w-6" />,
         title: "Notice Board",
-        description:
-            "Publish announcements and notices for students and parents",
-        color: "text-secondary",
-        bg: "bg-secondary/8",
-        border: "group-hover:border-secondary/25",
+        description: "Instant announcements and digital notices for students, parents, and staff members.",
+        color: "text-cyan-600",
+        bg: "bg-cyan-50",
     },
     {
-        icon: <FiTrendingUp className="h-5 w-5" />,
+        icon: <FiTrendingUp className="h-6 w-6" />,
         title: "Reports & Analytics",
-        description:
-            "Comprehensive reports to track institutional performance",
-        color: "text-tertiary",
-        bg: "bg-tertiary/8",
-        border: "group-hover:border-tertiary/25",
+        description: "Comprehensive data-driven reports to monitor and improve institutional performance.",
+        color: "text-blue-600",
+        bg: "bg-blue-50",
     },
 ];
 
 const Feature = () => {
     return (
-        <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-24 bg-primary/40">
-            <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
-                <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-12 sm:py-14">
-                    {/* Header */}
-                    <div className="max-w-3xl mx-auto text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-                            🚀 Features
+    <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-28 bg-[#F8FAFC]">
+        <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm border border-blue-100/50">
+                    🚀 POWERFUL FEATURES
+                </div>
+
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#1E293B] leading-tight mb-4">
+                    Everything Your Institution <span className="text-[#3B42F2]">Needs</span>
+                </h2>
+
+                <p className="mt-4 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-relaxed">
+                    A comprehensive suite of digital tools designed to modernize and empower your educational institution
+                </p>
+            </div>
+
+            {/* Feature Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                {features.map((feature, index) => (
+                    <div
+                        key={feature.title}
+                        className="group relative rounded-[40px] bg-white border border-slate-50 p-10 transition-all duration-500 hover:-translate-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)] overflow-hidden"
+                    >
+                        {/* Decorative background circle */}
+                        <div className={`absolute -right-10 -top-10 h-32 w-32 rounded-full ${feature.bg} opacity-0 group-hover:opacity-20 transition-all duration-700 blur-2xl`} />
+
+                        {/* Icon */}
+                        <div
+                            className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl ${feature.bg} ${feature.color} transition-all duration-500 group-hover:rotate-6 shadow-sm`}
+                        >
+                            {feature.icon}
                         </div>
 
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-dark leading-tight">
-                            Everything Your Institution{" "}
-                            <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
-                                Needs
-                            </span>
-                        </h2>
+                        {/* Title */}
+                        <h3 className="mt-6 text-xl font-black text-[#1E293B] group-hover:text-[#3B42F2] transition-colors duration-300">
+                            {feature.title}
+                        </h3>
 
-                        <p className="mt-5 text-sm sm:text-[15px] lg:text-base leading-7 text-dark/70 max-w-2xl mx-auto">
-                            A comprehensive suite of tools designed to digitize
-                            and streamline your educational institution
+                        {/* Description */}
+                        <p className="mt-4 text-[#64748B] font-semibold text-sm leading-relaxed">
+                            {feature.description}
                         </p>
+
+                        {/* Subtle indicator */}
+                        <div className="mt-6 h-1 w-0 group-hover:w-12 bg-[#3B42F2] rounded-full transition-all duration-500" />
                     </div>
-
-                    {/* Feature Cards Grid */}
-                    <div className="mt-12 lg:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {features.map((feature) => (
-                            <div
-                                key={feature.title}
-                                className={`group relative rounded-2xl border border-white/40 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-dark/5 hover:bg-white/80 ${feature.border}`}
-                            >
-                                {/* Icon */}
-                                <div
-                                    className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${feature.bg} ${feature.color} transition-transform duration-300 group-hover:scale-110`}
-                                >
-                                    {feature.icon}
-                                </div>
-
-                                {/* Title */}
-                                <h3 className="mt-4 text-[17px] font-bold text-dark leading-snug">
-                                    {feature.title}
-                                </h3>
-
-                                {/* Description */}
-                                <p className="mt-2 text-sm leading-relaxed text-dark/60">
-                                    {feature.description}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                ))}
             </div>
-        </section>
+        </div>
+    </section>
     );
 };
 

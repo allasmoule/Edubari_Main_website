@@ -78,7 +78,7 @@ const BlogDetail = () => {
           url: window.location.href,
         })
         .then(() => showPopup("Shared successfully!"))
-        .catch(() => {}); // User cancelled or error
+        .catch(() => {});
     } else {
       handleCopyLink();
     }
@@ -86,9 +86,10 @@ const BlogDetail = () => {
 
   if (isLoading) {
     return (
-      <section className="w-full px-4 sm:px-6 md:px-12 py-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-dark">Loading post...</h2>
+      <section className="min-h-screen flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 border-4 border-slate-100 border-t-[#3B42F2] rounded-full animate-spin" />
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Loading Article...</p>
         </div>
       </section>
     );
@@ -96,27 +97,25 @@ const BlogDetail = () => {
 
   if (!post) {
     return (
-      <section className="w-full px-4 sm:px-6 md:px-12 py-20">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="text-6xl mb-5">📄</div>
-          <h2 className="text-2xl font-bold text-dark">Post Not Found</h2>
-          <p className="mt-3 text-dark/50">
-            {error ||
-              "The article you're looking for doesn't exist or has been removed."}
+      <section className="min-h-screen flex items-center justify-center bg-white px-6">
+        <div className="max-w-md text-center">
+          <div className="text-8xl mb-8">📄</div>
+          <h2 className="text-3xl font-black text-[#1E293B] mb-4">Post Not Found</h2>
+          <p className="text-[#64748B] font-medium mb-10">
+            {error || "The article you're looking for doesn't exist or has been removed."}
           </p>
           <Link
             to="/blog"
-            className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-linear-to-r from-tertiary to-[#8B5CF6] text-white text-sm font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[#3B42F2] text-white font-black text-sm shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all"
           >
             <FiArrowLeft className="h-4 w-4" />
-            Back to Blog
+            BACK TO BLOG
           </Link>
         </div>
       </section>
     );
   }
 
-  // Parse the markdown-like body into sections
   const renderBody = (body) => {
     const lines = body.trim().split("\n");
     const elements = [];
@@ -126,17 +125,14 @@ const BlogDetail = () => {
     const flushUnorderedList = () => {
       if (listItems.length > 0) {
         elements.push(
-          <ul key={`ul-${elements.length}`} className="my-4 space-y-2 pl-1">
+          <ul key={`ul-${elements.length}`} className="my-8 space-y-4">
             {listItems.map((item, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-3 text-dark/70 text-[15px] leading-relaxed"
-              >
-                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-tertiary shrink-0" />
+              <li key={i} className="flex items-start gap-4 text-[#475569] text-lg leading-relaxed">
+                <span className="mt-3 h-2 w-2 rounded-full bg-[#3B42F2] shrink-0" />
                 <span dangerouslySetInnerHTML={{ __html: parseInline(item) }} />
               </li>
             ))}
-          </ul>,
+          </ul>
         );
         listItems = [];
       }
@@ -145,19 +141,16 @@ const BlogDetail = () => {
     const flushOrderedList = () => {
       if (orderedItems.length > 0) {
         elements.push(
-          <ol key={`ol-${elements.length}`} className="my-4 space-y-2 pl-1">
+          <ol key={`ol-${elements.length}`} className="my-8 space-y-4">
             {orderedItems.map((item, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-3 text-dark/70 text-[15px] leading-relaxed"
-              >
-                <span className="mt-0.5 h-6 w-6 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center text-xs font-bold shrink-0">
+              <li key={i} className="flex items-start gap-4 text-[#475569] text-lg leading-relaxed font-medium">
+                <span className="h-8 w-8 rounded-xl bg-blue-50 text-[#3B42F2] flex items-center justify-center text-sm font-black shrink-0">
                   {i + 1}
                 </span>
                 <span dangerouslySetInnerHTML={{ __html: parseInline(item) }} />
               </li>
             ))}
-          </ol>,
+          </ol>
         );
         orderedItems = [];
       }
@@ -165,216 +158,144 @@ const BlogDetail = () => {
 
     const parseInline = (text) => {
       return text
-        .replace(
-          /\*\*(.*?)\*\*/g,
-          '<strong class="font-semibold text-dark">$1</strong>',
-        )
-        .replace(/\*(.*?)\*/g, "<em>$1</em>");
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-[#1E293B]">$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em class="italic text-[#3B42F2]">$1</em>');
     };
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
-
-      if (!line) {
-        flushUnorderedList();
-        flushOrderedList();
-        continue;
-      }
+      if (!line) { flushUnorderedList(); flushOrderedList(); continue; }
 
       if (line.startsWith("### ")) {
-        flushUnorderedList();
-        flushOrderedList();
-        elements.push(
-          <h3 key={`h3-${i}`} className="mt-8 mb-3 text-xl font-bold text-dark">
-            {line.replace("### ", "")}
-          </h3>,
-        );
+        flushUnorderedList(); flushOrderedList();
+        elements.push(<h3 key={`h3-${i}`} className="text-2xl font-black text-[#1E293B] mt-12 mb-6">{line.replace("### ", "")}</h3>);
       } else if (line.startsWith("## ")) {
-        flushUnorderedList();
-        flushOrderedList();
-        elements.push(
-          <h2
-            key={`h2-${i}`}
-            className="mt-10 mb-4 text-2xl font-black text-dark"
-          >
-            {line.replace("## ", "")}
-          </h2>,
-        );
+        flushUnorderedList(); flushOrderedList();
+        elements.push(<h2 key={`h2-${i}`} className="text-3xl font-black text-[#1E293B] mt-16 mb-8">{line.replace("## ", "")}</h2>);
       } else if (line.startsWith("> ")) {
-        flushUnorderedList();
-        flushOrderedList();
+        flushUnorderedList(); flushOrderedList();
         elements.push(
-          <blockquote
-            key={`bq-${i}`}
-            className="my-6 pl-5 border-l-4 border-tertiary/30 py-3 bg-tertiary/5 rounded-r-xl pr-5"
-          >
-            <p className="text-dark/70 text-[15px] leading-relaxed italic">
-              {line.replace("> ", "").replace(/"/g, "").replace(/"/g, "")}
+          <blockquote key={`bq-${i}`} className="my-10 pl-8 border-l-4 border-[#3B42F2] py-2">
+            <p className="text-[#1E293B] text-2xl font-medium leading-relaxed italic opacity-80">
+              {line.replace("> ", "").replace(/"/g, "")}
             </p>
-          </blockquote>,
+          </blockquote>
         );
       } else if (line.startsWith("- ")) {
-        flushOrderedList();
-        listItems.push(line.replace("- ", ""));
+        flushOrderedList(); listItems.push(line.replace("- ", ""));
       } else if (/^\d+\.\s/.test(line)) {
-        flushUnorderedList();
-        orderedItems.push(line.replace(/^\d+\.\s/, ""));
+        flushUnorderedList(); orderedItems.push(line.replace(/^\d+\.\s/, ""));
       } else {
-        flushUnorderedList();
-        flushOrderedList();
-        elements.push(
-          <p
-            key={`p-${i}`}
-            className="my-3 text-dark/70 text-[15px] leading-[1.8]"
-            dangerouslySetInnerHTML={{ __html: parseInline(line) }}
-          />,
-        );
+        flushUnorderedList(); flushOrderedList();
+        elements.push(<p key={`p-${i}`} className="my-6 text-[#475569] text-lg leading-[1.8] font-medium" dangerouslySetInnerHTML={{ __html: parseInline(line) }} />);
       }
     }
 
-    flushUnorderedList();
-    flushOrderedList();
-
+    flushUnorderedList(); flushOrderedList();
     return elements;
   };
 
   return (
-    <article className="w-full relative">
-      {/* Custom Popup */}
+    <article className="min-h-screen bg-white">
       {popup.open && (
-        <div className="fixed left-1/2 top-8 z-50 -translate-x-1/2 bg-dark text-white px-6 py-3 rounded-xl shadow-lg text-sm font-semibold animate-fade-in-up">
+        <div className="fixed left-1/2 top-8 z-50 -translate-x-1/2 bg-[#1E293B] text-white px-8 py-4 rounded-2xl shadow-2xl text-sm font-black tracking-widest uppercase animate-slideDown">
           {popup.message}
         </div>
       )}
-      {/* Hero Image */}
-      <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[480px] overflow-hidden">
-        <img
-          src={post.image}
-          alt={post.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-dark/80 via-dark/30 to-transparent" />
 
-        {/* Back Button */}
-        <Link
-          to="/blog"
-          className="absolute top-6 left-4 sm:left-8 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/15 backdrop-blur-md border border-white/20 text-white text-sm font-semibold hover:bg-white/25 transition-all duration-300"
-        >
-          <FiArrowLeft className="h-4 w-4" />
-          Back to Blog
-        </Link>
+      {/* Hero Header */}
+      <div className="relative w-full h-[60vh] sm:h-[70vh] overflow-hidden">
+        <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#1E293B] via-[#1E293B]/40 to-transparent" />
 
-        {/* Title Overlay */}
-        <div
-          className="absolute bottom-0 left-0 right-0 px-4 sm:px-8 md:px-12 pb-8 sm:pb-10"
-          style={{ animation: "slideDown 0.6s ease-out" }}
-        >
-          <div className="max-w-4xl mx-auto">
-            <span className="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs font-bold border border-white/20 mb-4">
+        <div className="absolute inset-0 flex flex-col justify-end px-6 sm:px-12 lg:px-24 pb-16">
+          <div className="max-w-4xl mx-auto w-full">
+            <Link to="/blog" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-black uppercase tracking-widest mb-10 hover:bg-white/20 transition-all">
+              <FiArrowLeft className="h-4 w-4" />
+              BACK TO FEED
+            </Link>
+            
+            <div className="inline-block px-4 py-1.5 rounded-full bg-[#3B42F2] text-white text-[10px] font-black tracking-widest uppercase mb-6 shadow-xl">
               {post.category}
-            </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight tracking-tight max-w-3xl">
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight mb-8">
               {post.title}
             </h1>
+
+            <div className="flex flex-wrap items-center gap-8 text-slate-300">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full border-2 border-white/20 p-0.5">
+                   <img src={`https://ui-avatars.com/api/?name=${post.author.name}&background=3B42F2&color=fff`} className="h-full w-full rounded-full object-cover" />
+                </div>
+                <span className="font-black text-white text-sm">{post.author.name}</span>
+              </div>
+              <div className="h-1 w-1 rounded-full bg-white/30" />
+              <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+                <FiCalendar className="h-4 w-4" />
+                {post.date}
+              </div>
+              <div className="h-1 w-1 rounded-full bg-white/30" />
+              <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest">
+                <FiClock className="h-4 w-4" />
+                {post.readTime}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Meta & Content */}
-      <div className="px-4 sm:px-8 md:px-12 py-8 sm:py-12">
+      {/* Main Content Area */}
+      <div className="relative z-10 -mt-10 px-6 sm:px-12 lg:px-24 pb-24">
         <div className="max-w-4xl mx-auto">
-          {/* Meta Bar */}
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6 pb-8 border-b border-dark/8">
-            <div className="flex items-center gap-2.5">
-              <div className="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold text-white bg-linear-to-br from-tertiary to-[#8B5CF6]">
-                {post.author.avatar}
+          <div className="bg-white rounded-[40px] shadow-2xl shadow-slate-200 border border-slate-50 p-8 sm:p-16">
+            {/* Share & Tools */}
+            <div className="flex items-center justify-between mb-16 pb-8 border-b border-slate-50">
+               <div className="flex items-center gap-4">
+                  <button onClick={handleShare} className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-[#1E293B] hover:bg-[#3B42F2] hover:text-white transition-all">
+                    <FiShare2 className="h-5 w-5" />
+                  </button>
+                  <button onClick={handleCopyLink} className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-[#1E293B] hover:bg-[#3B42F2] hover:text-white transition-all">
+                    <FiCopy className="h-5 w-5" />
+                  </button>
+               </div>
+               <div className="text-slate-400 font-black text-xs uppercase tracking-widest">
+                  Reading Time: {post.readTime}
+               </div>
+            </div>
+
+            {/* Article Content */}
+            <div className="prose prose-lg prose-slate max-w-none">
+              {renderBody(post.body)}
+            </div>
+
+            {/* Author Section */}
+            <div className="mt-20 p-10 rounded-[32px] bg-slate-50 flex flex-col sm:flex-row items-center sm:items-start gap-8">
+              <div className="h-24 w-24 rounded-full border-4 border-white shadow-xl shrink-0 overflow-hidden">
+                 <img src={`https://ui-avatars.com/api/?name=${post.author.name}&background=3B42F2&color=fff`} className="h-full w-full object-cover" />
               </div>
-              <div>
-                <p className="text-sm font-bold text-dark">
-                  {post.author.name}
+              <div className="text-center sm:text-left">
+                <p className="text-[#3B42F2] font-black text-[10px] uppercase tracking-widest mb-2">AUTHORED BY</p>
+                <h3 className="text-2xl font-black text-[#1E293B] mb-4">{post.author.name}</h3>
+                <p className="text-slate-500 font-medium text-lg leading-relaxed">
+                  Education technology expert focusing on digital transformation and smart institutional management. Helping schools embrace the future.
                 </p>
-                <p className="text-xs text-dark/40">Author</p>
               </div>
             </div>
-
-            <div className="h-8 w-px bg-dark/10 hidden sm:block" />
-
-            <div className="flex items-center gap-1.5 text-sm text-dark/50">
-              <FiCalendar className="h-3.5 w-3.5" />
-              {post.date}
-            </div>
-
-            <div className="flex items-center gap-1.5 text-sm text-dark/50">
-              <FiClock className="h-3.5 w-3.5" />
-              {post.readTime}
-            </div>
-
-            <div className="ml-auto flex items-center gap-2">
-              <button
-                onClick={handleCopyLink}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-dark/5 text-dark/50 text-sm font-medium hover:bg-tertiary/10 hover:text-tertiary transition-all duration-200"
-                title="Copy link"
-              >
-                <FiCopy className="h-3.5 w-3.5" />
-                Copy Link
-              </button>
-              <button
-                onClick={handleShare}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-dark/5 text-dark/50 text-sm font-medium hover:bg-tertiary/10 hover:text-tertiary transition-all duration-200"
-                title="Share"
-              >
-                <FiShare2 className="h-3.5 w-3.5" />
-                Share
-              </button>
-            </div>
           </div>
 
-          {/* Article Body */}
-          <div className="py-8 max-w-3xl">{renderBody(post.body)}</div>
-
-          {/* Author Card */}
-          <div className="mt-8 rounded-2xl border border-white/40 bg-linear-to-br from-primary/60 to-white/60 backdrop-blur-sm p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-5">
-            <div className="h-16 w-16 rounded-2xl flex items-center justify-center text-xl font-bold text-white bg-linear-to-br from-tertiary to-[#8B5CF6] shrink-0">
-              {post.author.avatar}
-            </div>
-            <div>
-              <p className="text-xs font-bold text-tertiary uppercase tracking-wider">
-                Written by
-              </p>
-              <h3 className="mt-1 text-lg font-bold text-dark">
-                {post.author.name}
-              </h3>
-              <p className="mt-2 text-sm text-dark/55 leading-relaxed">
-                Passionate about education technology and helping institutions
-                embrace digital transformation. Writes about EdTech trends, best
-                practices, and product updates.
-              </p>
-            </div>
-          </div>
-
-          {/* Related Posts */}
+          {/* Related Stories */}
           {relatedPosts.length > 0 && (
-            <div className="mt-16">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="text-2xl font-black text-dark">
-                    Related Articles
-                  </h2>
-                  <p className="mt-1 text-sm text-dark/50">
-                    More from {post.category}
-                  </p>
-                </div>
-                <Link
-                  to="/blog"
-                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/60 border border-dark/10 text-sm font-bold text-dark hover:bg-white/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
-                >
-                  All Posts
-                  <FiArrowRight className="h-4 w-4" />
+            <div className="mt-24">
+              <div className="flex items-center justify-between mb-12">
+                <h2 className="text-4xl font-black text-[#1E293B]">More Stories</h2>
+                <Link to="/blog" className="flex items-center gap-2 text-[#3B42F2] font-black text-xs uppercase tracking-widest group">
+                  SEE ALL POSTS <FiArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {relatedPosts.map((rp) => (
-                  <BlogCard key={rp.id} post={rp} />
+                  <BlogCard key={rp.id || rp._id} post={rp} />
                 ))}
               </div>
             </div>

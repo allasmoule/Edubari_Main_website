@@ -220,7 +220,7 @@ const Blogs = () => {
       const url = editingId
         ? `${API_URL}/blogPosts/${editingId}`
         : `${API_URL}/blogPosts`;
-      const method = editingId ? "PUT" : "POST";
+      const method = editingId ? "PATCH" : "POST";
 
       const response = await fetch(url, {
         method,

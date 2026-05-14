@@ -6,7 +6,7 @@ import ContactMap from "./ContactComponents/ContactMap";
 
 const ContactPage = () => {
     return (
-        <div className="min-h-screen bg-linear-to-b from-primary/30 via-white to-primary/20">
+        <div className="min-h-screen bg-white">
             <ContactHero />
             <ContactInfo />
             <ContactForm />

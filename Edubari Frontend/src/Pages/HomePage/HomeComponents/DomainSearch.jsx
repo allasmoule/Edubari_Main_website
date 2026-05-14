@@ -104,35 +104,27 @@ const DomainSearch = () => {
   };
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-24 bg-white">
-      <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
-        <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-12 sm:py-14">
+    <section className="relative z-10 w-full px-0 -mt-8 sm:-mt-12 lg:-mt-16">
+      <div className="w-full max-w-[1400px] mx-auto rounded-t-[40px] sm:rounded-t-[50px] lg:rounded-t-[60px] bg-[#EFF2FF] shadow-xl overflow-hidden">
+        <div className="px-6 sm:px-12 md:px-20 lg:px-24 py-10 sm:py-12 lg:py-16">
           {/* Header */}
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-              <FiSearch className="h-3.5 w-3.5" />
-              Domain Availability Checker
+          <div className="max-w-xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#DCE4FF] text-[#3B42F2] text-[10px] font-bold tracking-widest uppercase mb-4 shadow-sm">
+              <FiSearch className="h-3 w-3" />
+              DOMAIN AVAILABILITY CHECKER
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-dark leading-tight">
-              Find Your Perfect{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
-                Domain Name
-              </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[#1E293B] leading-tight mb-6">
+              Find Your Perfect <span className="text-[#3B42F2] inline-block">Domain Name</span>
             </h2>
-
-            <p className="mt-5 text-sm sm:text-[15px] lg:text-base leading-7 text-dark/70 max-w-2xl mx-auto">
-              Enter your institution or brand name and we'll suggest available
-              domains instantly.
-            </p>
           </div>
 
           {/* Search Bar */}
-          <div className="mt-10 max-w-3xl mx-auto">
+          <div className="mt-6 max-w-4xl mx-auto">
             <form onSubmit={handleSearch}>
-              <div className="relative rounded-2xl border border-white/30 bg-white/60 backdrop-blur-sm shadow-lg shadow-dark/5 overflow-hidden transition-all duration-300 focus-within:shadow-xl focus-within:shadow-tertiary/10 focus-within:border-tertiary/30">
-                <div className="flex items-center">
-                  <div className="pl-5 text-dark/40">
+              <div className="relative rounded-[20px] border-2 border-white bg-white shadow-[0_12px_35px_rgba(59,66,242,0.08)] overflow-hidden transition-all duration-500 hover:shadow-[0_18px_45px_rgba(59,66,242,0.12)]">
+                <div className="flex items-center p-1.5">
+                  <div className="pl-4 text-[#94A3B8]">
                     <FiGlobe className="h-5 w-5" />
                   </div>
                   <input
@@ -141,29 +133,39 @@ const DomainSearch = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Enter a name (e.g., myschool or botbari)"
-                    className="flex-1 bg-transparent border-none outline-none px-4 py-4 sm:py-5 text-dark text-sm sm:text-base placeholder:text-dark/40 font-medium"
+                    className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-[#1E293B] text-base font-bold placeholder:text-[#94A3B8]"
                   />
                   <button
                     id="domain-search-btn"
                     type="submit"
                     disabled={isSearching || !searchTerm.trim()}
-                    className="mr-2 sm:mr-3 inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-tertiary to-[#8B5CF6] px-5 sm:px-7 py-2.5 sm:py-3 text-white text-sm font-bold shadow-md shadow-tertiary/30 hover:shadow-lg hover:shadow-tertiary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    className="rounded-[14px] bg-linear-to-r from-[#1E3A8A] to-[#3B42F2] px-10 py-3.5 text-white text-base font-black shadow-lg shadow-[#3B42F2]/15 hover:shadow-xl hover:shadow-[#3B42F2]/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isSearching ? (
-                      <>
-                        <FiLoader className="h-4 w-4 animate-spin" />
-                        <span className="hidden sm:inline">Searching…</span>
-                      </>
+                      <FiLoader className="h-5 w-5 animate-spin mx-auto" />
                     ) : (
-                      <>
-                        <FiSearch className="h-4 w-4" />
-                        <span className="hidden sm:inline">Search</span>
-                      </>
+                      "Search"
                     )}
                   </button>
                 </div>
               </div>
             </form>
+          </div>
+
+          {/* Feature Icons */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-8">
+            <div className="flex items-center gap-2.5 text-[#64748B] font-black text-xs group hover:text-[#3B42F2] transition-colors">
+              <svg className="w-5 h-5 text-[#94A3B8] group-hover:text-[#3B42F2] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              <span>Trust</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-[#64748B] font-black text-xs group hover:text-[#3B42F2] transition-colors">
+              <FiGlobe className="w-5 h-5 text-[#94A3B8] group-hover:text-[#3B42F2] transition-colors" />
+              <span>Global Reach</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-[#64748B] font-black text-xs group hover:text-[#3B42F2] transition-colors">
+              <svg className="w-5 h-5 text-[#94A3B8] group-hover:text-[#3B42F2] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              <span>Speed</span>
+            </div>
           </div>
 
           {/* Error */}
@@ -205,11 +207,10 @@ const DomainSearch = () => {
                   return (
                     <div
                       key={result.domain}
-                      className={`group relative rounded-2xl border p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 ${
-                        result.available
-                          ? "border-[#10B981]/25 bg-white/55 hover:shadow-xl hover:shadow-[#10B981]/10 hover:border-[#10B981]/40"
-                          : "border-white/20 bg-white/25 opacity-70 hover:opacity-80"
-                      }`}
+                      className={`group relative rounded-2xl border p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 ${result.available
+                        ? "border-[#10B981]/25 bg-white/55 hover:shadow-xl hover:shadow-[#10B981]/10 hover:border-[#10B981]/40"
+                        : "border-white/20 bg-white/25 opacity-70 hover:opacity-80"
+                        }`}
                       style={{
                         animationDelay: `${index * 80}ms`,
                         animation: "fadeInUp 0.4s ease-out backwards",
@@ -220,11 +221,10 @@ const DomainSearch = () => {
                         <div className="min-w-0">
                           {/* Domain Name */}
                           <p
-                            className={`text-base sm:text-lg font-bold break-all ${
-                              result.available
-                                ? "text-dark"
-                                : "text-dark/45 line-through decoration-1"
-                            }`}
+                            className={`text-base sm:text-lg font-bold break-all ${result.available
+                              ? "text-dark"
+                              : "text-dark/45 line-through decoration-1"
+                              }`}
                           >
                             {base}
                             <span
@@ -241,18 +241,16 @@ const DomainSearch = () => {
                           {/* Status Badge */}
                           <div className="mt-1.5 flex items-center gap-1.5">
                             <span
-                              className={`h-2 w-2 rounded-full ${
-                                result.available
-                                  ? "bg-[#10B981] shadow-[0_0_6px_rgba(16,185,129,0.5)]"
-                                  : "bg-red-400"
-                              }`}
+                              className={`h-2 w-2 rounded-full ${result.available
+                                ? "bg-[#10B981] shadow-[0_0_6px_rgba(16,185,129,0.5)]"
+                                : "bg-red-400"
+                                }`}
                             />
                             <span
-                              className={`text-xs font-semibold ${
-                                result.available
-                                  ? "text-[#10B981]"
-                                  : "text-red-400"
-                              }`}
+                              className={`text-xs font-semibold ${result.available
+                                ? "text-[#10B981]"
+                                : "text-red-400"
+                                }`}
                             >
                               {result.available ? "Available" : "Taken"}
                             </span>

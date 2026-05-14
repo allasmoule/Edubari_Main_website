@@ -20,9 +20,9 @@ const Home = () => {
             <HowWorks />
             <Feature />
             <WookProof />
-            {/* <OurClients /> */}
+            <OurClients />
             <WhyShouldChoose />
-            {/* <Feedback /> */}
+            <Feedback />
             <About />
             <GetInTouch />
         </div>

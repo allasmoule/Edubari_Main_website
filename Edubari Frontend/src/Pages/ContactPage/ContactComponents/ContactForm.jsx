@@ -78,35 +78,31 @@ const ContactForm = () => {
   };
 
   const inputBase =
-    "w-full rounded-xl border bg-white/60 backdrop-blur-sm px-4 py-3 text-sm text-dark placeholder:text-dark/35 font-medium outline-none transition-all duration-300 focus:ring-2 focus:ring-tertiary/30 focus:border-tertiary/40 hover:bg-white/80";
-  const inputNormal = "border-white/40";
+    "w-full rounded-2xl border-2 border-slate-100 bg-white px-6 py-4 text-sm text-[#1E293B] placeholder:text-slate-400 font-bold outline-none transition-all duration-300 focus:border-[#3B42F2] hover:border-slate-200";
   const inputError =
-    "border-red-400/60 focus:ring-red-400/30 focus:border-red-400/50";
+    "border-red-100 focus:border-red-500 bg-red-50/30";
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-14 sm:py-16 bg-primary/30">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-[1fr_1.1fr] gap-10 items-start">
+    <section className="w-full px-6 sm:px-12 lg:px-24 py-12 sm:py-20 bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-12 gap-16 items-start">
           {/* Left — Copy */}
-          <div className="max-w-md">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-              ✉️ Write To Us
+          <div className="lg:col-span-5">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black tracking-widest uppercase mb-6 border border-blue-100/50">
+              ✉️ WRITE TO US
             </div>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-dark leading-tight">
-              Send Us A{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
-                Message
-              </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#1E293B] leading-tight mb-8">
+              Send Us a <span className="text-[#3B42F2]">Message</span>
             </h2>
 
-            <p className="mt-4 text-sm sm:text-[15px] leading-7 text-dark/65">
+            <p className="text-slate-500 font-medium text-lg leading-relaxed mb-12">
               Fill out the form and our team will respond as soon as possible.
               We typically reply within 24 hours on business days.
             </p>
 
             {/* Quick Stats */}
-            <div className="mt-8 grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               {[
                 { value: "< 24h", label: "Response Time" },
                 { value: "99%", label: "Satisfaction" },
@@ -115,10 +111,10 @@ const ContactForm = () => {
               ].map((s) => (
                 <div
                   key={s.label}
-                  className="rounded-xl border border-white/40 bg-white/50 backdrop-blur-sm p-4 text-center"
+                  className="rounded-[32px] border border-slate-100 bg-white p-6 shadow-sm"
                 >
-                  <p className="text-xl font-black text-tertiary">{s.value}</p>
-                  <p className="mt-0.5 text-xs text-dark/50 font-medium">
+                  <p className="text-2xl font-black text-[#3B42F2]">{s.value}</p>
+                  <p className="mt-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                     {s.label}
                   </p>
                 </div>
@@ -127,152 +123,106 @@ const ContactForm = () => {
           </div>
 
           {/* Right — Form */}
-          <div className="rounded-2xl border border-white/40 bg-white/60 backdrop-blur-md p-7 sm:p-9 shadow-lg shadow-dark/5">
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+          <div className="lg:col-span-7 bg-white rounded-[40px] border border-slate-100 p-8 sm:p-12 shadow-2xl shadow-slate-200/50">
+            <form onSubmit={handleSubmit} noValidate className="space-y-8">
               {/* Name & Email */}
-              <div className="grid sm:grid-cols-2 gap-5">
+              <div className="grid sm:grid-cols-2 gap-8">
                 <div>
-                  <label
-                    htmlFor="contact-name"
-                    className="block text-xs font-bold text-dark/70 uppercase tracking-wide mb-1.5"
-                  >
-                    Full Name{" "}
-                    <span className="text-red-500 text-lg font-black leading-none align-middle">
-                      *
-                    </span>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-2">
+                    FULL NAME <span className="text-red-500">*</span>
                   </label>
                   <input
-                    id="contact-name"
                     name="name"
                     type="text"
                     placeholder="John Doe"
                     value={form.name}
                     onChange={handleChange}
-                    className={`${inputBase} ${
-                      errors.name ? inputError : inputNormal
-                    }`}
+                    className={`${inputBase} ${errors.name ? inputError : ""}`}
                   />
                   {errors.name && (
-                    <p className="mt-1 text-xs text-red-500 font-medium flex items-center gap-1">
-                      <FiAlertCircle className="h-3 w-3" />
-                      {errors.name}
+                    <p className="mt-2 text-xs text-red-500 font-bold pl-2 flex items-center gap-1">
+                      <FiAlertCircle className="h-3 w-3" /> {errors.name}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="contact-email"
-                    className="block text-xs font-bold text-dark/70 uppercase tracking-wide mb-1.5"
-                  >
-                    Email Address{" "}
-                    <span className="text-red-500 text-lg font-black leading-none align-middle">
-                      *
-                    </span>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-2">
+                    EMAIL ADDRESS <span className="text-red-500">*</span>
                   </label>
                   <input
-                    id="contact-email"
                     name="email"
                     type="email"
                     placeholder="you@example.com"
                     value={form.email}
                     onChange={handleChange}
-                    className={`${inputBase} ${
-                      errors.email ? inputError : inputNormal
-                    }`}
+                    className={`${inputBase} ${errors.email ? inputError : ""}`}
                   />
                   {errors.email && (
-                    <p className="mt-1 text-xs text-red-500 font-medium flex items-center gap-1">
-                      <FiAlertCircle className="h-3 w-3" />
-                      {errors.email}
+                    <p className="mt-2 text-xs text-red-500 font-bold pl-2 flex items-center gap-1">
+                      <FiAlertCircle className="h-3 w-3" /> {errors.email}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Phone */}
-              <div>
-                <label
-                  htmlFor="contact-phone"
-                  className="block text-xs font-bold text-dark/70 uppercase tracking-wide mb-1.5"
-                >
-                  Phone No
-                </label>
-                <input
-                  id="contact-phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="+8801XXXXXXXXX"
-                  value={form.phone}
-                  onChange={handleChange}
-                  className={`${inputBase} ${
-                    errors.phone ? inputError : inputNormal
-                  }`}
-                />
-                {errors.phone && (
-                  <p className="mt-1 text-xs text-red-500 font-medium flex items-center gap-1">
-                    <FiAlertCircle className="h-3 w-3" />
-                    {errors.phone}
-                  </p>
-                )}
-              </div>
+              {/* Phone & Subject */}
+              <div className="grid sm:grid-cols-2 gap-8">
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-2">
+                    PHONE NO
+                  </label>
+                  <input
+                    name="phone"
+                    type="tel"
+                    placeholder="+8801XXXXXXXXX"
+                    value={form.phone}
+                    onChange={handleChange}
+                    className={`${inputBase} ${errors.phone ? inputError : ""}`}
+                  />
+                  {errors.phone && (
+                    <p className="mt-2 text-xs text-red-500 font-bold pl-2 flex items-center gap-1">
+                      <FiAlertCircle className="h-3 w-3" /> {errors.phone}
+                    </p>
+                  )}
+                </div>
 
-              {/* Subject */}
-              <div>
-                <label
-                  htmlFor="contact-subject"
-                  className="block text-xs font-bold text-dark/70 uppercase tracking-wide mb-1.5"
-                >
-                  Subject{" "}
-                  <span className="text-red-500 text-lg font-black leading-none align-middle">
-                    *
-                  </span>
-                </label>
-                <input
-                  id="contact-subject"
-                  name="subject"
-                  type="text"
-                  placeholder="What is this about?"
-                  value={form.subject}
-                  onChange={handleChange}
-                  className={`${inputBase} ${
-                    errors.subject ? inputError : inputNormal
-                  }`}
-                />
-                {errors.subject && (
-                  <p className="mt-1 text-xs text-red-500 font-medium flex items-center gap-1">
-                    <FiAlertCircle className="h-3 w-3" />
-                    {errors.subject}
-                  </p>
-                )}
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-2">
+                    SUBJECT <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name="subject"
+                    type="text"
+                    placeholder="General Inquiry"
+                    value={form.subject}
+                    onChange={handleChange}
+                    className={`${inputBase} ${errors.subject ? inputError : ""}`}
+                  />
+                  {errors.subject && (
+                    <p className="mt-2 text-xs text-red-500 font-bold pl-2 flex items-center gap-1">
+                      <FiAlertCircle className="h-3 w-3" /> {errors.subject}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Message */}
               <div>
-                <label
-                  htmlFor="contact-message"
-                  className="block text-xs font-bold text-dark/70 uppercase tracking-wide mb-1.5"
-                >
-                  Message{" "}
-                  <span className="text-red-500 text-lg font-black leading-none align-middle">
-                    *
-                  </span>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-2">
+                  YOUR MESSAGE <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  id="contact-message"
                   name="message"
-                  rows={5}
+                  rows={6}
                   placeholder="Tell us more about your inquiry..."
                   value={form.message}
                   onChange={handleChange}
-                  className={`${inputBase} resize-none ${
-                    errors.message ? inputError : inputNormal
-                  }`}
+                  className={`${inputBase} resize-none ${errors.message ? inputError : ""}`}
                 />
                 {errors.message && (
-                  <p className="mt-1 text-xs text-red-500 font-medium flex items-center gap-1">
-                    <FiAlertCircle className="h-3 w-3" />
-                    {errors.message}
+                  <p className="mt-2 text-xs text-red-500 font-bold pl-2 flex items-center gap-1">
+                    <FiAlertCircle className="h-3 w-3" /> {errors.message}
                   </p>
                 )}
               </div>
@@ -281,34 +231,27 @@ const ContactForm = () => {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-tertiary to-[#8B5CF6] px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-tertiary/25 hover:shadow-xl hover:shadow-tertiary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-[20px] bg-[#1E293B] px-12 py-5 text-sm font-black text-white shadow-xl hover:bg-[#3B42F2] transition-all duration-300 disabled:opacity-60 uppercase tracking-widest"
               >
-                {status === "sending" && (
-                  <FiLoader className="h-4 w-4 animate-spin" />
-                )}
-                {status === "success" && <FiCheck className="h-4 w-4" />}
-                {status === "idle" && <FiSend className="h-4 w-4" />}
-                {status === "error" && <FiAlertCircle className="h-4 w-4" />}
-
-                {status === "idle" && "Send Message"}
-                {status === "sending" && "Sending..."}
-                {status === "success" && "Message Sent!"}
-                {status === "error" && "Failed — Try Again"}
+                {status === "sending" ? <FiLoader className="h-5 w-5 animate-spin" /> : 
+                 status === "success" ? <FiCheck className="h-5 w-5" /> : 
+                 <FiSend className="h-5 w-5" />}
+                
+                {status === "idle" ? "Send Message" : 
+                 status === "sending" ? "Sending..." : 
+                 status === "success" ? "Message Sent!" : "Try Again"}
               </button>
             </form>
 
-            {/* Toast */}
+            {/* Success/Error Toasts */}
             {status === "success" && (
-              <div className="mt-5 flex items-center gap-2 rounded-xl border border-green-300/50 bg-green-50/80 px-4 py-3 text-sm font-medium text-green-700 animate-[fadeInUp_0.3s_ease-out]">
-                <FiCheck className="h-4 w-4" />
-                Thanks! We'll get back to you soon.
+              <div className="mt-8 p-4 rounded-2xl bg-green-50 text-green-600 text-sm font-bold flex items-center gap-2 border border-green-100 animate-slideDown">
+                <FiCheck className="h-5 w-5" /> Thanks! We'll get back to you soon.
               </div>
             )}
-
             {status === "error" && (
-              <div className="mt-5 flex items-center gap-2 rounded-xl border border-red-300/50 bg-red-50/80 px-4 py-3 text-sm font-medium text-red-600 animate-[fadeInUp_0.3s_ease-out]">
-                <FiAlertCircle className="h-4 w-4" />
-                Something went wrong. Please try again later.
+              <div className="mt-8 p-4 rounded-2xl bg-red-50 text-red-600 text-sm font-bold flex items-center gap-2 border border-red-100 animate-slideDown">
+                <FiAlertCircle className="h-5 w-5" /> Something went wrong. Please try again.
               </div>
             )}
           </div>

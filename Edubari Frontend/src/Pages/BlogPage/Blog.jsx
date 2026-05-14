@@ -75,7 +75,7 @@ const Blog = () => {
   }, [posts]);
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-primary/30 via-white to-primary/20">
+    <div className="min-h-screen bg-white">
       {/* Hero */}
       <BlogHero
         searchQuery={searchQuery}
@@ -86,34 +86,36 @@ const Blog = () => {
       />
 
       {/* Content */}
-      <section className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-14">
-        {error && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            {error}
-          </div>
-        )}
+      <section className="w-full px-6 sm:px-12 lg:px-24 py-16 sm:py-24 bg-[#F8FAFC]">
+        <div className="max-w-7xl mx-auto">
+          {error && (
+            <div className="mb-10 rounded-[28px] border-2 border-red-100 bg-red-50 p-6 text-sm font-bold text-red-600 shadow-sm">
+              {error}
+            </div>
+          )}
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Main Grid */}
-          <div className="flex-1 min-w-0">
-            <BlogGrid
-              searchQuery={searchQuery}
-              activeCategory={activeCategory}
-              posts={posts}
-              isLoading={isLoading}
-            />
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            {/* Main Grid */}
+            <div className="lg:col-span-8">
+              <BlogGrid
+                searchQuery={searchQuery}
+                activeCategory={activeCategory}
+                posts={posts}
+                isLoading={isLoading}
+              />
+            </div>
 
-          {/* Sidebar */}
-          <div className="w-full lg:w-[340px] shrink-0">
-            <BlogSidebar
-              setActiveCategory={setActiveCategory}
-              setSearchQuery={setSearchQuery}
-              posts={posts}
-              categories={categories}
-              popularTags={popularTags}
-              isLoading={isLoading}
-            />
+            {/* Sidebar */}
+            <div className="lg:col-span-4">
+              <BlogSidebar
+                setActiveCategory={setActiveCategory}
+                setSearchQuery={setSearchQuery}
+                posts={posts}
+                categories={categories}
+                popularTags={popularTags}
+                isLoading={isLoading}
+              />
+            </div>
           </div>
         </div>
       </section>

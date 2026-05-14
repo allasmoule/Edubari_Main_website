@@ -61,67 +61,60 @@ const BlogSidebar = ({
   };
 
   return (
-    <aside className="space-y-6">
-      {/* Recent Posts */}
-      <div className="rounded-2xl border border-white/40 bg-white/50 backdrop-blur-sm p-6 transition-all duration-300 hover:shadow-lg hover:shadow-dark/5">
-        <h3 className="text-lg font-bold text-dark flex items-center gap-2">
-          <FiClock className="h-4 w-4 text-tertiary" />
-          Recent Posts
-        </h3>
-        <div className="mt-4 space-y-4">
-          {isLoading && recentPosts.length === 0 && (
-            <p className="text-sm text-dark/50">Loading recent posts...</p>
-          )}
-          {recentPosts.map((post) => (
-            <Link
-              key={post.id || post._id || post.slug || post.title}
-              to={`/blog/${post.slug || post._id || ""}`}
-              className="group flex gap-3 items-start"
+    <aside className="space-y-10">
+      {/* Newsletter */}
+      <div className="rounded-[40px] bg-[#1E293B] p-10 overflow-hidden relative shadow-[0_30px_70px_rgba(30,41,59,0.3)]">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#3B42F2] rounded-full blur-[80px] opacity-20" />
+        
+        <div className="relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-6 border border-white/10">
+            <FiMail className="h-7 w-7" />
+          </div>
+          <h3 className="text-2xl font-black text-white mb-3">Stay Updated</h3>
+          <p className="text-slate-400 font-medium text-sm leading-relaxed mb-8">
+            Get the latest articles and trends delivered to your inbox.
+          </p>
+          
+          <form className="space-y-3" onSubmit={handleSubscribe}>
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#3B42F2] transition-all"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full py-4 rounded-2xl bg-[#3B42F2] text-white font-black text-sm hover:bg-blue-700 transition-all flex items-center justify-center gap-2 group/btn shadow-xl shadow-blue-500/20"
             >
-              <img
-                src={post.image}
-                alt={post.title}
-                className="h-14 w-14 rounded-xl object-cover shrink-0 border border-white/30 group-hover:border-tertiary/20 transition-all duration-300"
-                loading="lazy"
-              />
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-dark leading-snug line-clamp-2 group-hover:text-tertiary transition-colors duration-300">
-                  {post.title}
-                </p>
-                <p className="mt-1 text-xs text-dark/40">{post.date}</p>
-              </div>
-            </Link>
-          ))}
+              SUBSCRIBE
+              <FiArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+            </button>
+          </form>
         </div>
+
+        {showPopup && (
+          <div className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold text-center">
+            {successMsg}
+          </div>
+        )}
       </div>
 
       {/* Categories */}
-      <div className="rounded-2xl border border-white/40 bg-white/50 backdrop-blur-sm p-6 transition-all duration-300 hover:shadow-lg hover:shadow-dark/5">
-        <h3 className="text-lg font-bold text-dark flex items-center gap-2">
-          <svg
-            className="h-4 w-4 text-tertiary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-            />
-          </svg>
+      <div className="rounded-[40px] bg-white border border-slate-50 p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] transition-all duration-500">
+        <h3 className="text-xl font-black text-[#1E293B] mb-6 flex items-center gap-2">
           Categories
         </h3>
-        <div className="mt-4 space-y-1.5">
+        <div className="space-y-2">
           {categoryCounts.map((cat) => (
             <button
               key={cat.name}
               onClick={() => handleCategoryClick(cat.name)}
-              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-dark/70 hover:bg-tertiary/8 hover:text-tertiary transition-all duration-200 group"
+              className="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-bold text-slate-600 hover:bg-blue-50 hover:text-[#3B42F2] transition-all duration-300 group"
             >
               <span>{cat.name}</span>
-              <span className="px-2 py-0.5 rounded-full bg-dark/5 text-xs font-semibold text-dark/40 group-hover:bg-tertiary/15 group-hover:text-tertiary transition-all duration-200">
+              <span className="px-3 py-1 rounded-full bg-slate-50 text-[10px] font-black group-hover:bg-[#3B42F2] group-hover:text-white transition-all">
                 {cat.count}
               </span>
             </button>
@@ -129,62 +122,55 @@ const BlogSidebar = ({
         </div>
       </div>
 
-      {/* Popular Tags */}
-      <div className="rounded-2xl border border-white/40 bg-white/50 backdrop-blur-sm p-6 transition-all duration-300 hover:shadow-lg hover:shadow-dark/5">
-        <h3 className="text-lg font-bold text-dark flex items-center gap-2">
-          <FiTag className="h-4 w-4 text-tertiary" />
-          Popular Tags
+      {/* Recent Posts */}
+      <div className="rounded-[40px] bg-white border border-slate-50 p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] transition-all duration-500">
+        <h3 className="text-xl font-black text-[#1E293B] mb-6 flex items-center gap-2">
+          Recent Posts
         </h3>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {popularTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => handleTagClick(tag)}
-              className="px-3 py-1.5 rounded-full bg-dark/5 text-xs font-semibold text-dark/60 hover:bg-tertiary/10 hover:text-tertiary border border-transparent hover:border-tertiary/20 transition-all duration-200"
+        <div className="space-y-6">
+          {isLoading && recentPosts.length === 0 && (
+            <p className="text-sm text-slate-400 font-medium">Loading posts...</p>
+          )}
+          {recentPosts.map((post) => (
+            <Link
+              key={post.id || post._id || post.slug || post.title}
+              to={`/blog/${post.slug || post._id || ""}`}
+              className="group flex gap-4 items-center"
             >
-              {tag}
-            </button>
+              <div className="h-16 w-16 rounded-2xl overflow-hidden shrink-0 border border-slate-100">
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-black text-[#1E293B] leading-snug line-clamp-2 group-hover:text-[#3B42F2] transition-colors">
+                  {post.title}
+                </p>
+                <p className="mt-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">{post.date}</p>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
 
-      {/* Newsletter */}
-      <div className="rounded-2xl border border-tertiary/20 bg-linear-to-br from-tertiary/8 to-[#8B5CF6]/8 backdrop-blur-sm p-6 transition-all duration-300 hover:shadow-lg hover:shadow-tertiary/10">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="h-9 w-9 rounded-xl bg-linear-to-br from-tertiary to-[#8B5CF6] flex items-center justify-center">
-            <FiMail className="h-4 w-4 text-white" />
-          </div>
-          <h3 className="text-lg font-bold text-dark">Newsletter</h3>
+      {/* Popular Tags */}
+      <div className="rounded-[40px] bg-white border border-slate-50 p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] transition-all duration-500">
+        <h3 className="text-xl font-black text-[#1E293B] mb-6 flex items-center gap-2">
+          Popular Tags
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {popularTags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => handleTagClick(tag)}
+              className="px-4 py-2 rounded-xl bg-slate-50 text-xs font-black text-slate-500 hover:bg-[#3B42F2] hover:text-white transition-all duration-300"
+            >
+              #{tag}
+            </button>
+          ))}
         </div>
-        <p className="text-sm text-dark/55 leading-relaxed">
-          Get the latest articles and updates delivered to your inbox
-        </p>
-        <form className="mt-4 space-y-2.5" onSubmit={handleSubscribe}>
-          <input
-            type="email"
-            placeholder="your@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl bg-white/70 border border-white/50 text-sm text-dark placeholder:text-dark/30 focus:outline-none focus:border-tertiary/30 focus:ring-2 focus:ring-tertiary/10 transition-all duration-300"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-linear-to-r from-tertiary to-[#8B5CF6] text-white text-sm font-bold shadow-md shadow-tertiary/25 hover:shadow-lg hover:shadow-tertiary/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
-          >
-            Subscribe
-            <FiArrowRight className="h-4 w-4" />
-          </button>
-        </form>
-        {/* Popup Notification */}
-        {showPopup && (
-          <div
-            className="fixed left-1/2 top-8 z-50 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg animate-slideDown text-base font-semibold"
-            style={{ minWidth: "260px", textAlign: "center" }}
-          >
-            {successMsg}
-          </div>
-        )}
       </div>
     </aside>
   );

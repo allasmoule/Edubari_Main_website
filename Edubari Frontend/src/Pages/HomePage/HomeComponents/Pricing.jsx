@@ -39,161 +39,142 @@ const Pricing = () => {
   };
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-24 bg-white">
-      <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
-        <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-12 sm:py-14">
-          {/* Header */}
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-              💰 Available Plans
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-dark leading-tight">
-              Simple, Transparent{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
-                Pricing
-              </span>
-            </h2>
-
-            <p className="mt-5 text-sm sm:text-[15px] lg:text-base leading-7 text-dark/70 max-w-2xl mx-auto">
-              Choose the plan that fits your institution
-            </p>
+    <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-24 bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm border border-blue-100/50">
+            💰 AVAILABLE PLANS
           </div>
 
-          {/* Pricing Cards */}
-          <div className="mt-12 lg:mt-14 max-w-5xl mx-auto">
-            {loading ? (
-              <div className="text-center py-12">
-                <FiLoader className="w-8 h-8 mx-auto text-tertiary animate-spin mb-3" />
-                <p className="text-dark/50 font-medium">Loading plans...</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#1E293B] leading-tight mb-4">
+            Simple, Transparent <span className="text-[#3B42F2]">Pricing</span>
+          </h2>
+
+          <p className="mt-4 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-relaxed">
+            Choose the perfect plan to digitize and empower your institution
+          </p>
+        </div>
+
+        {/* Pricing Cards */}
+        <div className="max-w-6xl mx-auto">
+          {loading ? (
+            <div className="text-center py-20 bg-white rounded-[40px] border border-slate-100 shadow-sm">
+              <FiLoader className="w-10 h-10 mx-auto text-[#3B42F2] animate-spin mb-4" />
+              <p className="text-[#64748B] font-bold text-lg">Finding the best plans for you...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-16 px-6 rounded-[40px] bg-red-50/50 border border-red-100">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FiArrowRight className="w-8 h-8 text-red-500 rotate-180" />
               </div>
-            ) : error ? (
-              <div className="text-center py-12 px-6 rounded-xl bg-red-50 border border-red-200/60">
-                <p className="text-red-600 font-semibold">
-                  Failed to load plans
-                </p>
-                <p className="text-sm text-red-500/70 mt-1">{error}</p>
-                <button
-                  onClick={fetchPlans}
-                  className="mt-4 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-all"
+              <p className="text-[#1E293B] font-black text-xl">Failed to load plans</p>
+              <p className="text-[#EF4444] font-medium mt-2">{error}</p>
+              <button
+                onClick={fetchPlans}
+                className="mt-6 px-8 py-3 rounded-2xl bg-[#EF4444] text-white font-black shadow-lg shadow-red-500/20 hover:shadow-red-500/40 hover:-translate-y-1 transition-all"
+              >
+                Retry Fetching
+              </button>
+            </div>
+          ) : plans.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-[40px] border border-slate-100 shadow-sm">
+              <p className="text-[#64748B] font-bold text-lg">No active plans available at the moment.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+              {plans.slice(0, 3).map((plan) => (
+                <div
+                  key={plan._id}
+                  className={`group relative rounded-[40px] border-2 p-8 sm:p-10 text-left transition-all duration-500 hover:-translate-y-4 ${
+                    plan.popular
+                      ? "border-[#3B42F2] bg-white shadow-[0_30px_70px_rgba(59,66,242,0.15)] z-10"
+                      : "border-slate-100 bg-white hover:border-[#3B42F2]/20 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)]"
+                  }`}
                 >
-                  Retry
-                </button>
-              </div>
-            ) : plans.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-dark/50 font-medium">
-                  No active plans available
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
-                {plans.slice(0, 3).map((plan) => (
-                  <div
-                    key={plan._id}
-                    className={`group relative rounded-2xl border p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-dark/5 ${
-                      plan.popular
-                        ? "border-tertiary/30 bg-white/80 shadow-lg shadow-tertiary/10 ring-1 ring-tertiary/20"
-                        : "border-white/40 bg-white/50 hover:bg-white/80"
-                    }`}
-                  >
-                    {/* Badge */}
-                    {plan.badge && (
-                      <div
-                        className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold tracking-wide ${
-                          plan.popular
-                            ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/30"
-                            : "bg-[#F59E0B]/15 text-[#D97706]"
-                        }`}
-                      >
-                        {plan.badge}
-                      </div>
-                    )}
+                  {/* Popular Badge */}
+                  {plan.popular && (
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-linear-to-r from-[#1E3A8A] to-[#3B42F2] text-white text-xs font-black tracking-widest uppercase shadow-xl shadow-[#3B42F2]/30">
+                      MOST POPULAR
+                    </div>
+                  )}
 
-                    {/* Popular label */}
-                    {plan.popular && (
-                      <div className="text-[11px] font-bold text-tertiary uppercase tracking-wider mb-2">
-                        Most Popular
-                      </div>
-                    )}
-
-                    {/* Plan Name */}
-                    <h3 className="mt-1 text-lg font-bold text-dark">
+                  {/* Plan Name */}
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-black text-[#1E293B] group-hover:text-[#3B42F2] transition-colors">
                       {plan.name}
                     </h3>
-
-                    {/* Duration */}
-                    <p className="mt-1 text-xs font-medium text-dark/45">
-                      {plan.duration}
+                    <p className="mt-1 text-sm font-bold text-[#64748B] uppercase tracking-wider">
+                      {plan.duration || "Billed Monthly"}
                     </p>
+                  </div>
 
-                    {/* Price */}
-                    <div className="mt-5 flex items-baseline gap-2">
-                      <span
-                        className={`text-4xl sm:text-5xl font-black tracking-tight ${
-                          plan.popular
-                            ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]"
-                            : "text-dark"
-                        }`}
-                      >
+                  {/* Price */}
+                  <div className="mb-8 flex flex-col">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl sm:text-5xl font-black tracking-tight text-[#1E293B]">
                         ৳{(plan.price || 0).toLocaleString()}
                       </span>
                       {plan.oldPrice && (
-                        <span className="text-base font-semibold text-dark/30 line-through decoration-1">
+                        <span className="text-lg font-bold text-[#94A3B8] line-through decoration-2">
                           ৳{(plan.oldPrice || 0).toLocaleString()}
                         </span>
                       )}
                     </div>
-
-                    {/* Features */}
-                    {plan.features &&
-                      Array.isArray(plan.features) &&
-                      plan.features.length > 0 && (
-                        <ul className="mt-6 space-y-2.5">
-                          {plan.features.map((feat, idx) => (
-                            <li
-                              key={idx}
-                              className="flex items-start gap-2.5 text-sm text-dark/70"
-                            >
-                              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/10 text-tertiary">
-                                <FiCheck className="h-3 w-3 stroke-[3]" />
-                              </span>
-                              <span className="leading-5 font-medium">
-                                {feat}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-
-                    {/* CTA */}
-                    <button
-                      type="button"
-                      onClick={() => handleGetStarted(plan._id)}
-                      className={`mt-7 w-full block rounded-xl px-6 py-3 text-sm font-bold text-center transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 ${
-                        plan.popular
-                          ? "bg-tertiary/10 text-tertiary group-hover:bg-tertiary group-hover:text-white group-hover:shadow-md group-hover:shadow-tertiary/30"
-                          : "bg-white/60 text-dark border border-dark/10 group-hover:bg-white/90 shadow-sm group-hover:shadow-md"
-                      }`}
-                    >
-                      Get Started
-                    </button>
+                    {plan.badge && (
+                      <span className="mt-2 inline-flex w-fit px-3 py-1 rounded-lg bg-green-50 text-green-600 text-[10px] font-black tracking-widest uppercase border border-green-100">
+                        {plan.badge}
+                      </span>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
 
-          {/* View All Plans */}
-          <div className="mt-10 text-center">
-            <a
-              href="/payment-purchase"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/60 border border-dark/10 text-sm font-bold text-dark hover:bg-white/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
-            >
-              Explore All Plans
-              <FiArrowRight className="h-4 w-4" />
-            </a>
-          </div>
+                  {/* Features */}
+                  <div className="mb-10 flex-1">
+                    <p className="text-sm font-black text-[#1E293B] mb-4 uppercase tracking-widest">Everything in {plan.name}:</p>
+                    {plan.features && Array.isArray(plan.features) && (
+                      <ul className="space-y-4">
+                        {plan.features.slice(0, 8).map((feat, idx) => (
+                          <li
+                            key={idx}
+                            className="flex items-start gap-3 text-sm text-[#475569] font-semibold leading-relaxed"
+                          >
+                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EFF2FF] text-[#3B42F2] group-hover:bg-[#3B42F2] group-hover:text-white transition-colors duration-300">
+                              <FiCheck className="h-3 w-3 stroke-[4]" />
+                            </span>
+                            {feat}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  {/* CTA */}
+                  <button
+                    type="button"
+                    onClick={() => handleGetStarted(plan._id)}
+                    className={`w-full block rounded-2xl px-6 py-4 text-base font-black text-center transition-all duration-300 ${
+                      plan.popular
+                        ? "bg-linear-to-r from-[#1E3A8A] to-[#3B42F2] text-white shadow-xl shadow-[#3B42F2]/20 hover:shadow-2xl hover:shadow-[#3B42F2]/40 hover:-translate-y-1"
+                        : "bg-[#EFF2FF] text-[#3B42F2] hover:bg-[#3B42F2] hover:text-white hover:shadow-xl hover:shadow-[#3B42F2]/20 hover:-translate-y-1"
+                    }`}
+                  >
+                    Get Started Now
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* View All Plans */}
+        <div className="mt-16 text-center">
+          <a
+            href="/payment-purchase"
+            className="inline-flex items-center gap-3 px-10 py-4 rounded-[20px] bg-white border border-slate-100 text-[#1E293B] font-black shadow-lg shadow-slate-200/50 hover:bg-[#3B42F2] hover:text-white hover:border-[#3B42F2] hover:-translate-y-1 transition-all duration-500 group"
+          >
+            Explore All Premium Plans
+            <FiArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+          </a>
         </div>
       </div>
     </section>

@@ -41,7 +41,7 @@ const PaymentPurchase = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-primary/30 via-white to-primary/20">
+    <div className="min-h-screen bg-[#F8FAFC]">
       {/* Hero */}
       <PurchaseHero />
 
@@ -53,9 +53,9 @@ const PaymentPurchase = () => {
       />
 
       {/* Order Details Section */}
-      <section className="w-full px-4 sm:px-6 md:px-12 py-12 sm:py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">
+      <section className="w-full px-6 sm:px-12 lg:px-24 pb-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-[1fr_400px] gap-8 items-start">
             {/* Registration Form */}
             <RegistrationForm
               selectedPlan={selectedPlan}
@@ -63,7 +63,7 @@ const PaymentPurchase = () => {
             />
 
             {/* Order Summary — sticky sidebar */}
-            <div className="lg:sticky lg:top-24">
+            <div className="lg:sticky lg:top-32">
               <OrderSummary selectedPlan={selectedPlan} />
             </div>
           </div>

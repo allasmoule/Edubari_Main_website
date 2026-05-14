@@ -3,39 +3,37 @@ import { FiMapPin } from "react-icons/fi";
 
 const ContactHero = () => {
     return (
-        <section className="relative w-full overflow-hidden">
-            {/* Background — matching blog hero style */}
-            <div className="absolute inset-0 bg-linear-to-br from-primary via-primary-light to-white" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(37,99,235,0.12),transparent_60%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(139,92,246,0.08),transparent_60%)]" />
+        <section className="relative w-full overflow-hidden bg-white pt-20 pb-8 sm:pt-28 sm:pb-12">
+            {/* Background Decorative Elements */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-100 rounded-full blur-[120px] opacity-40" />
+                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-100 rounded-full blur-[120px] opacity-40" />
+            </div>
 
-            <div className="relative px-4 sm:px-6 md:px-12 pt-12 sm:pt-16 pb-10 sm:pb-14">
-                <div className="max-w-3xl mx-auto text-center">
+            <div className="relative px-6 sm:px-12 lg:px-24 z-10">
+                <div className="max-w-4xl mx-auto text-center">
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-5">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-8 shadow-sm border border-blue-100/50">
                         <FiMapPin className="h-3.5 w-3.5" />
-                        Contact Us
+                        GET IN TOUCH
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-dark leading-[1.1]">
-                        Get In{" "}
-                        <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
-                            Touch
-                        </span>
+                    <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight text-[#1E293B] leading-tight mb-6">
+                        Let's Start a <span className="text-[#3B42F2]">Conversation</span>
                     </h1>
 
                     {/* Subtitle */}
-                    <p className="mt-5 text-sm sm:text-base lg:text-lg leading-7 text-dark/60 max-w-2xl mx-auto">
+                    <p className="text-[#64748B] font-medium text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
                         Have a question, suggestion, or just want to say hello? We'd love
-                        to hear from you. Get in touch and we'll get back to you shortly.
+                        to hear from you. Our team is here to help you every step of the way.
                     </p>
 
-                    {/* Decorative Dots */}
-                    <div className="mt-8 flex items-center justify-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-tertiary/60" />
-                        <span className="h-1.5 w-8 rounded-full bg-linear-to-r from-tertiary to-[#8B5CF6]" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6]/60" />
+                    {/* Decorative Divider */}
+                    <div className="flex items-center justify-center gap-3">
+                        <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
+                        <div className="h-1.5 w-16 rounded-full bg-[#3B42F2]" />
+                        <div className="h-1.5 w-1.5 rounded-full bg-slate-200" />
                     </div>
                 </div>
             </div>
