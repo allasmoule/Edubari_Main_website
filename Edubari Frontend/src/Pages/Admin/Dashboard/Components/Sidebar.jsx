@@ -16,6 +16,9 @@ import {
   FiHome,
   FiImage,
   FiUserPlus,
+  FiSend,
+  FiStar,
+  FiMail,
 } from "react-icons/fi";
 import { AuthContext } from "../../../../Firebase/AuthContext";
 
@@ -44,7 +47,18 @@ const navItems = [
     label: "Home Banners",
     icon: FiImage,
   },
+  {
+    path: "/admin/dashboard/reviews",
+    label: "Reviews",
+    icon: FiStar,
+  },
   { path: "/admin/dashboard/blogs", label: "Blogs", icon: FiFileText },
+  {
+    path: "/admin/dashboard/newsletter",
+    label: "Newsletter",
+    icon: FiMail,
+  },
+
   {
     path: "/admin/dashboard/messages",
     label: "Messages",

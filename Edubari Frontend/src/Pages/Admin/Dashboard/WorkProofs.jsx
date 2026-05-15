@@ -22,6 +22,12 @@ const initialForm = {
   link: "",
   featuresText: "",
   description: "",
+  image: "",
+  stat1: "",
+  stat1Label: "",
+  stat2: "",
+  stat2Label: "",
+  tagColor: "bg-blue-50 text-blue-600",
 };
 
 const toFormState = (item) => ({
@@ -31,6 +37,12 @@ const toFormState = (item) => ({
   link: item?.link || "",
   featuresText: Array.isArray(item?.features) ? item.features.join("\n") : "",
   description: item?.description || "",
+  image: item?.image || item?.imageUrl || "",
+  stat1: item?.stat1 || "",
+  stat1Label: item?.stat1Label || "",
+  stat2: item?.stat2 || "",
+  stat2Label: item?.stat2Label || "",
+  tagColor: item?.tagColor || "bg-blue-50 text-blue-600",
 });
 
 const toPayload = (form) => ({
@@ -43,7 +55,14 @@ const toPayload = (form) => ({
     .map((f) => f.trim())
     .filter(Boolean),
   description: form.description.trim(),
+  image: form.image.trim(),
+  stat1: form.stat1.trim(),
+  stat1Label: form.stat1Label.trim(),
+  stat2: form.stat2.trim(),
+  stat2Label: form.stat2Label.trim(),
+  tagColor: form.tagColor.trim(),
 });
+
 
 const WorkProofModal = ({
   open,
@@ -149,11 +168,65 @@ const WorkProofModal = ({
                 value={form.category}
                 onChange={(e) => handleChange("category", e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl border border-dark/10 bg-white/70 text-sm outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10"
-                placeholder="LMS / Website / Mobile App"
+                placeholder="LMS / Attendance / Exam"
               />
             </div>
 
             <div>
+              <label className="text-xs font-bold text-dark/65 mb-1.5 block">
+                Image URL *
+              </label>
+              <div className="relative">
+                <FiLink className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark/25" />
+                <input
+                  required
+                  value={form.image}
+                  onChange={(e) => handleChange("image", e.target.value)}
+                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-dark/10 bg-white/70 text-sm outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10"
+                  placeholder="https://image-url.com/photo.jpg"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="text-xs font-bold text-dark/65 mb-1.5 block">
+                Tag Color
+              </label>
+              <input
+                value={form.tagColor}
+                onChange={(e) => handleChange("tagColor", e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border border-dark/10 bg-white/70 text-sm outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10"
+                placeholder="bg-blue-50 text-blue-600"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-dark/65 mb-1.5 block">
+                Stat 1 (Value)
+              </label>
+              <input
+                value={form.stat1}
+                onChange={(e) => handleChange("stat1", e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border border-dark/10 bg-white/70 text-sm outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10"
+                placeholder="e.g. 2,450+"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-dark/65 mb-1.5 block">
+                Stat 1 Label
+              </label>
+              <input
+                value={form.stat1Label}
+                onChange={(e) => handleChange("stat1Label", e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border border-dark/10 bg-white/70 text-sm outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10"
+                placeholder="e.g. Students"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="sm:col-span-1">
               <label className="text-xs font-bold text-dark/65 mb-1.5 block">
                 Live Link
               </label>
@@ -166,6 +239,28 @@ const WorkProofModal = ({
                   placeholder="https://example.com"
                 />
               </div>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-dark/65 mb-1.5 block">
+                Stat 2 (Value)
+              </label>
+              <input
+                value={form.stat2}
+                onChange={(e) => handleChange("stat2", e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border border-dark/10 bg-white/70 text-sm outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10"
+                placeholder="e.g. 80%"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-dark/65 mb-1.5 block">
+                Stat 2 Label
+              </label>
+              <input
+                value={form.stat2Label}
+                onChange={(e) => handleChange("stat2Label", e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border border-dark/10 bg-white/70 text-sm outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10"
+                placeholder="e.g. Success Rate"
+              />
             </div>
           </div>
 

@@ -104,9 +104,9 @@ const DomainSearch = () => {
   };
 
   return (
-    <section className="relative z-10 w-full px-0 -mt-8 sm:-mt-12 lg:-mt-16">
+    <section className="relative z-10 w-full px-0 -mt-32 sm:-mt-48 lg:-mt-60">
       <div className="w-full max-w-[1400px] mx-auto rounded-t-[40px] sm:rounded-t-[50px] lg:rounded-t-[60px] bg-[#EFF2FF] shadow-xl overflow-hidden">
-        <div className="px-6 sm:px-12 md:px-20 lg:px-24 py-10 sm:py-12 lg:py-16">
+        <div className="px-6 sm:px-12 md:px-20 lg:px-24 py-6 sm:py-8 lg:py-10">
           {/* Header */}
           <div className="max-w-xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#DCE4FF] text-[#3B42F2] text-[10px] font-bold tracking-widest uppercase mb-4 shadow-sm">
@@ -114,7 +114,7 @@ const DomainSearch = () => {
               DOMAIN AVAILABILITY CHECKER
             </div>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[#1E293B] leading-tight mb-6">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#1E293B] leading-tight mb-4">
               Find Your Perfect <span className="text-[#3B42F2] inline-block">Domain Name</span>
             </h2>
           </div>
@@ -133,13 +133,13 @@ const DomainSearch = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Enter a name (e.g., myschool or botbari)"
-                    className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-[#1E293B] text-base font-bold placeholder:text-[#94A3B8]"
+                    className="flex-1 bg-transparent border-none outline-none px-4 py-2 text-[#1E293B] text-sm font-bold placeholder:text-[#94A3B8]"
                   />
                   <button
                     id="domain-search-btn"
                     type="submit"
                     disabled={isSearching || !searchTerm.trim()}
-                    className="rounded-[14px] bg-linear-to-r from-[#1E3A8A] to-[#3B42F2] px-10 py-3.5 text-white text-base font-black shadow-lg shadow-[#3B42F2]/15 hover:shadow-xl hover:shadow-[#3B42F2]/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="rounded-[14px] bg-linear-to-r from-[#1E3A8A] to-[#3B42F2] px-8 py-3 text-white text-sm font-black shadow-lg shadow-[#3B42F2]/15 hover:shadow-xl hover:shadow-[#3B42F2]/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isSearching ? (
                       <FiLoader className="h-5 w-5 animate-spin mx-auto" />
@@ -153,7 +153,7 @@ const DomainSearch = () => {
           </div>
 
           {/* Feature Icons */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-8">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-6">
             <div className="flex items-center gap-2.5 text-[#64748B] font-black text-xs group hover:text-[#3B42F2] transition-colors">
               <svg className="w-5 h-5 text-[#94A3B8] group-hover:text-[#3B42F2] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
               <span>Trust</span>
@@ -262,7 +262,7 @@ const DomainSearch = () => {
                           <button
                             className="shrink-0 rounded-xl bg-linear-to-r from-tertiary to-[#8B5CF6] px-4 py-2 text-xs font-bold text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
                             onClick={() =>
-                              navigate("/payment-purchase", {
+                              navigate("/pricing", {
                                 state: { preferredDomain: result.domain },
                               })
                             }

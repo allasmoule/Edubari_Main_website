@@ -71,19 +71,19 @@ const features = [
 
 const Feature = () => {
     return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-28 bg-[#F8FAFC]">
+    <section className="w-full px-4 sm:px-6 md:px-12 py-6 sm:py-8 lg:py-10 bg-[#F8FAFC]">
         <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
+            <div className="max-w-3xl mx-auto text-center mb-6 sm:mb-8">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm border border-blue-100/50">
                     🚀 POWERFUL FEATURES
                 </div>
 
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#1E293B] leading-tight mb-4">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[#1E293B] leading-tight mb-3">
                     Everything Your Institution <span className="text-[#3B42F2]">Needs</span>
                 </h2>
 
-                <p className="mt-4 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-relaxed">
+                <p className="mt-2 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-snug">
                     A comprehensive suite of digital tools designed to modernize and empower your educational institution
                 </p>
             </div>
@@ -93,30 +93,30 @@ const Feature = () => {
                 {features.map((feature, index) => (
                     <div
                         key={feature.title}
-                        className="group relative rounded-[40px] bg-white border border-slate-50 p-10 transition-all duration-500 hover:-translate-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)] overflow-hidden"
+                        className="group relative rounded-[32px] bg-white border border-slate-50 p-6 sm:p-8 transition-all duration-500 hover:-translate-y-2 shadow-[0_15px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_50px_rgba(59,66,242,0.08)] overflow-hidden"
                     >
                         {/* Decorative background circle */}
                         <div className={`absolute -right-10 -top-10 h-32 w-32 rounded-full ${feature.bg} opacity-0 group-hover:opacity-20 transition-all duration-700 blur-2xl`} />
 
                         {/* Icon */}
                         <div
-                            className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl ${feature.bg} ${feature.color} transition-all duration-500 group-hover:rotate-6 shadow-sm`}
+                            className={`inline-flex h-12 w-12 items-center justify-center rounded-xl ${feature.bg} ${feature.color} transition-all duration-500 group-hover:rotate-6 shadow-sm`}
                         >
                             {feature.icon}
                         </div>
 
                         {/* Title */}
-                        <h3 className="mt-6 text-xl font-black text-[#1E293B] group-hover:text-[#3B42F2] transition-colors duration-300">
+                        <h3 className="mt-4 text-lg font-black text-[#1E293B] group-hover:text-[#3B42F2] transition-colors duration-300">
                             {feature.title}
                         </h3>
 
                         {/* Description */}
-                        <p className="mt-4 text-[#64748B] font-semibold text-sm leading-relaxed">
+                        <p className="mt-2 text-[#64748B] font-semibold text-xs leading-snug">
                             {feature.description}
                         </p>
 
                         {/* Subtle indicator */}
-                        <div className="mt-6 h-1 w-0 group-hover:w-12 bg-[#3B42F2] rounded-full transition-all duration-500" />
+                        <div className="mt-4 h-1 w-0 group-hover:w-10 bg-[#3B42F2] rounded-full transition-all duration-500" />
                     </div>
                 ))}
             </div>

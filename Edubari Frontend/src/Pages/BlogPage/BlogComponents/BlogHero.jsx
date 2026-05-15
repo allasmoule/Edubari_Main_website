@@ -1,5 +1,5 @@
 import React from "react";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiChevronDown } from "react-icons/fi";
 
 const BlogHero = ({
   searchQuery,
@@ -9,76 +9,60 @@ const BlogHero = ({
   categories = ["All"],
 }) => {
   return (
-    <section className="relative w-full overflow-hidden bg-white pt-24 pb-16 sm:pt-32 sm:pb-24">
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-100 rounded-full blur-[120px] opacity-40" />
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-100 rounded-full blur-[120px] opacity-40" />
+    <section className="relative w-full pt-20 pb-16 px-6 sm:px-12 lg:px-24 bg-linear-to-b from-[#F5F7FF] to-white overflow-hidden">
+      {/* Background Decorations (Dots and 3D illustration) */}
+      <div className="absolute top-10 left-10 opacity-20 pointer-events-none hidden md:block">
+        <div className="grid grid-cols-4 gap-4">
+          {[...Array(16)].map((_, i) => (
+            <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+          ))}
+        </div>
+      </div>
+      
+      <div className="absolute top-10 right-20 hidden lg:block animate-bounce-slow opacity-80">
+        <div className="relative w-48 h-48">
+           <img 
+             src="https://img.freepik.com/free-psd/3d-rendering-school-elements_23-2149723555.jpg" 
+             className="w-full h-full object-contain relative z-10" 
+             alt="Education 3D"
+           />
+        </div>
       </div>
 
-      <div className="relative px-6 sm:px-12 lg:px-24 z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-8 shadow-sm border border-blue-100/50">
-            ✍️ INSIGHTS & STORIES
+      <div className="max-w-4xl mx-auto text-center relative z-10">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#1E293B] mb-4">
+          Our Latest <span className="text-[#3B42F2]">Blogs & Insights</span>
+        </h1>
+        <p className="text-slate-500 font-bold text-xs md:text-sm max-w-lg mx-auto mb-8 leading-relaxed opacity-80">
+          Discover useful tips, inspiring stories, and expert insights to help schools and institutions grow smarter.
+        </p>
+
+        {/* Search & Filter Bar */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-xl mx-auto">
+          <div className="relative flex-1 w-full group">
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#3B42F2] transition-colors text-sm" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search articles..."
+              className="w-full rounded-xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-slate-50 px-10 py-3 text-xs font-bold text-slate-600 outline-none transition-all focus:ring-2 focus:ring-blue-500/5"
+            />
           </div>
-
-          {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight text-[#1E293B] leading-tight mb-6">
-            Explore the Future of <span className="text-[#3B42F2]">Education</span>
-          </h1>
-
-          <p className="text-[#64748B] font-medium text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-12">
-            Stay updated with the latest trends, tips, and success stories in modern education management.
-          </p>
-
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto mb-12">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-[#3B42F2]/10 rounded-[32px] blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-              <div className="relative flex items-center bg-white border-2 border-slate-100 rounded-[28px] shadow-2xl shadow-slate-200/50 focus-within:border-[#3B42F2] transition-all duration-300 p-2">
-                <div className="pl-6 pr-4">
-                  <FiSearch className="h-6 w-6 text-slate-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search articles, topics, or authors..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full py-4 bg-transparent text-[#1E293B] font-semibold placeholder:text-slate-400 focus:outline-none"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="mr-2 p-3 rounded-full hover:bg-slate-50 text-slate-400 hover:text-[#1E293B] transition-all"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-                <button className="bg-[#1E293B] text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-[#3B42F2] transition-all hidden sm:block">
-                  SEARCH
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Category Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-8 py-3 rounded-2xl text-sm font-black transition-all duration-300 ${
-                  activeCategory === cat
-                    ? "bg-[#3B42F2] text-white shadow-xl shadow-blue-200"
-                    : "bg-white text-[#64748B] border-2 border-slate-100 hover:border-[#3B42F2] hover:text-[#3B42F2] hover:-translate-y-1"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+          
+          <div className="relative w-full sm:w-48 group">
+            <select
+              value={activeCategory}
+              onChange={(e) => setActiveCategory(e.target.value)}
+              className="w-full appearance-none rounded-xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-slate-50 py-3 pl-4 pr-10 text-xs font-bold text-slate-600 outline-none cursor-pointer focus:ring-2 focus:ring-blue-500/5"
+            >
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat === "All" ? "All Categories" : cat}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           </div>
         </div>
       </div>

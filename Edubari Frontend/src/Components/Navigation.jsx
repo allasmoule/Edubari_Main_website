@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router';
-import { FiMenu, FiX } from 'react-icons/fi';
+import React, { useState, useEffect, useContext } from 'react';
+import { NavLink, Link } from 'react-router';
+import { FiMenu, FiX, FiLogOut, FiUser } from 'react-icons/fi';
+import { AuthContext } from '../Firebase/AuthContext';
 
 const Navigation = () => {
+    const { user, logOut } = useContext(AuthContext);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+
     // Prevent scrolling when mobile menu is open
     useEffect(() => {
         if (isMobileMenuOpen) {
@@ -22,7 +25,7 @@ const Navigation = () => {
         { path: "/blog", label: "Blog" },
         { path: "/contact", label: "Contact" },
         { path: "/work-proof", label: "Work Proof" },
-        { path: "/payment-purchase", label: "Payment & Purchase" },
+        { path: "/pricing", label: "Pricing" },
     ];
 
     const closeMobileMenu = () => {
@@ -45,14 +48,13 @@ const Navigation = () => {
             <div className="hidden lg:flex items-center px-8 py-2.5 rounded-full border border-tertiary gap-8 bg-white/40">
                 {navItems.map((item) => {
                     return (
-                        <NavLink 
-                            key={item.path} 
-                            to={item.path} 
+                        <NavLink
+                            key={item.path}
+                            to={item.path}
                             className={({ isActive }) =>
-                                `relative text-[15px] transition-all duration-300 ${
-                                    isActive
-                                        ? "text-secondary font-semibold"
-                                        : "text-dark hover:text-secondary font-medium"
+                                `relative text-[15px] transition-all duration-300 ${isActive
+                                    ? "text-secondary font-semibold"
+                                    : "text-dark hover:text-secondary font-medium"
                                 }`
                             }
                         >
@@ -64,8 +66,53 @@ const Navigation = () => {
 
             {/* Actions (Desktop) & Hamburger Menu (Mobile) */}
             <div className="flex items-center gap-4 shrink-0 relative z-60">
-                {/* Desktop Software Demo */}
-                <div className="hidden lg:flex items-center gap-3">
+                {/* Desktop Actions */}
+                <div className="hidden lg:flex items-center gap-6">
+                    {user ? (
+                        <div className="relative">
+                            <button 
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="flex items-center gap-2 group cursor-pointer focus:outline-none"
+                            >
+                                <div className="w-9 h-9 rounded-full bg-linear-to-tr from-tertiary to-[#8B5CF6] flex items-center justify-center text-white font-black text-sm shadow-md border border-white/20 group-hover:scale-105 transition-transform duration-300">
+                                    {user.displayName?.[0] || user.email?.[0] || "U"}
+                                </div>
+                            </button>
+
+                            {/* Profile Dropdown */}
+                            {isProfileOpen && (
+                                <div className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-[fadeInUp_0.2s_ease-out]">
+                                    <div className="px-4 py-2 border-b border-slate-50 mb-1">
+                                        <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Signed in as</p>
+                                        <p className="text-xs font-bold text-dark truncate">{user.displayName || user.email}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => {
+                                            logOut();
+                                            setIsProfileOpen(false);
+                                        }}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-colors"
+                                    >
+                                        <FiLogOut className="w-3.5 h-3.5" />
+                                        Log Out
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <NavLink 
+                            to="/login" 
+                            className={({ isActive }) =>
+                                `text-[15px] font-black tracking-tight transition-all duration-300 relative group/login ${
+                                    isActive ? "text-tertiary" : "text-dark hover:text-tertiary"
+                                }`
+                            }
+                        >
+                            Login
+                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-tertiary transition-all duration-300 group-hover/login:w-full" />
+                        </NavLink>
+                    )}
+
                     <NavLink to="/software-demo" className="relative font-bold shadow-md hover:shadow-lg group overflow-hidden rounded-full p-[2px] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0">
                         <span className="absolute inset-0 bg-linear-to-r from-tertiary via-[#A78BFA] to-secondary rounded-full opacity-70 group-hover:opacity-100 transition-opacity duration-500 animate-[spin_4s_linear_infinite]" />
                         <span className="relative z-10 flex items-center justify-center gap-2 bg-white rounded-full px-6 py-2 text-[15px] text-tertiary-dark transition-colors duration-300 group-hover:bg-primary-light">
@@ -82,7 +129,7 @@ const Navigation = () => {
                 </div>
 
                 {/* Mobile Hamburger Icon */}
-                <button 
+                <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     className="lg:hidden p-2 text-dark hover:text-tertiary focus:outline-none transition-colors duration-300 rounded-full hover:bg-white/50"
                     aria-label="Toggle navigation menu"
@@ -96,25 +143,24 @@ const Navigation = () => {
             </div>
 
             {/* Mobile Navigation Drawer */}
-            <div 
+            <div
                 className={`fixed inset-0 bg-dark/40 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                 onClick={closeMobileMenu}
             />
-            
+
             <div className={`fixed top-0 right-0 h-screen w-[85%] sm:w-[350px] bg-white shadow-2xl z-50 transform transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] lg:hidden flex flex-col pt-24 pb-6 px-6 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                 {/* Mobile Links */}
                 <div className="flex flex-col gap-2 grow overflow-y-auto">
                     {navItems.map((item, index) => {
                         return (
-                            <NavLink 
-                                key={item.path} 
-                                to={item.path} 
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
                                 onClick={closeMobileMenu}
                                 className={({ isActive }) =>
-                                    `p-4 rounded-xl text-[16px] transition-all duration-300 flex items-center ${
-                                        isActive
-                                            ? "bg-primary text-secondary font-bold"
-                                            : "text-dark/80 hover:bg-gray-50 hover:text-tertiary font-medium"
+                                    `p-4 rounded-xl text-[16px] transition-all duration-300 flex items-center ${isActive
+                                        ? "bg-primary text-secondary font-bold"
+                                        : "text-dark/80 hover:bg-gray-50 hover:text-tertiary font-medium"
                                     }`
                                 }
                                 style={{
@@ -130,7 +176,7 @@ const Navigation = () => {
                 </div>
 
                 {/* Mobile Software Demo Action */}
-                <div 
+                <div
                     className="mt-auto pt-6 border-t border-gray-100 flex flex-col gap-3"
                     style={{
                         opacity: isMobileMenuOpen ? 1 : 0,
@@ -139,8 +185,39 @@ const Navigation = () => {
                         transitionDelay: `${isMobileMenuOpen ? navItems.length * 50 + 100 : 0}ms`
                     }}
                 >
-                    <NavLink 
-                        to="/software-demo" 
+                    {user ? (
+                        <div className="bg-slate-50 rounded-2xl p-4 flex flex-col gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-tertiary to-[#8B5CF6] flex items-center justify-center text-white font-black text-sm shadow-sm">
+                                    {user.displayName?.[0] || user.email?.[0] || "U"}
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-dark">{user.displayName || "User"}</p>
+                                    <p className="text-[10px] font-medium text-slate-500 truncate max-w-[180px]">{user.email}</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => {
+                                    logOut();
+                                    closeMobileMenu();
+                                }}
+                                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-rose-50 text-rose-500 font-black text-xs uppercase tracking-widest"
+                            >
+                                <FiLogOut className="w-4 h-4" />
+                                Log Out
+                            </button>
+                        </div>
+                    ) : (
+                        <NavLink 
+                            to="/login" 
+                            onClick={closeMobileMenu}
+                            className="w-full py-3.5 px-4 text-center text-dark font-bold bg-white border border-slate-200 rounded-xl shadow-sm transition-all duration-300"
+                        >
+                            Login
+                        </NavLink>
+                    )}
+                    <NavLink
+                        to="/software-demo"
                         onClick={closeMobileMenu}
                         className="w-full py-3.5 px-4 text-center text-tertiary font-bold bg-linear-to-r from-tertiary/10 to-[#8B5CF6]/10 hover:from-tertiary/15 hover:to-[#8B5CF6]/15 border border-tertiary/20 rounded-xl shadow-md transition-all duration-300 flex items-center justify-center gap-2"
                     >

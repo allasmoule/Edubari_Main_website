@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router";
-import PurchaseHero from "./PaymentPurchaseComponents/PurchaseHero";
 import PlanSelector from "./PaymentPurchaseComponents/PlanSelector";
-import OrderSummary from "./PaymentPurchaseComponents/OrderSummary";
-import RegistrationForm from "./PaymentPurchaseComponents/RegistrationForm";
 
 const PaymentPurchase = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -42,33 +39,12 @@ const PaymentPurchase = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Hero */}
-      <PurchaseHero />
-
-      {/* Plan Selector */}
+      {/* Plan Selector (Acts as Hero + Pricing) */}
       <PlanSelector
         selectedPlan={selectedPlan}
         onSelectPlan={setSelectedPlan}
         plans={plans}
       />
-
-      {/* Order Details Section */}
-      <section className="w-full px-6 sm:px-12 lg:px-24 pb-16">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-[1fr_400px] gap-8 items-start">
-            {/* Registration Form */}
-            <RegistrationForm
-              selectedPlan={selectedPlan}
-              preferredDomain={preferredDomain}
-            />
-
-            {/* Order Summary — sticky sidebar */}
-            <div className="lg:sticky lg:top-32">
-              <OrderSummary selectedPlan={selectedPlan} />
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import BlogHero from "./BlogComponents/BlogHero";
 import BlogGrid from "./BlogComponents/BlogGrid";
 import BlogSidebar from "./BlogComponents/BlogSidebar";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
 
@@ -86,23 +87,45 @@ const Blog = () => {
       />
 
       {/* Content */}
-      <section className="w-full px-6 sm:px-12 lg:px-24 py-16 sm:py-24 bg-[#F8FAFC]">
-        <div className="max-w-7xl mx-auto">
+      <section className="w-full px-6 sm:px-12 lg:px-24 py-12 bg-white">
+        <div className="max-w-6xl mx-auto">
           {error && (
-            <div className="mb-10 rounded-[28px] border-2 border-red-100 bg-red-50 p-6 text-sm font-bold text-red-600 shadow-sm">
+            <div className="mb-10 rounded-2xl border border-red-100 bg-red-50 p-6 text-xs font-black text-red-600 shadow-sm uppercase tracking-widest text-center">
               {error}
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Main Grid */}
             <div className="lg:col-span-8">
               <BlogGrid
                 searchQuery={searchQuery}
                 activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
+                categories={categories}
                 posts={posts}
                 isLoading={isLoading}
               />
+
+              
+              {/* Pagination Placeholder */}
+              {!isLoading && posts.length > 0 && (
+                <div className="flex justify-center mt-10">
+                  <div className="flex items-center gap-1.5">
+                    <button className="w-8 h-8 rounded-lg border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-all text-slate-400">
+                      <FiChevronLeft className="text-base" />
+                    </button>
+                    <button className="w-8 h-8 rounded-lg bg-[#3B42F2] text-white flex items-center justify-center font-black text-xs shadow-md shadow-blue-50">1</button>
+                    <button className="w-8 h-8 rounded-lg border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-all text-slate-400 font-black text-xs">2</button>
+                    <button className="w-8 h-8 rounded-lg border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-all text-slate-400 font-black text-xs">3</button>
+                    <span className="px-1.5 text-slate-300 font-black text-xs">...</span>
+                    <button className="w-8 h-8 rounded-lg border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-all text-slate-400 font-black text-xs">12</button>
+                    <button className="w-8 h-8 rounded-lg border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-all text-slate-400">
+                      <FiChevronRight className="text-base" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Sidebar */}

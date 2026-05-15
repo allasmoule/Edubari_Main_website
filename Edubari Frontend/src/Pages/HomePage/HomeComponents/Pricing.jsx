@@ -35,23 +35,23 @@ const Pricing = () => {
 
   // Handle Get Started click
   const handleGetStarted = (planId) => {
-    navigate(`/payment-purchase?plan=${planId}`);
+    navigate(`/pricing?plan=${planId}`);
   };
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-24 bg-[#F8FAFC]">
+    <section className="w-full px-4 sm:px-6 md:px-12 py-6 sm:py-8 lg:py-10 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16">
+        <div className="max-w-3xl mx-auto text-center mb-4 sm:mb-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm border border-blue-100/50">
             💰 AVAILABLE PLANS
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#1E293B] leading-tight mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[#1E293B] leading-tight mb-3">
             Simple, Transparent <span className="text-[#3B42F2]">Pricing</span>
           </h2>
 
-          <p className="mt-4 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-2 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-snug">
             Choose the perfect plan to digitize and empower your institution
           </p>
         </div>
@@ -86,7 +86,7 @@ const Pricing = () => {
               {plans.slice(0, 3).map((plan) => (
                 <div
                   key={plan._id}
-                  className={`group relative rounded-[40px] border-2 p-8 sm:p-10 text-left transition-all duration-500 hover:-translate-y-4 ${
+                  className={`group relative rounded-[32px] border-2 p-6 sm:p-8 text-left transition-all duration-500 hover:-translate-y-2 ${
                     plan.popular
                       ? "border-[#3B42F2] bg-white shadow-[0_30px_70px_rgba(59,66,242,0.15)] z-10"
                       : "border-slate-100 bg-white hover:border-[#3B42F2]/20 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)]"
@@ -100,7 +100,7 @@ const Pricing = () => {
                   )}
 
                   {/* Plan Name */}
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <h3 className="text-2xl font-black text-[#1E293B] group-hover:text-[#3B42F2] transition-colors">
                       {plan.name}
                     </h3>
@@ -110,9 +110,9 @@ const Pricing = () => {
                   </div>
 
                   {/* Price */}
-                  <div className="mb-8 flex flex-col">
+                  <div className="mb-5 flex flex-col">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-4xl sm:text-5xl font-black tracking-tight text-[#1E293B]">
+                        <span className="text-3xl sm:text-4xl font-black tracking-tight text-[#1E293B]">
                         ৳{(plan.price || 0).toLocaleString()}
                       </span>
                       {plan.oldPrice && (
@@ -129,14 +129,14 @@ const Pricing = () => {
                   </div>
 
                   {/* Features */}
-                  <div className="mb-10 flex-1">
-                    <p className="text-sm font-black text-[#1E293B] mb-4 uppercase tracking-widest">Everything in {plan.name}:</p>
+                  <div className="mb-8 flex-1">
+                    <p className="text-[10px] font-black text-[#1E293B] mb-3 uppercase tracking-widest">Everything in {plan.name}:</p>
                     {plan.features && Array.isArray(plan.features) && (
-                      <ul className="space-y-4">
+                      <ul className="space-y-3">
                         {plan.features.slice(0, 8).map((feat, idx) => (
                           <li
                             key={idx}
-                            className="flex items-start gap-3 text-sm text-[#475569] font-semibold leading-relaxed"
+                            className="flex items-start gap-3 text-sm text-[#475569] font-semibold leading-snug"
                           >
                             <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EFF2FF] text-[#3B42F2] group-hover:bg-[#3B42F2] group-hover:text-white transition-colors duration-300">
                               <FiCheck className="h-3 w-3 stroke-[4]" />
@@ -167,9 +167,9 @@ const Pricing = () => {
         </div>
 
         {/* View All Plans */}
-        <div className="mt-16 text-center">
+        <div className="mt-6 text-center">
           <a
-            href="/payment-purchase"
+            href="/pricing"
             className="inline-flex items-center gap-3 px-10 py-4 rounded-[20px] bg-white border border-slate-100 text-[#1E293B] font-black shadow-lg shadow-slate-200/50 hover:bg-[#3B42F2] hover:text-white hover:border-[#3B42F2] hover:-translate-y-1 transition-all duration-500 group"
           >
             Explore All Premium Plans

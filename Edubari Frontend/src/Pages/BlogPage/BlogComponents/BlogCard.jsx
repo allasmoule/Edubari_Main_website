@@ -1,84 +1,73 @@
 import React from "react";
 import { Link } from "react-router";
-import { FiClock, FiArrowRight } from "react-icons/fi";
-
-const categoryColors = {
-  Education: { text: "text-tertiary", bg: "bg-tertiary/10" },
-  Technology: { text: "text-[#8B5CF6]", bg: "bg-[#8B5CF6]/10" },
-  "Tips & Tricks": { text: "text-[#10B981]", bg: "bg-[#10B981]/10" },
-  News: { text: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-  Updates: { text: "text-secondary", bg: "bg-secondary/10" },
-};
+import { FiCalendar, FiClock, FiArrowRight } from "react-icons/fi";
 
 const BlogCard = ({ post }) => {
   const postPath = post?.slug || post?._id || "";
   const authorName = post?.author?.name || "Anonymous";
-  const authorAvatar = post?.author?.avatar || `https://ui-avatars.com/api/?name=${authorName}&background=3B42F2&color=fff`;
 
   return (
-    <Link
-      to={`/blog/${postPath}`}
-      className="group flex flex-col bg-white rounded-[40px] border border-slate-50 overflow-hidden transition-all duration-700 hover:-translate-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)]"
-    >
-      {/* Thumbnail */}
-      <div className="relative h-64 overflow-hidden">
-        <img
-          src={post.image}
-          alt={post.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
-
-        {/* Category Badge */}
-        <div className="absolute top-6 left-6">
-          <span className="px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase bg-white/90 backdrop-blur-md text-[#3B42F2] shadow-sm">
-            {post.category}
-          </span>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-col grow p-8">
-        {/* Meta Info */}
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
-            <FiClock className="h-3.5 w-3.5" />
-            <span>{post.readTime}</span>
-          </div>
-          <div className="h-1 w-1 rounded-full bg-slate-200" />
-          <span className="text-xs font-bold text-slate-400">{post.date}</span>
-        </div>
-
-        {/* Title */}
-        <h3 className="text-xl font-black text-[#1E293B] leading-tight mb-4 group-hover:text-[#3B42F2] transition-colors duration-300 line-clamp-2">
-          {post.title}
-        </h3>
-
-        {/* Excerpt */}
-        <p className="text-slate-500 font-medium text-sm leading-relaxed line-clamp-3 mb-8">
-          {post.excerpt}
-        </p>
-
-        {/* Footer */}
-        <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img 
-              src={authorAvatar} 
-              alt={authorName} 
-              className="h-8 w-8 rounded-full border border-slate-100 p-0.5"
+    <article className="bg-white rounded-[20px] border border-slate-100 overflow-hidden group hover:shadow-[0_15px_30px_rgba(0,0,0,0.02)] transition-all duration-500 mb-4">
+      <div className="flex flex-col md:flex-row h-full">
+        {/* Image Side */}
+        <div className="w-full md:w-[28%] h-48 md:h-auto overflow-hidden relative">
+          <Link to={`/blog/${postPath}`} className="block h-full w-full">
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
             />
-            <span className="text-sm font-bold text-[#1E293B]">
-              {authorName}
+          </Link>
+          <div className="absolute top-3 left-3">
+             <span className="px-2 py-0.5 rounded-md bg-blue-600 text-white text-[8px] font-black uppercase tracking-widest shadow-lg">
+                {post.category}
+             </span>
+          </div>
+        </div>
+
+        {/* Content Side */}
+        <div className="flex-1 p-4 md:p-5 flex flex-col justify-center">
+          <div className="flex items-center gap-3 text-[9px] font-bold text-slate-400 mb-2 uppercase tracking-wider">
+            <span className="flex items-center gap-1.5">
+              <FiCalendar className="text-blue-600" /> {post.date}
+            </span>
+            <span className="h-0.5 w-0.5 rounded-full bg-slate-200" />
+            <span className="flex items-center gap-1.5">
+              <FiClock className="text-blue-600" /> {post.readTime}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-[#3B42F2] font-black text-xs tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-2 group-hover:translate-x-0">
-            READ <FiArrowRight className="h-3.5 w-3.5" />
+          <Link to={`/blog/${postPath}`}>
+            <h3 className="text-base md:text-lg font-black text-[#1E293B] mb-2 leading-tight group-hover:text-[#3B42F2] transition-colors line-clamp-2">
+              {post.title}
+            </h3>
+          </Link>
+
+          <p className="text-slate-500 font-bold text-[10px] leading-relaxed line-clamp-2 mb-4 opacity-80">
+            {post.excerpt}
+          </p>
+
+          <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-50">
+            <div className="flex items-center gap-2">
+              <img 
+                src={`https://ui-avatars.com/api/?name=${authorName}&background=F1F5F9&color=3B42F2`} 
+                className="w-6 h-6 rounded-full border border-slate-100" 
+                alt={authorName} 
+              />
+              <span className="text-[9px] font-black text-[#1E293B] uppercase tracking-widest opacity-70">By {authorName}</span>
+            </div>
+            
+            <Link 
+              to={`/blog/${postPath}`} 
+              className="flex items-center gap-1.5 text-blue-600 font-black text-[9px] uppercase tracking-widest group/link"
+            >
+              Read More <FiArrowRight className="transition-transform group-hover/link:translate-x-1" />
+            </Link>
           </div>
         </div>
       </div>
-    </Link>
+    </article>
   );
 };
 

@@ -1,142 +1,183 @@
 import React, { useState, useEffect } from "react";
-import { FiCheck, FiLoader } from "react-icons/fi";
+import { useNavigate } from "react-router";
+import { FiCheck, FiArrowRight, FiMail, FiPhoneCall, FiLoader } from "react-icons/fi";
 
 const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
 
-const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [] }) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const PlanSelector = ({ selectedPlan, onSelectPlan }) => {
+  const [billingPeriod, setBillingPeriod] = useState("monthly"); // "monthly" or "yearly"
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_URL}/plans`);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setPlans(data);
+        }
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlans();
+  }, []);
+
+  const handleAction = (plan, actionType) => {
+    if (plan.type === "contact") {
+      window.location.href = "mailto:sales@edubari.com";
+      return;
+    }
+    
+    // Pass current billing price to selection
+    const currentPrice = billingPeriod === "monthly" ? plan.price : (plan.yearlyPrice || plan.price * 12 * 0.8);
+    const selectedPlanWithPrice = { ...plan, price: currentPrice };
+    
+    onSelectPlan(selectedPlanWithPrice);
+    
+    if (actionType === "direct") {
+      navigate("/checkout", { state: { plan: selectedPlanWithPrice, billingPeriod } });
+    } else {
+      navigate("/payment-plan-details", { state: { plan: selectedPlanWithPrice, billingPeriod } });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full py-32 flex flex-col items-center justify-center bg-white">
+        <FiLoader className="w-10 h-10 text-blue-600 animate-spin mb-4" />
+        <p className="text-slate-500 font-bold">Loading premium plans...</p>
+      </div>
+    );
+  }
 
   return (
-    <section className="w-full px-6 sm:px-12 lg:px-24 pb-12 sm:pb-20 bg-transparent">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="max-w-3xl mx-auto text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black tracking-widest uppercase mb-4 shadow-sm border border-blue-100/50">
-            💰 CHOOSE YOUR PLAN
-          </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[#1E293B] leading-tight mb-3">
-            Simple, Transparent <span className="text-[#3B42F2]">Pricing</span>
+    <section className="w-full pb-20 bg-white">
+      {/* Dark Header Section */}
+      <div className="bg-[#0B1121] pt-16 pb-28 px-6 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">
+            Choose Your Plan <br />
+            <span className="text-white/90">& Get Started</span>
           </h2>
-          <p className="text-[#64748B] font-medium text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-            Pick the plan that fits your institution best. All plans include a
-            professional website and dedicated domain.
+          <p className="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto mb-8 leading-normal font-medium">
+            Select the perfect plan for your institution, fill in your details, and confirm your 
+            order to launch your professional teaching platform with EduBari.
           </p>
+
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-4">
+            <span className={`text-sm font-bold ${billingPeriod === "monthly" ? "text-white" : "text-slate-500"}`}>Monthly</span>
+            <button 
+              onClick={() => setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly")}
+              className="relative w-14 h-7 bg-blue-600 rounded-full p-1 transition-colors duration-300"
+            >
+              <div className={`w-5 h-5 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${billingPeriod === "yearly" ? "translate-x-7" : "translate-x-0"}`} />
+            </button>
+            <span className={`text-sm font-bold ${billingPeriod === "yearly" ? "text-white" : "text-slate-500"}`}>Yearly</span>
+            <span className="bg-blue-900/50 text-blue-400 text-[10px] font-black px-3 py-1 rounded-full border border-blue-800/50 ml-2 uppercase">
+              Save 20%
+            </span>
+          </div>
         </div>
+      </div>
 
-        {/* Plan Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {loading ? (
-            <div className="col-span-full flex items-center justify-center py-20 bg-white rounded-[40px] border border-slate-50 shadow-sm">
-              <FiLoader className="w-8 h-8 animate-spin text-[#3B42F2] mr-3" />
-              <span className="text-slate-500 font-bold">Loading plans...</span>
-            </div>
-          ) : error ? (
-            <div className="col-span-full text-center py-16 rounded-[40px] bg-red-50/50 border border-red-100">
-              <p className="text-[#1E293B] font-black text-xl mb-2">Oops! Connection error</p>
-              <p className="text-red-500 font-medium">{error}</p>
-              <button
-                onClick={fetchPlans}
-                className="mt-6 px-8 py-3 rounded-xl bg-red-500 text-white text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all"
+      {/* Plans Grid */}
+      <div className="max-w-7xl mx-auto px-6 -mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {plans.map((plan) => {
+            const isHighlighted = plan.highlighted;
+            const displayPrice = billingPeriod === "monthly" ? plan.price : (plan.yearlyPrice || "Contact");
+
+            return (
+              <div
+                key={plan._id}
+                className={`relative flex flex-col p-8 bg-white transition-all duration-500 ${
+                  plan.isDashed 
+                    ? "rounded-[24px] border-2 border-dashed border-slate-200" 
+                    : isHighlighted 
+                      ? "rounded-[24px] border-4 border-blue-600 shadow-xl shadow-blue-600/10 scale-105 z-10" 
+                      : "rounded-[24px] border border-slate-100 shadow-[0_15px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1"
+                }`}
               >
-                Retry
-              </button>
-            </div>
-          ) : plans.length === 0 ? (
-            <div className="col-span-full text-center py-20 bg-white rounded-[40px] border border-slate-50">
-              <p className="text-slate-400 font-bold text-lg">No active plans available right now.</p>
-            </div>
-          ) : (
-            plans.map((plan) => {
-              const isSelected = selectedPlan?._id === plan._id;
-              return (
-                <button
-                  key={plan._id}
-                  type="button"
-                  onClick={() => onSelectPlan(plan)}
-                  className={`group relative rounded-[40px] border-2 p-10 text-left transition-all duration-700 hover:-translate-y-4 cursor-pointer ${isSelected
-                      ? "border-[#3B42F2] bg-white shadow-[0_30px_70px_rgba(59,66,242,0.15)] ring-4 ring-[#3B42F2]/5"
-                      : plan.popular
-                        ? "border-[#3B42F2]/30 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)] hover:border-[#3B42F2]/50"
-                        : "border-slate-100 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)] hover:border-[#3B42F2]/20"
+                {/* Most Popular Badge */}
+                {plan.popular && (
+                  <div className={`absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isHighlighted ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-600 border border-blue-100"}`}>
+                    Most Popular
+                  </div>
+                )}
+
+                {/* Card Header */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-[#1E293B] mb-0.5">{plan.name}</h3>
+                  <p className="text-[10px] text-slate-400 font-medium">{plan.subtitle}</p>
+                </div>
+
+                {/* Price */}
+                <div className="mb-6">
+                  {typeof displayPrice === "number" ? (
+                    <div className="flex items-baseline">
+                      <span className="text-3xl font-bold text-[#1E293B]">৳{displayPrice}</span>
+                      <span className="text-slate-400 text-xs font-bold ml-1">/{billingPeriod === "monthly" ? "mo" : "yr"}</span>
+                    </div>
+                  ) : (
+                    <div className="text-3xl font-bold text-[#1E293B] tracking-tight">
+                      {displayPrice}
+                    </div>
+                  )}
+                </div>
+
+                {/* Features */}
+                <div className="flex-grow">
+                  {plan.description ? (
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                      {plan.description}
+                    </p>
+                  ) : (
+                    <ul className="space-y-3 mb-6">
+                      {plan.features?.map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-3 text-[13px] font-medium text-slate-600">
+                          <FiCheck className={`mt-1 shrink-0 ${isHighlighted ? "text-blue-600" : "text-emerald-500"}`} />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <button
+                    onClick={() => handleAction(plan, "select")}
+                    className={`w-full py-4 rounded-xl text-[11px] font-black transition-all duration-300 uppercase tracking-widest ${
+                      isHighlighted
+                        ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+                        : "bg-[#0B1121] text-white hover:bg-[#1E293B]"
                     }`}
-                >
-                  {/* Selected indicator */}
-                  {isSelected && (
-                    <div className="absolute top-6 right-6 h-8 w-8 rounded-full bg-[#3B42F2] flex items-center justify-center shadow-lg shadow-[#3B42F2]/20">
-                      <FiCheck className="h-4 w-4 text-white stroke-[3]" />
-                    </div>
-                  )}
-
-                  {/* Badge */}
-                  {plan.badge && (
-                    <div
-                      className={`absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${plan.popular
-                          ? "bg-[#3B42F2] text-white shadow-lg shadow-[#3B42F2]/20"
-                          : "bg-amber-100 text-amber-600 border border-amber-200"
-                        }`}
-                    >
-                      {plan.badge}
-                    </div>
-                  )}
-
-                  {/* Popular label */}
-                  {plan.popular && !isSelected && (
-                    <div className="text-[10px] font-black text-[#3B42F2] uppercase tracking-widest mb-4">
-                      Most Popular
-                    </div>
-                  )}
-
-                  {/* Plan Name */}
-                  <h3 className="text-2xl font-black text-[#1E293B] mb-1">
-                    {plan.name}
-                  </h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">
-                    {plan.duration}
-                  </p>
-
-                  {/* Price */}
-                  <div className="flex items-baseline gap-2 mb-8">
-                    <span className="text-5xl font-black text-[#1E293B] tracking-tight">
-                      ৳{(plan.price || 0).toLocaleString()}
-                    </span>
-                    {plan.oldPrice && (
-                      <span className="text-lg font-bold text-slate-300 line-through">
-                        ৳{(plan.oldPrice || 0).toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Feature list */}
-                  <ul className="space-y-4 mb-10">
-                    {plan.features.map((feat, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-start gap-3 text-sm font-bold text-slate-600"
-                      >
-                        <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-[#3B42F2]">
-                          <FiCheck className="h-3 w-3 stroke-[3]" />
-                        </div>
-                        <span className="leading-tight">{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Select Button */}
-                  <div
-                    className={`w-full rounded-[20px] py-5 text-[10px] font-black uppercase tracking-widest text-center transition-all duration-300 ${isSelected
-                        ? "bg-[#3B42F2] text-white shadow-xl shadow-[#3B42F2]/20"
-                        : plan.popular
-                          ? "bg-slate-50 text-[#3B42F2] group-hover:bg-[#3B42F2] group-hover:text-white group-hover:shadow-xl group-hover:shadow-[#3B42F2]/20"
-                          : "bg-slate-50 text-slate-400 group-hover:bg-[#3B42F2] group-hover:text-white group-hover:shadow-xl group-hover:shadow-[#3B42F2]/20"
-                      }`}
                   >
-                    {isSelected ? "✓ Selected" : "Select Plan"}
-                  </div>
-                </button>
-              );
-            })
-          )}
+                    {plan.buttonText || "Select Plan"}
+                  </button>
+
+                  {/* Direct Order Button - always visible for regular plans */}
+                  {plan.type === "regular" && (
+                    <button
+                      onClick={() => handleAction(plan, "direct")}
+                      className="w-full py-4 rounded-xl text-[11px] font-black bg-white text-[#1E293B] border-2 border-[#1E293B] hover:bg-slate-50 transition-all duration-300 flex items-center justify-center gap-2 uppercase tracking-widest"
+                    >
+                      Direct Order
+                      <FiArrowRight className="w-4 h-4 stroke-[3]" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -144,3 +185,4 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [] }) => {
 };
 
 export default PlanSelector;
+

@@ -63,7 +63,7 @@ const HeroSlider = () => {
   if (banners === null) {
     return (
       <div className="w-full">
-        <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:min-h-[600px] bg-gray-200 flex items-center justify-center">
+        <div className="relative w-full h-[50vh] md:h-[60vh] lg:min-h-[500px] bg-gray-200 flex items-center justify-center">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
         </div>
       </div>
@@ -90,7 +90,7 @@ const HeroSlider = () => {
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide._id || slide.id || slide.image}>
-            <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:min-h-[600px] overflow-hidden">
+            <div className="relative w-full h-[50vh] md:h-[60vh] lg:min-h-[500px] overflow-hidden">
               {/* Image with Zoom Effect */}
               <img
                 src={slide.image}
@@ -103,7 +103,7 @@ const HeroSlider = () => {
 
               {/* Content */}
               {(slide.title || slide.subtitle) && (
-                <div className="absolute inset-0 flex items-center justify-center text-center">
+                <div className="absolute inset-0 flex items-start justify-center text-center pt-10 sm:pt-14 lg:pt-16">
                   <div className="max-w-5xl px-6 sm:px-10 lg:px-14 text-white">
                     {slide.title && (
                       <h2 className="animate-fadeUp text-xl sm:text-3xl lg:text-4xl font-black leading-tight tracking-tight drop-shadow-2xl mb-3">

@@ -102,8 +102,9 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    const database = client.db("edubari");
+    const database = client.db("EdubariClient");
     const plansCollection = database.collection("plans");
+    const subscriptionsCollection = database.collection("subscriptions");
 
     // Get all plans
     app.get("/plans", async (req, res) => {
@@ -228,11 +229,14 @@ async function run() {
     app.patch("/workProof/:id", verifyAccessToken, async (req, res) => {
       try {
         const workProofId = req.params.id;
-        const updatedWorkProof = req.body;
+        const updatedWorkProof = { ...req.body };
+        delete updatedWorkProof._id; // Prevent MongoDB error by removing _id
+        
         const result = await workProofCollection.updateOne(
           { _id: new ObjectId(workProofId) },
           { $set: updatedWorkProof },
         );
+
         if (result.matchedCount > 0) {
           res.json({ message: "Work proof updated" });
         } else {
@@ -340,82 +344,141 @@ async function run() {
     // });
 
     // User Reviews
-    // const reviewsCollection = database.collection("reviews");
-    // app.get("/reviews", async (req, res) => {
-    //   try {
-    //     const reviews = await reviewsCollection.find({}).toArray();
-    //     res.json(reviews);
-    //   } catch (error) {
-    //     console.error("Error fetching reviews:", error);
-    //     res.status(500).json({ error: "Internal Server Error" });
-    //   }
-    // });
+    const reviewsCollection = database.collection("reviews");
+    app.get("/reviews", async (req, res) => {
+      try {
+        const reviews = await reviewsCollection.find({}).toArray();
+        res.json(reviews);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
 
-    // app.get("/reviews/:id", async (req, res) => {
-    //   try {
-    //     const reviewId = req.params.id;
-    //     const review = await reviewsCollection.findOne({
-    //       _id: new ObjectId(reviewId),
-    //     });
-    //     if (review) {
-    //       res.json(review);
-    //     } else {
-    //       res.status(404).json({ error: "Review not found" });
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching review:", error);
-    //     res.status(500).json({ error: "Internal Server Error" });
-    //   }
-    // });
+    app.get("/reviews/:id", async (req, res) => {
+      try {
+        const reviewId = req.params.id;
+        const review = await reviewsCollection.findOne({
+          _id: new ObjectId(reviewId),
+        });
+        if (review) {
+          res.json(review);
+        } else {
+          res.status(404).json({ error: "Review not found" });
+        }
+      } catch (error) {
+        console.error("Error fetching review:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
 
-    // app.post("/reviews", async (req, res) => {
-    //   try {
-    //     const newReview = req.body;
-    //     const result = await reviewsCollection.insertOne(newReview);
-    //     res
-    //       .status(201)
-    //       .json({ message: "Review created", reviewId: result.insertedId });
-    //   } catch (error) {
-    //     console.error("Error creating review:", error);
-    //     res.status(500).json({ error: "Internal Server Error" });
-    //   }
-    // });
+    app.post("/reviews", verifyAccessToken, async (req, res) => {
+      try {
+        const newReview = req.body;
+        const result = await reviewsCollection.insertOne(newReview);
+        res
+          .status(201)
+          .json({ message: "Review created", reviewId: result.insertedId });
+      } catch (error) {
+        console.error("Error creating review:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
 
-    // app.patch("/reviews/:id", async (req, res) => {
-    //   try {
-    //     const reviewId = req.params.id;
-    //     const updatedReview = req.body;
-    //     const result = await reviewsCollection.updateOne(
-    //       { _id: new ObjectId(reviewId) },
-    //       { $set: updatedReview },
-    //     );
-    //     if (result.matchedCount > 0) {
-    //       res.json({ message: "Review updated" });
-    //     } else {
-    //       res.status(404).json({ error: "Review not found" });
-    //     }
-    //   } catch (error) {
-    //     console.error("Error updating review:", error);
-    //     res.status(500).json({ error: "Internal Server Error" });
-    //   }
-    // });
+    app.patch("/reviews/:id", verifyAccessToken, async (req, res) => {
+      try {
+        const reviewId = req.params.id;
+        const updatedReview = { ...req.body };
+        delete updatedReview._id; // Remove _id if it exists to prevent MongoDB error
+        
+        const result = await reviewsCollection.updateOne(
+          { _id: new ObjectId(reviewId) },
+          { $set: updatedReview },
+        );
 
-    // app.delete("/reviews/:id", async (req, res) => {
-    //   try {
-    //     const reviewId = req.params.id;
-    //     const result = await reviewsCollection.deleteOne({
-    //       _id: new ObjectId(reviewId),
-    //     });
-    //     if (result.deletedCount > 0) {
-    //       res.json({ message: "Review deleted" });
-    //     } else {
-    //       res.status(404).json({ error: "Review not found" });
-    //     }
-    //   } catch (error) {
-    //     console.error("Error deleting review:", error);
-    //     res.status(500).json({ error: "Internal Server Error" });
-    //   }
-    // });
+        if (result.matchedCount > 0) {
+          res.json({ message: "Review updated" });
+        } else {
+          res.status(404).json({ error: "Review not found" });
+        }
+      } catch (error) {
+        console.error("Error updating review:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
+    app.delete("/reviews/:id", verifyAccessToken, async (req, res) => {
+      try {
+        const reviewId = req.params.id;
+        const result = await reviewsCollection.deleteOne({
+          _id: new ObjectId(reviewId),
+        });
+        if (result.deletedCount > 0) {
+          res.json({ message: "Review deleted" });
+        } else {
+          res.status(404).json({ error: "Review not found" });
+        }
+      } catch (error) {
+        console.error("Error deleting review:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
+    // Newsletter Subscriptions
+    
+    app.post("/subscribe", async (req, res) => {
+
+      try {
+        const { email } = req.body;
+        if (!email) {
+          return res.status(400).json({ error: "Email is required" });
+        }
+
+        // Check if already subscribed
+        const existing = await subscriptionsCollection.findOne({ email });
+        if (existing) {
+          return res.status(400).json({ error: "Email already subscribed" });
+        }
+
+        const result = await subscriptionsCollection.insertOne({
+          email,
+          subscribedAt: new Date(),
+        });
+
+        res.status(201).json({ message: "Successfully subscribed", id: result.insertedId });
+      } catch (error) {
+        console.error("Error in subscription:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
+    app.get("/subscriptions", verifyAccessToken, async (req, res) => {
+      try {
+        const subscribers = await subscriptionsCollection
+          .find({})
+          .sort({ subscribedAt: -1 })
+          .toArray();
+        res.json(subscribers);
+      } catch (error) {
+        console.error("Error fetching subscribers:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
+    app.delete("/subscriptions/:id", verifyAccessToken, async (req, res) => {
+      try {
+        const id = req.params.id;
+        const result = await subscriptionsCollection.deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount > 0) {
+          res.json({ message: "Subscriber removed" });
+        } else {
+          res.status(404).json({ error: "Subscriber not found" });
+        }
+      } catch (error) {
+        console.error("Error deleting subscriber:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
 
     //Blog Posts
     
@@ -426,7 +489,9 @@ async function run() {
           .find({})
           .sort({ createdAt: -1, _id: -1 })
           .toArray();
+        console.log(`[GET /blogPosts] Found ${blogPosts.length} posts`);
         res.json(blogPosts);
+
       } catch (error) {
         console.error("Error fetching blog posts:", error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -470,11 +535,14 @@ async function run() {
     app.patch("/blogPosts/:id", verifyAccessToken, async (req, res) => {
       try {
         const blogPostId = req.params.id;
-        const updatedBlogPost = req.body;
+        const updatedBlogPost = { ...req.body };
+        delete updatedBlogPost._id;
+        
         const result = await blogPostsCollection.updateOne(
           { _id: new ObjectId(blogPostId) },
           { $set: updatedBlogPost },
         );
+
         if (result.matchedCount > 0) {
           res.json({ message: "Blog post updated" });
         } else {
@@ -885,7 +953,6 @@ async function run() {
 
 
     //Subscribtions
-    const subscriptionsCollection = database.collection("subscriptions");
     app.get("/subscriptions", verifyAccessToken, async (req, res) => {
       try {
         const subscriptions = await subscriptionsCollection.find({}).toArray();
