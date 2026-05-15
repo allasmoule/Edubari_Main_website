@@ -2,7 +2,7 @@ const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
 // Backend-er actual URI theke database name parse kora holo
-const uri = "mongodb+srv://masumaakterakhi:Admin123@mycluster.jrulyye.mongodb.net/EdubariClient?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 
 const blogs = [

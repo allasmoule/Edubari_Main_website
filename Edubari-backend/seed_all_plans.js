@@ -1,5 +1,6 @@
+require("dotenv").config();
 const { MongoClient } = require("mongodb");
-const uri = "mongodb+srv://masumaakterakhi:Admin123@mycluster.jrulyye.mongodb.net/EdubariClient?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 
 async function seed() {
