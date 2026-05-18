@@ -53,11 +53,13 @@ const BlogGrid = ({
           <div className="bg-white rounded-[24px] overflow-hidden border border-slate-100 shadow-[0_15px_40px_rgba(0,0,0,0.02)] group transition-all duration-500">
             <div className="flex flex-col lg:flex-row">
               <div className="w-full lg:w-[50%] h-56 lg:h-auto overflow-hidden">
-                <img 
-                  src={featuredPost.image} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                  alt="Featured" 
-                />
+                <Link to={`/blog/${featuredPost.slug || featuredPost._id}`} className="block h-full">
+                  <img 
+                    src={featuredPost.image} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                    alt="Featured" 
+                  />
+                </Link>
               </div>
               <div className="flex-1 p-6 lg:p-8 flex flex-col justify-center">
                 <div className="inline-block px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 text-[9px] font-black uppercase tracking-widest mb-4 w-fit">
@@ -68,12 +70,16 @@ const BlogGrid = ({
                   <span className="h-0.5 w-0.5 rounded-full bg-slate-300" />
                   <span>5 min read</span>
                 </div>
-                <h3 className="text-xl lg:text-2xl font-black text-[#1E293B] mb-4 leading-tight group-hover:text-blue-600 transition-colors">
-                  {featuredPost.title}
-                </h3>
-                <p className="text-slate-500 font-bold text-xs leading-relaxed mb-6 opacity-80">
-                  {featuredPost.excerpt}
-                </p>
+                <Link to={`/blog/${featuredPost.slug || featuredPost._id}`}>
+                  <h3 className="text-xl lg:text-2xl font-black text-[#1E293B] mb-4 leading-tight group-hover:text-blue-600 transition-colors">
+                    {featuredPost.title}
+                  </h3>
+                </Link>
+                <Link to={`/blog/${featuredPost.slug || featuredPost._id}`}>
+                  <p className="text-slate-500 font-bold text-xs leading-relaxed mb-6 opacity-80">
+                    {featuredPost.excerpt}
+                  </p>
+                </Link>
                 <div className="flex items-center justify-between pt-6 border-t border-slate-50">
                   <div className="flex items-center gap-2.5">
                     <img 

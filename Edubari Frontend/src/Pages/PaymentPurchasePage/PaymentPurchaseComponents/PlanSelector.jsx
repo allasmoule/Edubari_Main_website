@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { FiCheck, FiArrowRight, FiMail, FiPhoneCall, FiLoader } from "react-icons/fi";
+import Swal from "sweetalert2";
 
 const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
 
@@ -9,6 +10,8 @@ const PlanSelector = ({ selectedPlan, onSelectPlan }) => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const preferredDomain = location.state?.preferredDomain;
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -34,17 +37,23 @@ const PlanSelector = ({ selectedPlan, onSelectPlan }) => {
       window.location.href = "mailto:sales@edubari.com";
       return;
     }
-    
+
+    if (!preferredDomain) {
+      // Redirect to home domain search with state to trigger toast and scroll
+      navigate("/", { state: { scrollToDomain: true } });
+      return;
+    }
+
     // Pass current billing price to selection
     const currentPrice = billingPeriod === "monthly" ? plan.price : (plan.yearlyPrice || plan.price * 12 * 0.8);
-    const selectedPlanWithPrice = { ...plan, price: currentPrice };
-    
+    const selectedPlanWithPrice = { ...plan, price: currentPrice, domain: preferredDomain };
+
     onSelectPlan(selectedPlanWithPrice);
-    
+
     if (actionType === "direct") {
-      navigate("/checkout", { state: { plan: selectedPlanWithPrice, billingPeriod } });
+      navigate("/checkout", { state: { plan: selectedPlanWithPrice, billingPeriod, domain: preferredDomain } });
     } else {
-      navigate("/payment-plan-details", { state: { plan: selectedPlanWithPrice, billingPeriod } });
+      navigate("/payment-plan-details", { state: { plan: selectedPlanWithPrice, billingPeriod, domain: preferredDomain } });
     }
   };
 
@@ -67,14 +76,14 @@ const PlanSelector = ({ selectedPlan, onSelectPlan }) => {
             <span className="text-white/90">& Get Started</span>
           </h2>
           <p className="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto mb-8 leading-normal font-medium">
-            Select the perfect plan for your institution, fill in your details, and confirm your 
+            Select the perfect plan for your institution, fill in your details, and confirm your
             order to launch your professional teaching platform with EduBari.
           </p>
 
           {/* Billing Toggle */}
           <div className="flex items-center justify-center gap-4">
             <span className={`text-sm font-bold ${billingPeriod === "monthly" ? "text-white" : "text-slate-500"}`}>Monthly</span>
-            <button 
+            <button
               onClick={() => setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly")}
               className="relative w-14 h-7 bg-blue-600 rounded-full p-1 transition-colors duration-300"
             >
@@ -98,13 +107,12 @@ const PlanSelector = ({ selectedPlan, onSelectPlan }) => {
             return (
               <div
                 key={plan._id}
-                className={`relative flex flex-col p-8 bg-white transition-all duration-500 ${
-                  plan.isDashed 
-                    ? "rounded-[24px] border-2 border-dashed border-slate-200" 
-                    : isHighlighted 
-                      ? "rounded-[24px] border-4 border-blue-600 shadow-xl shadow-blue-600/10 scale-105 z-10" 
+                className={`relative flex flex-col p-8 bg-white transition-all duration-500 ${plan.isDashed
+                    ? "rounded-[24px] border-2 border-dashed border-slate-200"
+                    : isHighlighted
+                      ? "rounded-[24px] border-4 border-blue-600 shadow-xl shadow-blue-600/10 scale-105 z-10"
                       : "rounded-[24px] border border-slate-100 shadow-[0_15px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_50px_rgba(0,0,0,0.06)] hover:-translate-y-1"
-                }`}
+                  }`}
               >
                 {/* Most Popular Badge */}
                 {plan.popular && (
@@ -116,7 +124,9 @@ const PlanSelector = ({ selectedPlan, onSelectPlan }) => {
                 {/* Card Header */}
                 <div className="mb-6">
                   <h3 className="text-lg font-bold text-[#1E293B] mb-0.5">{plan.name}</h3>
-                  <p className="text-[10px] text-slate-400 font-medium">{plan.subtitle}</p>
+                  <p className={`text-[10px] font-bold tracking-tight ${preferredDomain ? "text-emerald-500" : "text-rose-500"}`}>
+                    {preferredDomain ? `Domain: ${preferredDomain.toLowerCase()}` : "Domain Select First"}
+                  </p>
                 </div>
 
                 {/* Price */}
@@ -155,11 +165,10 @@ const PlanSelector = ({ selectedPlan, onSelectPlan }) => {
                 <div className="space-y-3">
                   <button
                     onClick={() => handleAction(plan, "select")}
-                    className={`w-full py-4 rounded-xl text-[11px] font-black transition-all duration-300 uppercase tracking-widest ${
-                      isHighlighted
+                    className={`w-full py-4 rounded-xl text-[11px] font-black transition-all duration-300 uppercase tracking-widest ${isHighlighted
                         ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20"
                         : "bg-[#0B1121] text-white hover:bg-[#1E293B]"
-                    }`}
+                      }`}
                   >
                     {plan.buttonText || "Select Plan"}
                   </button>

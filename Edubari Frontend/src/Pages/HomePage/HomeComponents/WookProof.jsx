@@ -44,20 +44,20 @@ const WookProof = () => {
   }, []);
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-28 bg-white overflow-hidden">
+    <section className="w-full px-4 sm:px-6 md:px-12 py-4 sm:py-6 lg:py-8 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm border border-blue-100/50">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-4 shadow-sm border border-blue-100/50">
             <FiLayout className="h-3.5 w-3.5" />
             LIVE IMPLEMENTATIONS
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#1E293B] leading-tight mb-4">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-[#1E293B] leading-tight mb-2">
             Our Successful <span className="text-[#3B42F2]">Implementations</span>
           </h2>
 
-          <p className="mt-4 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-2 text-xs sm:text-sm lg:text-base text-[#64748B] font-medium max-w-2xl mx-auto leading-snug">
             Explore live websites and portals we've built for leading educational institutions across the country.
           </p>
         </div>
@@ -122,22 +122,22 @@ const WookProof = () => {
                 </div>
 
                 {/* Content Card */}
-                <div className="bg-white p-10 rounded-b-[40px] border-x-2 border-b-2 border-slate-50 shadow-[0_20px_50px_rgba(0,0,0,0.05)] group-hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)] transition-all duration-700 group-hover:-translate-y-4 flex flex-col flex-1">
+                <div className="bg-white p-6 rounded-b-[40px] border-x-2 border-b-2 border-slate-50 shadow-[0_20px_50px_rgba(0,0,0,0.05)] group-hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)] transition-all duration-700 group-hover:-translate-y-4 flex flex-col flex-1">
                   <div className="flex items-center gap-2 mb-4">
                     <span className="px-3 py-1 rounded-lg bg-[#EFF2FF] text-[#3B42F2] text-[10px] font-black tracking-widest uppercase">
                       {site.type || "Educational"}
                     </span>
                   </div>
                   
-                  <h3 className="text-xl font-black text-[#1E293B] mb-4 group-hover:text-[#3B42F2] transition-colors duration-300">
+                  <h3 className="text-lg font-black text-[#1E293B] mb-3 group-hover:text-[#3B42F2] transition-colors duration-300">
                     {site.title}
                   </h3>
 
                   {/* Features */}
-                  <div className="space-y-3 mb-8 flex-1">
+                  <div className="space-y-2 mb-6 flex-1">
                     {(Array.isArray(site.features) ? site.features : []).slice(0, 3).map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-3 text-sm font-semibold text-[#64748B]">
-                        <FiCheckCircle className="h-4 w-4 text-[#3B42F2] shrink-0" />
+                      <div key={idx} className="flex items-center gap-3 text-xs font-semibold text-[#64748B]">
+                        <FiCheckCircle className="h-3.5 w-3.5 text-[#3B42F2] shrink-0" />
                         <span>{feature}</span>
                       </div>
                     ))}
@@ -148,7 +148,7 @@ const WookProof = () => {
                     href={toPreviewUrl(site.link) || "#"}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-[#1E293B] text-white font-black text-sm hover:bg-[#3B42F2] shadow-lg shadow-slate-200/50 hover:shadow-[#3B42F2]/20 transition-all duration-300"
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#1E293B] text-white font-black text-xs hover:bg-[#3B42F2] shadow-lg shadow-slate-200/50 hover:shadow-[#3B42F2]/20 transition-all duration-300"
                   >
                     Launch Live Project
                     <FiExternalLink className="w-4 h-4" />

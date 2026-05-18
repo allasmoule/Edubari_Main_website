@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { FiArrowRight, FiLoader, FiCheck } from "react-icons/fi";
+import Swal from "sweetalert2";
 
 const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
 
@@ -10,6 +11,8 @@ const Pricing = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const preferredDomain = location.state?.preferredDomain;
 
   useEffect(() => {
     fetchPlans();
@@ -35,23 +38,60 @@ const Pricing = () => {
 
   // Handle Get Started click
   const handleGetStarted = (planId) => {
-    navigate(`/pricing?plan=${planId}`);
+    const domainSection = document.getElementById("domain-search-section");
+    if (domainSection) {
+      domainSection.scrollIntoView({ behavior: "smooth" });
+
+      // Focus the input
+      const searchInput = document.getElementById("domain-search-input");
+      if (searchInput) {
+        setTimeout(() => searchInput.focus(), 800);
+      }
+
+      // Show premium toast
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        background: '#ffffff',
+        color: '#0F172A',
+        iconColor: '#2563EB',
+        padding: '1rem 1.5rem',
+        customClass: {
+          popup: 'rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-slate-50',
+          title: 'text-sm font-bold tracking-tight ml-2',
+        },
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      });
+
+      Toast.fire({
+        icon: 'info',
+        title: 'Select Your Domain First to Continue'
+      });
+    } else {
+      navigate(`/pricing?plan=${planId}`);
+    }
   };
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-6 sm:py-8 lg:py-10 bg-[#F8FAFC]">
+    <section className="w-full px-4 sm:px-6 md:px-12 py-4 sm:py-6 lg:py-8 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-4 sm:mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-6 shadow-sm border border-blue-100/50">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-widest uppercase mb-4 shadow-sm border border-blue-100/50">
             💰 AVAILABLE PLANS
           </div>
 
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[#1E293B] leading-tight mb-3">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-[#1E293B] leading-tight mb-2">
             Simple, Transparent <span className="text-[#3B42F2]">Pricing</span>
           </h2>
 
-          <p className="mt-2 text-sm sm:text-base lg:text-lg text-[#64748B] font-medium max-w-2xl mx-auto leading-snug">
+          <p className="mt-2 text-xs sm:text-sm lg:text-base text-[#64748B] font-medium max-w-2xl mx-auto leading-snug">
             Choose the perfect plan to digitize and empower your institution
           </p>
         </div>
@@ -86,11 +126,10 @@ const Pricing = () => {
               {plans.slice(0, 3).map((plan) => (
                 <div
                   key={plan._id}
-                  className={`group relative rounded-[32px] border-2 p-6 sm:p-8 text-left transition-all duration-500 hover:-translate-y-2 ${
-                    plan.popular
+                  className={`group relative rounded-[32px] border-2 p-4 sm:p-6 text-left transition-all duration-500 hover:-translate-y-2 ${plan.popular
                       ? "border-[#3B42F2] bg-white shadow-[0_30px_70px_rgba(59,66,242,0.15)] z-10"
                       : "border-slate-100 bg-white hover:border-[#3B42F2]/20 shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_rgba(59,66,242,0.1)]"
-                  }`}
+                    }`}
                 >
                   {/* Popular Badge */}
                   {plan.popular && (
@@ -101,22 +140,22 @@ const Pricing = () => {
 
                   {/* Plan Name */}
                   <div className="mb-4">
-                    <h3 className="text-2xl font-black text-[#1E293B] group-hover:text-[#3B42F2] transition-colors">
+                    <h3 className="text-xl font-black text-[#1E293B] group-hover:text-[#3B42F2] transition-colors">
                       {plan.name}
                     </h3>
-                    <p className="mt-1 text-sm font-bold text-[#64748B] uppercase tracking-wider">
-                      {plan.duration || "Billed Monthly"}
+                    <p className={`text-[10px] font-bold tracking-tight ${preferredDomain ? "text-emerald-500" : "text-rose-500"}`}>
+                      {preferredDomain ? `Domain: ${preferredDomain.toLowerCase()}` : "Domain Select First"}
                     </p>
                   </div>
 
                   {/* Price */}
                   <div className="mb-5 flex flex-col">
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl sm:text-4xl font-black tracking-tight text-[#1E293B]">
+                      <span className="text-2xl sm:text-3xl font-black tracking-tight text-[#1E293B]">
                         ৳{(plan.price || 0).toLocaleString()}
                       </span>
                       {plan.oldPrice && (
-                        <span className="text-lg font-bold text-[#94A3B8] line-through decoration-2">
+                        <span className="text-base font-bold text-[#94A3B8] line-through decoration-2">
                           ৳{(plan.oldPrice || 0).toLocaleString()}
                         </span>
                       )}
@@ -152,11 +191,10 @@ const Pricing = () => {
                   <button
                     type="button"
                     onClick={() => handleGetStarted(plan._id)}
-                    className={`w-full block rounded-2xl px-6 py-4 text-base font-black text-center transition-all duration-300 ${
-                      plan.popular
+                    className={`w-full block rounded-2xl px-6 py-4 text-base font-black text-center transition-all duration-300 ${plan.popular
                         ? "bg-linear-to-r from-[#1E3A8A] to-[#3B42F2] text-white shadow-xl shadow-[#3B42F2]/20 hover:shadow-2xl hover:shadow-[#3B42F2]/40 hover:-translate-y-1"
                         : "bg-[#EFF2FF] text-[#3B42F2] hover:bg-[#3B42F2] hover:text-white hover:shadow-xl hover:shadow-[#3B42F2]/20 hover:-translate-y-1"
-                    }`}
+                      }`}
                   >
                     Get Started Now
                   </button>

@@ -44,9 +44,11 @@ const BlogCard = ({ post }) => {
             </h3>
           </Link>
 
-          <p className="text-slate-500 font-bold text-[10px] leading-relaxed line-clamp-2 mb-4 opacity-80">
-            {post.excerpt}
-          </p>
+          <Link to={`/blog/${postPath}`}>
+            <p className="text-slate-500 font-bold text-[10px] leading-relaxed line-clamp-2 mb-4 opacity-80">
+              {post.excerpt}
+            </p>
+          </Link>
 
           <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-50">
             <div className="flex items-center gap-2">

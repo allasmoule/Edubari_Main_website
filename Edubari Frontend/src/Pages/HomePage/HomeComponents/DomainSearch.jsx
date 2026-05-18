@@ -104,7 +104,7 @@ const DomainSearch = () => {
   };
 
   return (
-    <section className="relative z-10 w-full px-0 -mt-32 sm:-mt-48 lg:-mt-60">
+    <section id="domain-search-section" className="relative z-10 w-full px-0 -mt-32 sm:-mt-48 lg:-mt-60">
       <div className="w-full max-w-[1400px] mx-auto rounded-t-[40px] sm:rounded-t-[50px] lg:rounded-t-[60px] bg-[#EFF2FF] shadow-xl overflow-hidden">
         <div className="px-6 sm:px-12 md:px-20 lg:px-24 py-6 sm:py-8 lg:py-10">
           {/* Header */}

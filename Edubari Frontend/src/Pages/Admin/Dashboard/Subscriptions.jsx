@@ -47,7 +47,8 @@ const parseDurationDays = (duration) => {
 };
 
 const getSubscriptionMeta = (item) => {
-  const start = new Date(item?.submittedAt || "");
+  const submittedDate = item?.submittedAt || item?.orderDate;
+  const start = new Date(submittedDate || "");
   if (Number.isNaN(start.getTime())) {
     return {
       status: "Unknown",
@@ -56,7 +57,8 @@ const getSubscriptionMeta = (item) => {
     };
   }
 
-  const durationDays = parseDurationDays(item?.selectedPlanDuration);
+  const durationStr = item?.selectedPlanDuration || (item?.billingPeriod === "yearly" ? "365 Days" : item?.billingPeriod === "monthly" ? "30 Days" : null);
+  const durationDays = parseDurationDays(durationStr);
   if (!durationDays) {
     return {
       status: "Unknown",
@@ -132,7 +134,7 @@ const Subscriptions = () => {
 
   const totalRevenue = useMemo(() => {
     return subscriptions.reduce((sum, item) => {
-      const price = Number(item?.selectedPlanPrice);
+      const price = Number(item?.selectedPlanPrice || item?.price);
       return Number.isFinite(price) ? sum + price : sum;
     }, 0);
   }, [subscriptions]);
@@ -373,7 +375,7 @@ const Subscriptions = () => {
                             {item.institutionName || "-"}
                           </p>
                           <p className="text-xs text-dark/45 mt-0.5 inline-flex items-center gap-1">
-                            <FiMapPin className="w-3 h-3" />
+                            <FiMapPin className="w-3.5 h-3.5" />
                             {item.address || "-"}
                           </p>
                         </td>
@@ -381,7 +383,7 @@ const Subscriptions = () => {
                           <div className="space-y-1.5">
                             <div className="text-sm font-semibold text-dark flex items-center gap-1.5">
                               <FiUser className="w-3.5 h-3.5 text-dark/45" />
-                              <span>{item.fullName || "-"}</span>
+                              <span>{item.fullName || item.customerName || "-"}</span>
                             </div>
                             <div className="text-xs text-dark/55 flex items-center gap-1.5">
                               <FiMail className="w-3.5 h-3.5 text-dark/45" />
@@ -396,20 +398,20 @@ const Subscriptions = () => {
                         <td className="px-4 py-3 align-top">
                           <p className="text-sm font-semibold text-dark inline-flex items-center gap-1.5 break-all">
                             <FiGlobe className="w-3.5 h-3.5 text-dark/45 shrink-0" />
-                            {item.preferredDomain || "-"}
+                            {item.preferredDomain || item.domain || "-"}
                           </p>
                         </td>
                         <td className="px-4 py-3 align-top">
                           <p className="text-sm font-semibold text-dark">
-                            {item.selectedPlanName || "-"}
+                            {item.selectedPlanName || item.planName || "-"}
                           </p>
                           <p className="text-xs text-dark/50 mt-1">
-                            {item.selectedPlanDuration || "-"}
+                            {item.selectedPlanDuration || (item.billingPeriod === "yearly" ? "365 Days" : item.billingPeriod === "monthly" ? "30 Days" : "-")}
                           </p>
                           <p className="text-xs font-bold text-tertiary mt-1">
                             BDT{" "}
                             {Number(
-                              item.selectedPlanPrice || 0,
+                              item.selectedPlanPrice || item.price || 0,
                             ).toLocaleString()}
                           </p>
                         </td>
@@ -424,7 +426,7 @@ const Subscriptions = () => {
                         </td>
                         <td className="px-4 py-3 align-top">
                           <p className="text-xs font-semibold text-dark/65">
-                            {formatDateTime(item.submittedAt)}
+                            {formatDateTime(item.submittedAt || item.orderDate)}
                           </p>
                         </td>
                         <td className="px-4 py-3 align-top">
@@ -502,7 +504,7 @@ const Subscriptions = () => {
                     <div className="space-y-1.5">
                       <div className="text-xs text-dark/60 flex items-center gap-1.5">
                         <FiUser className="w-3.5 h-3.5" />
-                        <span>{item.fullName || "-"}</span>
+                        <span>{item.fullName || item.customerName || "-"}</span>
                       </div>
                       <div className="text-xs text-dark/60 flex items-center gap-1.5 break-all">
                         <FiMail className="w-3.5 h-3.5" />
@@ -515,7 +517,7 @@ const Subscriptions = () => {
                     </div>
                     <p className="text-xs text-dark/60 inline-flex items-center gap-1.5 break-all">
                       <FiGlobe className="w-3.5 h-3.5" />
-                      {item.preferredDomain || "-"}
+                      {item.preferredDomain || item.domain || "-"}
                     </p>
                     <p className="text-xs text-dark/60 inline-flex items-center gap-1.5">
                       <FiCreditCard className="w-3.5 h-3.5" />
@@ -525,20 +527,20 @@ const Subscriptions = () => {
                     <div className="pt-2 border-t border-dark/8 flex items-center justify-between">
                       <div>
                         <p className="text-xs font-bold text-dark/70">
-                          {item.selectedPlanName || "-"}
+                          {item.selectedPlanName || item.planName || "-"}
                         </p>
                         <p className="text-[11px] text-dark/50 mt-0.5">
-                          {item.selectedPlanDuration || "-"}
+                          {item.selectedPlanDuration || (item.billingPeriod === "yearly" ? "365 Days" : item.billingPeriod === "monthly" ? "30 Days" : "-")}
                         </p>
                       </div>
                       <p className="text-xs font-extrabold text-tertiary">
                         BDT{" "}
-                        {Number(item.selectedPlanPrice || 0).toLocaleString()}
+                        {Number(item.selectedPlanPrice || item.price || 0).toLocaleString()}
                       </p>
                     </div>
 
                     <p className="text-[11px] font-semibold text-dark/45">
-                      Submitted: {formatDateTime(item.submittedAt)}
+                      Submitted: {formatDateTime(item.submittedAt || item.orderDate)}
                     </p>
                     <div className="pt-2 border-t border-dark/8 space-y-1">
                       <p className="text-[11px] font-semibold text-dark/55">
@@ -626,15 +628,15 @@ const Subscriptions = () => {
                   </p>
                   <p className="text-dark/70">
                     <span className="font-bold text-dark">Plan:</span>{" "}
-                    {selectedSubscription.selectedPlanName || "-"}
+                    {selectedSubscription.selectedPlanName || selectedSubscription.planName || "-"}
                   </p>
                   <p className="text-dark/70">
                     <span className="font-bold text-dark">Duration:</span>{" "}
-                    {selectedSubscription.selectedPlanDuration || "-"}
+                    {selectedSubscription.selectedPlanDuration || (selectedSubscription.billingPeriod === "yearly" ? "365 Days" : selectedSubscription.billingPeriod === "monthly" ? "30 Days" : "-")}
                   </p>
                   <p className="text-dark/70">
                     <span className="font-bold text-dark">Submitted:</span>{" "}
-                    {formatDateTime(selectedSubscription.submittedAt)}
+                    {formatDateTime(selectedSubscription.submittedAt || selectedSubscription.orderDate)}
                   </p>
                 </div>
               </div>

@@ -103,10 +103,10 @@ const HeroSlider = () => {
 
               {/* Content */}
               {(slide.title || slide.subtitle) && (
-                <div className="absolute inset-0 flex items-start justify-center text-center pt-10 sm:pt-14 lg:pt-16">
+                <div className="absolute inset-0 flex items-start justify-center text-center pt-8 sm:pt-12 lg:pt-14">
                   <div className="max-w-5xl px-6 sm:px-10 lg:px-14 text-white">
                     {slide.title && (
-                      <h2 className="animate-fadeUp text-xl sm:text-3xl lg:text-4xl font-black leading-tight tracking-tight drop-shadow-2xl mb-3">
+                      <h2 className="animate-fadeUp text-lg sm:text-2xl lg:text-3xl font-black leading-tight tracking-tight drop-shadow-2xl mb-3">
                         {slide.title}
                       </h2>
                     )}

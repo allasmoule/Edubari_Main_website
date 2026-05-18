@@ -182,12 +182,14 @@ const WorkProofPage = () => {
                       </span>
                     </div>
 
-                    <h3 className="text-base font-black text-[#0F172A] mb-2 group-hover:text-blue-600 transition-colors leading-tight">
-                      {item.title}
-                    </h3>
-                    <p className="text-[#64748B] text-[10px] font-medium mb-4 leading-relaxed line-clamp-2">
-                      {item.desc || item.description}
-                    </p>
+                    <a href="#" className="block group/link">
+                      <h3 className="text-base font-black text-[#0F172A] mb-2 group-hover:text-blue-600 transition-colors leading-tight">
+                        {item.title}
+                      </h3>
+                      <p className="text-[#64748B] text-[10px] font-medium mb-4 leading-relaxed line-clamp-2">
+                        {item.desc || item.description}
+                      </p>
+                    </a>
 
                     <div className="space-y-3 mb-4 mt-auto">
                       <div className="flex items-center gap-2">
@@ -210,13 +212,13 @@ const WorkProofPage = () => {
                       </div>
                     </div>
 
-                    <a href="#" className="inline-flex items-center gap-1.5 text-blue-600 font-black text-[9px] uppercase tracking-widest">
+                    <a href="#" className="inline-flex items-center gap-1.5 text-blue-600 font-black text-[9px] uppercase tracking-widest hover:translate-x-1 transition-transform">
                       View Details <FiArrowRight className="w-3 h-3" />
                     </a>
                   </div>
 
-                  <div className="w-[45%] shrink-0 self-center">
-                    <div className="rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-slate-100 bg-white p-1.5 transition-transform duration-500 group-hover:scale-[1.02]">
+                  <a href="#" className="w-[45%] shrink-0 self-center block group/image transition-transform duration-500 hover:scale-[1.02]">
+                    <div className="rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-slate-100 bg-white p-1.5">
                       <div className="h-6 bg-slate-50/80 border-b border-slate-100 flex items-center px-3 gap-1.5 mb-1.5 rounded-t-xl">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#FF5F56]" />
                         <div className="w-1.5 h-1.5 rounded-full bg-[#FFBD2E]" />
@@ -225,10 +227,10 @@ const WorkProofPage = () => {
                       <img 
                         src={item.image || item.imageUrl} 
                         alt={item.title} 
-                        className="w-full h-auto rounded-lg min-h-[180px] max-h-[220px] object-cover object-top" 
+                        className="w-full h-auto rounded-lg min-h-[180px] max-h-[210px] object-cover object-top" 
                       />
                     </div>
-                  </div>
+                  </a>
 
                 </div>
               </div>
