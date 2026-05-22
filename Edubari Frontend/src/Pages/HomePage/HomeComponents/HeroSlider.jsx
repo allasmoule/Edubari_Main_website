@@ -5,7 +5,7 @@ import { Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const normalizeBanner = (item = {}) => ({
   ...item,

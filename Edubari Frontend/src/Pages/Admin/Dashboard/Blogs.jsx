@@ -14,7 +14,7 @@ import { categories } from "../../BlogPage/BlogComponents/blogData";
 import { imageUpload } from "../../../Utils/Upload";
 import { AuthContext } from "../../../Firebase/AuthContext";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const CATEGORY_OPTIONS = categories.filter((item) => item !== "All");
 const READ_TIME_OPTIONS = Array.from(

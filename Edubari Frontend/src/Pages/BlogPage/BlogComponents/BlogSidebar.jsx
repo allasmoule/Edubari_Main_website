@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router";
 import { FiSend, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const BlogSidebar = ({
   setActiveCategory,

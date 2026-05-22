@@ -26,7 +26,7 @@ const PaymentPurchase = () => {
   const fetchPlans = async () => {
     try {
       const response = await fetch(
-        (import.meta.env.VITE_SERVER || "http://localhost:3000") + "/plans",
+        (import.meta.env.VITE_SERVER || "http://localhost:5000") + "/plans",
       );
       if (!response.ok) throw new Error("Failed to fetch plans");
       const data = await response.json();

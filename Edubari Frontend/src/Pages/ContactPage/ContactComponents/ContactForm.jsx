@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FiSend, FiCheck, FiAlertCircle, FiLoader } from "react-icons/fi";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const initialForm = {
   name: "",

@@ -7,7 +7,7 @@ import {
   FiGlobe,
 } from "react-icons/fi";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const toPreviewUrl = (url) => {
   const value = (url || "").trim();

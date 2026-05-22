@@ -3,7 +3,7 @@ import { FiPlus, FiEdit3, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 import { imageUpload } from "../../../Utils/Upload";
 import { AuthContext } from "../../../Firebase/AuthContext";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const EMPTY_FORM = {
   title: "",

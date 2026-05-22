@@ -16,7 +16,7 @@ import {
 } from "react-icons/fi";
 import { AuthContext } from "../../../Firebase/AuthContext";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 const IMPORTANCE_OPTIONS = ["More", "Usual", "Less", "Duplicate", "Spam"];
 const STATUS_OPTIONS = ["To be replied", "Replied"];
 const FILTER_ALL = "All";

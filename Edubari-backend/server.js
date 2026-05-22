@@ -4,8 +4,8 @@ const app = express();
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const port = process.env.PORT || 3000;
-const uri = process.env.MONGODB_URI;
+const port = process.env.PORT || 5000;
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/EdubariClient";
 const admin = require("firebase-admin");
 const serviceAccount = require("./service-account.json");
 

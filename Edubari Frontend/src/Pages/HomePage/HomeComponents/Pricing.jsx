@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router";
 import { FiArrowRight, FiLoader, FiCheck } from "react-icons/fi";
 import Swal from "sweetalert2";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const Pricing = () => {
   const [plans, setPlans] = useState([]);

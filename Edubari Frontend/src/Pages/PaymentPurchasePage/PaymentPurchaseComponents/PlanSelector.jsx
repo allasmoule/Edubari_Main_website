@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 import { FiCheck, FiArrowRight, FiMail, FiPhoneCall, FiLoader } from "react-icons/fi";
 import Swal from "sweetalert2";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const PlanSelector = ({ selectedPlan, onSelectPlan }) => {
   const [billingPeriod, setBillingPeriod] = useState("monthly"); // "monthly" or "yearly"

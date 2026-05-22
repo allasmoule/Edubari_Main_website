@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { FiArrowRight, FiCheck, FiUser, FiMail, FiHome, FiShield, FiClock, FiHeadphones, FiCalendar, FiRotateCcw, FiGlobe } from "react-icons/fi";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const CheckoutPage = () => {
   const location = useLocation();

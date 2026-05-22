@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FiTrash2, FiSearch, FiMail, FiCalendar, FiLoader, FiAlertCircle, FiSend } from "react-icons/fi";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const Newsletter = () => {
   const [subscribers, setSubscribers] = useState([]);

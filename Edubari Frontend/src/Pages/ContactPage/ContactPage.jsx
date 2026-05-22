@@ -12,7 +12,7 @@ const ContactPage = () => {
     phone: "" // Optional if you want to add phone field later
   });
 
-  const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+  const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

@@ -13,7 +13,7 @@ import {
 } from "react-icons/fi";
 import { AuthContext } from "../../../Firebase/AuthContext";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const initialForm = {
   title: "",

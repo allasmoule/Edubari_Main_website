@@ -10,7 +10,7 @@ import {
 } from "react-icons/fi";
 import BlogCard from "./BlogCard";
 
-const API_URL = import.meta.env.VITE_SERVER || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_SERVER || "http://localhost:5000";
 
 const BlogDetail = () => {
   const { slug } = useParams();
