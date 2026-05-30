@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import {
   FiSearch,
   FiGlobe,
@@ -34,7 +36,7 @@ const DomainSearch = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -106,7 +108,7 @@ const DomainSearch = () => {
           "Sorry, no related domains are currently available. Try a different name.",
         );
       }
-    } catch {
+    } catch (error) {
       setError("An error occurred while checking domain availability.");
     } finally {
       setIsSearching(false);
@@ -289,9 +291,7 @@ const DomainSearch = () => {
                                 : "bg-linear-to-r from-tertiary to-[#8B5CF6] cursor-pointer"
                             }`}
                             onClick={() =>
-                              navigate("/payment-purchase", {
-                                state: { preferredDomain: result.domain },
-                              })
+                              router.push(`/payment-purchase?preferredDomain=${encodeURIComponent(result.domain)}`)
                             }
                           >
                             Select
