@@ -5,6 +5,22 @@
 -- Run this in your Supabase SQL Editor (https://supabase.com/dashboard/project/_/sql)
 -- =============================================================================
 
+--------------------------------------------------------------------------------
+-- 0. CLEAN RESET BLOCK (Drops all tables cascadingly to support 1-click redeployments)
+--------------------------------------------------------------------------------
+DROP TABLE IF EXISTS public.domain_ai_transactions CASCADE;
+DROP TABLE IF EXISTS public.domain_ai_credits CASCADE;
+DROP TABLE IF EXISTS public.ai_purchase_requests CASCADE;
+DROP TABLE IF EXISTS public.ai_packages CASCADE;
+DROP TABLE IF EXISTS public.banners CASCADE;
+DROP TABLE IF EXISTS public.contact_messages CASCADE;
+DROP TABLE IF EXISTS public.blog_posts CASCADE;
+DROP TABLE IF EXISTS public.work_proofs CASCADE;
+DROP TABLE IF EXISTS public.subscription_requests CASCADE;
+DROP TABLE IF EXISTS public.subscriptions CASCADE;
+DROP TABLE IF EXISTS public.plans CASCADE;
+DROP TABLE IF EXISTS public.clients CASCADE;
+
 -- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -81,7 +97,7 @@ CREATE TABLE public.subscription_requests (
 -- 4. WORK PROOFS TABLE
 --------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.work_proofs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     description TEXT,
     image_url TEXT,
@@ -97,7 +113,7 @@ CREATE TABLE IF NOT EXISTS public.work_proofs (
 -- 5. BLOG POSTS TABLE
 --------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.blog_posts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NOT NULL,
     content TEXT NOT NULL,
@@ -113,7 +129,7 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
 -- 6. CONTACT MESSAGES TABLE
 --------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.contact_messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(50),
@@ -129,7 +145,7 @@ CREATE TABLE IF NOT EXISTS public.contact_messages (
 -- 7. BANNERS TABLE
 --------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.banners (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255),
     subtitle TEXT,
     image TEXT NOT NULL,
