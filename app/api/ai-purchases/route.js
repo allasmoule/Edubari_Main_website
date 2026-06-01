@@ -14,7 +14,13 @@ export async function GET(request) {
 
   try {
     if (dataType === "balance" && domain) {
-      const data = await getDomainCredits(domain);
+      let cleanDomain = domain.trim().toLowerCase();
+      if (cleanDomain.includes("://")) {
+        cleanDomain = cleanDomain.split("://")[1];
+      }
+      cleanDomain = cleanDomain.split("/")[0].split(":")[0];
+
+      const data = await getDomainCredits(cleanDomain);
       return NextResponse.json(data);
     } else if (dataType === "balances") {
       const data = await getDomainBalances();

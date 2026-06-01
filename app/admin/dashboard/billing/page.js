@@ -849,7 +849,7 @@ export default function AdminBillingPage() {
               </button>
             </div>
 
-            <form onSubmit={handleClientSubmit} className="space-y-4">
+            <form onSubmit={handleClientSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
               {/* Premium Logo Preview & Placeholder Box */}
               <div className="flex flex-col items-center justify-center p-4 bg-dark/[0.02] rounded-xl border border-dashed border-dark/10 space-y-3">
                 <div className="relative w-20 h-20 rounded-2xl bg-white border border-dark/10 shadow-sm flex items-center justify-center overflow-hidden group">

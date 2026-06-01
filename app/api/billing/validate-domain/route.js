@@ -10,11 +10,18 @@ export async function GET(request) {
       return NextResponse.json({ error: "Domain parameter is required" }, { status: 400 });
     }
 
+    // Clean and normalize the domain (extracts host from http/https, ports, and subdirectories)
+    let cleanDomain = domain.toLowerCase();
+    if (cleanDomain.includes("://")) {
+      cleanDomain = cleanDomain.split("://")[1];
+    }
+    cleanDomain = cleanDomain.split("/")[0].split(":")[0].trim();
+
     // 1. Fetch Client by Domain
     const { data: client, error: clientError } = await supabaseAdmin
       .from("clients")
       .select("*")
-      .eq("domain", domain)
+      .eq("domain", cleanDomain)
       .maybeSingle();
 
     if (clientError) throw clientError;
