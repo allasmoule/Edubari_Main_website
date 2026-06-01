@@ -294,6 +294,30 @@ VALUES
 ('e8b093f1-694e-5d4f-acf3-89e21c8f9ef2', 'Standard Plan', 365, 1000, 50, 45000.00, ARRAY['All Basic Features', 'Advanced Exam Reports', 'Unlimited SMS Alerts', 'Interactive Mobile App Demo', 'Premium Support'])
 ON CONFLICT (id) DO NOTHING;
 
+-- Seed Standard Active Clients (For local & live tenant testing)
+INSERT INTO public.clients (id, client_name, domain, phone, status)
+VALUES 
+('c1000000-0000-0000-0000-000000000001', 'AVA School & College', 'ava.edubari.bd', '+8801700000001', 'active'),
+('c1000000-0000-0000-0000-000000000002', 'School 1 Demo', 'school1.edubari.bd', '+8801700000002', 'active'),
+('c1000000-0000-0000-0000-000000000003', 'Asif Rabetul Personal Domain', 'asifrabetul.com', '+8801700000003', 'active')
+ON CONFLICT (id) DO NOTHING;
+
+-- Seed Client Subscriptions
+INSERT INTO public.subscriptions (id, client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status)
+VALUES
+('s1000000-0000-0000-0000-000000000001', 'c1000000-0000-0000-0000-000000000001', 'e8b093f1-694e-5d4f-acf3-89e21c8f9ef2', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid'),
+('s1000000-0000-0000-0000-000000000002', 'c1000000-0000-0000-0000-000000000002', 'd5d992f0-583d-4c3e-9bf2-78d10b7f8df1', NOW(), NOW() + INTERVAL '30 days', NOW() + INTERVAL '37 days', TRUE, 'paid'),
+('s1000000-0000-0000-0000-000000000003', 'c1000000-0000-0000-0000-000000000003', 'e8b093f1-694e-5d4f-acf3-89e21c8f9ef2', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid')
+ON CONFLICT (id) DO NOTHING;
+
+-- Seed AI Credits for the domains
+INSERT INTO public.domain_ai_credits (domain, remaining_credits, total_credits_purchased, expires_at)
+VALUES
+('ava.edubari.bd', 500, 500, NOW() + INTERVAL '365 days'),
+('school1.edubari.bd', 150, 150, NOW() + INTERVAL '365 days'),
+('asifrabetul.com', 1000, 1000, NOW() + INTERVAL '365 days')
+ON CONFLICT (domain) DO NOTHING;
+
 -- Seed default AI package plans (Starter, Pro, Power Packs)
 INSERT INTO public.ai_packages (id, name, credits, price, validity_days, is_active, highlight, currency)
 VALUES
