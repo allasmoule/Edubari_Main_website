@@ -7,8 +7,8 @@ const contacts = [
   {
     icon: <FiMessageCircle className="h-5 w-5" />,
     title: "WhatsApp",
-    info: "+880XXXXXXXXXX",
-    href: "https://wa.me/880",
+    info: "Chat on WhatsApp",
+    href: "https://wa.me/8801754958008",
     external: true,
     color: "text-[#25D366]",
     bg: "bg-[#25D366]/10",
@@ -17,8 +17,8 @@ const contacts = [
   {
     icon: <FiPhone className="h-5 w-5" />,
     title: "Phone",
-    info: "+880XXXXXXXXXX",
-    href: "tel:+880XXXXXXXXXX",
+    info: "Call Now",
+    href: "tel:+8801754958008",
     external: false,
     color: "text-tertiary",
     bg: "bg-tertiary/10",
@@ -27,8 +27,8 @@ const contacts = [
   {
     icon: <FiMail className="h-5 w-5" />,
     title: "Email",
-    info: "contact@yourbrand.com",
-    href: "mailto:contact@yourbrand.com",
+    info: "support.edubari@gmail.com",
+    href: "mailto:support.edubari@gmail.com",
     external: false,
     color: "text-[#8B5CF6]",
     bg: "bg-[#8B5CF6]/10",
