@@ -199,15 +199,15 @@ export async function DELETE(request, { params }) {
     const { id } = await params;
 
     const { error } = await supabaseAdmin
-      .from("subscriptions")
+      .from("subscription_requests")
       .delete()
       .eq("id", id);
 
     if (error) throw error;
 
-    return NextResponse.json({ message: "Subscription deleted" });
+    return NextResponse.json({ message: "Subscription request deleted" });
   } catch (error) {
-    console.error("Error deleting subscription:", error);
+    console.error("Error deleting subscription request:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -216,7 +216,7 @@ export async function GET(request, { params }) {
     const { id } = await params;
 
     const { data, error } = await supabaseAdmin
-      .from("subscriptions")
+      .from("subscription_requests")
       .select("*")
       .eq("id", id)
       .single();
@@ -231,7 +231,7 @@ export async function GET(request, { params }) {
 
     return NextResponse.json(mapped);
   } catch (error) {
-    console.error("Error fetching subscription:", error);
+    console.error("Error fetching subscription request:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

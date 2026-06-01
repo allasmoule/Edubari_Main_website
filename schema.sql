@@ -56,6 +56,28 @@ CREATE TABLE public.subscriptions (
 CREATE UNIQUE INDEX IF NOT EXISTS unique_current_subscription ON public.subscriptions (client_id) WHERE (is_current = true);
 
 --------------------------------------------------------------------------------
+-- 3.5. SUBSCRIPTION REQUESTS TABLE (Public signups)
+--------------------------------------------------------------------------------
+DROP TABLE IF EXISTS public.subscription_requests CASCADE;
+CREATE TABLE public.subscription_requests (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    institution_name VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(50),
+    preferred_domain VARCHAR(255) NOT NULL,
+    address TEXT,
+    payment_method VARCHAR(50),
+    transaction_id VARCHAR(100) UNIQUE,
+    selected_plan_id UUID REFERENCES public.plans(id) ON DELETE SET NULL,
+    selected_plan_name VARCHAR(255),
+    selected_plan_duration INTEGER,
+    selected_plan_price NUMERIC(10, 2),
+    verified BOOLEAN DEFAULT false,
+    submitted_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+--------------------------------------------------------------------------------
 -- 4. WORK PROOFS TABLE
 --------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.work_proofs (
@@ -251,6 +273,7 @@ $$ LANGUAGE plpgsql;
 ALTER TABLE public.clients DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.plans DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.subscriptions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.subscription_requests DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.work_proofs DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.blog_posts DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_messages DISABLE ROW LEVEL SECURITY;
@@ -277,25 +300,6 @@ VALUES
   ('b0000000-0000-0000-0000-000000000001', 'Starter Pack', 15, 99.00, 30, TRUE, FALSE, 'BDT'),
   ('b0000000-0000-0000-0000-000000000002', 'Pro Pack', 50, 179.00, 30, TRUE, TRUE, 'BDT'),
   ('b0000000-0000-0000-0000-000000000003', 'Power Pack', 100, 299.00, 30, TRUE, FALSE, 'BDT')
-ON CONFLICT (id) DO NOTHING;
-
--- Seed Sample Active Client Subdomain
-INSERT INTO public.clients (id, client_name, domain, status)
-VALUES ('fa778899-aabb-ccdd-eeff-001122334455', 'EduBari Demo School', 'demo.edubari.bd', 'active')
-ON CONFLICT (id) DO NOTHING;
-
--- Seed Active Subscription for the Sample Client (valid for 1 year with a 7-day grace period)
-INSERT INTO public.subscriptions (id, client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status)
-VALUES (
-    'aa112233-4455-6677-8899-bbccddeeff00',
-    'fa778899-aabb-ccdd-eeff-001122334455',
-    'e8b093f1-694e-5d4f-acf3-89e21c8f9ef2',
-    timezone('utc'::text, now()),
-    timezone('utc'::text, now() + interval '365 days'),
-    timezone('utc'::text, now() + interval '372 days'),
-    true,
-    'paid'
-)
 ON CONFLICT (id) DO NOTHING;
 
 --------------------------------------------------------------------------------
