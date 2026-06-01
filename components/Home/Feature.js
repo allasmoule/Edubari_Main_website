@@ -81,51 +81,60 @@ const features = [
 
 const Feature = () => {
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-24 bg-primary/40">
-      <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
-        <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-12 sm:py-14">
+    <section className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-12 lg:py-14 bg-primary/20">
+      <div className="w-full rounded-[32px] border border-white bg-primary-light/80 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
+        {/* Subtle Ambient flows */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-tertiary/5 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#8B5CF6]/5 rounded-full blur-3xl pointer-events-none -ml-32 -mb-32" />
+
+        <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-10 sm:py-12 relative z-10">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
               🚀 Features
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-dark leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-4.5xl font-black tracking-tight text-dark leading-tight">
               Everything Your Institution{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
+              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary via-[#8B5CF6] to-[#7c3aed] drop-shadow-sm">
                 Needs
               </span>
             </h2>
 
-            <p className="mt-5 text-sm sm:text-[15px] lg:text-base leading-7 text-dark/70 max-w-2xl mx-auto">
-              A comprehensive suite of tools designed to digitize and streamline
-              your educational institution
+            <p className="mt-4 text-sm sm:text-base leading-relaxed text-dark/70 max-w-2xl mx-auto font-medium">
+              A comprehensive suite of tools designed to digitize and streamline your educational institution
             </p>
           </div>
 
           {/* Feature Cards Grid */}
-          <div className="mt-12 lg:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {features.map((feature) => (
+          <div className="mt-10 lg:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {features.map((feature, idx) => (
               <div
                 key={feature.title}
-                className={`group relative rounded-2xl border border-white/40 bg-white/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-dark/5 hover:bg-white/80 ${feature.border}`}
+                className="group relative rounded-2xl border border-white bg-white/70 backdrop-blur-xs p-5 sm:p-5.5 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-tertiary/5 hover:bg-white flex flex-col justify-between"
+                style={{
+                  animationDelay: `${idx * 60}ms`,
+                  animation: "fadeInUp 0.5s cubic-bezier(0.23, 1, 0.32, 1) backwards",
+                }}
               >
-                {/* Icon */}
-                <div
-                  className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${feature.bg} ${feature.color} transition-transform duration-300 group-hover:scale-110`}
-                >
-                  {feature.icon}
+                <div>
+                  {/* Icon */}
+                  <div
+                    className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${feature.bg} ${feature.color} shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:shadow-md`}
+                  >
+                    {feature.icon}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="mt-4 text-base font-extrabold text-dark tracking-tight leading-snug">
+                    {feature.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="mt-2 text-xs leading-relaxed text-dark/60 font-medium">
+                    {feature.description}
+                  </p>
                 </div>
-
-                {/* Title */}
-                <h3 className="mt-4 text-[17px] font-bold text-dark leading-snug">
-                  {feature.title}
-                </h3>
-
-                {/* Description */}
-                <p className="mt-2 text-sm leading-relaxed text-dark/60">
-                  {feature.description}
-                </p>
               </div>
             ))}
           </div>

@@ -121,22 +121,26 @@ const Pricing = () => {
 
   return (
     <section className="w-full px-4 sm:px-6 md:px-12 py-16 sm:py-20 lg:py-24 bg-white select-none">
-      <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
-        <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-12 sm:py-14">
+      <div className="w-full rounded-[32px] border border-white bg-primary-light/80 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
+        {/* Ambient glows */}
+        <div className="absolute -top-32 -right-32 w-64 h-64 bg-tertiary/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[#8B5CF6]/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="px-6 sm:px-8 md:px-10 lg:px-16 py-12 sm:py-16 relative z-10">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-xs font-bold tracking-wide uppercase mb-5">
               💰 Available Plans
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-dark leading-tight">
+            <h2 className="text-3xl sm:text-4.5xl lg:text-5xl font-black tracking-tight text-dark leading-tight">
               Simple, Transparent{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
+              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary via-[#8B5CF6] to-[#7c3aed] drop-shadow-sm">
                 Pricing
               </span>
             </h2>
 
-            <p className="mt-5 text-sm sm:text-[15px] lg:text-base leading-7 text-dark/70 max-w-2xl mx-auto">
+            <p className="mt-5 text-sm sm:text-base leading-relaxed text-dark/70 max-w-2xl mx-auto font-medium">
               Choose the plan that fits your institution and power up with AI capabilities.
             </p>
           </div>
@@ -144,49 +148,49 @@ const Pricing = () => {
           {/* Pricing Cards */}
           <div className="mt-12 lg:mt-14 max-w-5xl mx-auto">
             {loading ? (
-              <div className="text-center py-12">
-                <FiLoader className="w-8 h-8 mx-auto text-tertiary animate-spin mb-3" />
-                <p className="text-dark/50 font-medium">Loading plans...</p>
+              <div className="text-center py-16">
+                <FiLoader className="w-10 h-10 mx-auto text-tertiary animate-spin mb-4" />
+                <p className="text-dark/50 font-bold">Loading plans...</p>
               </div>
             ) : error ? (
-              <div className="text-center py-12 px-6 rounded-xl bg-red-50 border border-red-200/60">
-                <p className="text-red-600 font-semibold">Failed to load plans</p>
-                <p className="text-sm text-red-500/70 mt-1">{error}</p>
+              <div className="text-center py-12 px-6 rounded-2xl bg-red-50 border border-red-200 max-w-md mx-auto shadow-sm">
+                <p className="text-red-600 font-extrabold">Failed to load plans</p>
+                <p className="text-sm text-red-500/80 mt-1.5 leading-relaxed">{error}</p>
                 <button
                   onClick={fetchPlans}
-                  className="mt-4 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-all cursor-pointer border-none"
+                  className="mt-5 px-6 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-black tracking-wider uppercase shadow-md shadow-red-500/20 transition-all cursor-pointer border-none"
                 >
                   Retry
                 </button>
               </div>
             ) : plans.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-dark/50 font-medium">
-                  No active plans available
+              <div className="text-center py-16 bg-white/40 border border-white rounded-2xl">
+                <p className="text-dark/45 font-bold">
+                  No active plans available right now.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
                 {/* Renders first 2 standard plans */}
                 {plans.slice(0, 2).map((plan) => {
                   const planId = plan.id || plan._id;
                   return (
                     <div
                       key={planId}
-                      className={`group relative rounded-2xl border p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-dark/5 flex flex-col justify-between ${
+                      className={`group relative rounded-2xl border p-8 text-left transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between ${
                         plan.popular
-                          ? "border-tertiary/30 bg-white/80 shadow-lg shadow-tertiary/10 ring-1 ring-tertiary/20"
-                          : "border-white/40 bg-white/50 hover:bg-white/80"
+                          ? "border-transparent bg-white shadow-[0_20px_40px_-15px_rgba(37,99,235,0.12)] ring-2 ring-tertiary/40"
+                          : "border-white bg-white/70 backdrop-blur-xs hover:shadow-xl hover:shadow-dark/5 hover:border-tertiary/20"
                       }`}
                     >
                       <div>
                         {/* Badge */}
                         {plan.badge && (
                           <div
-                            className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold tracking-wide ${
+                            className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-4.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase shadow-md ${
                               plan.popular
-                                ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/30"
-                                : "bg-[#F59E0B]/15 text-[#D97706]"
+                                ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-tertiary/25"
+                                : "bg-[#F59E0B]/10 text-[#D97706] border border-[#F59E0B]/20"
                             }`}
                           >
                             {plan.badge}
@@ -195,34 +199,34 @@ const Pricing = () => {
 
                         {/* Popular label */}
                         {plan.popular && (
-                          <div className="text-[11px] font-bold text-tertiary uppercase tracking-wider mb-2">
+                          <div className="text-[10px] font-black text-tertiary uppercase tracking-widest mb-3">
                             Most Popular
                           </div>
                         )}
 
                         {/* Plan Name */}
-                        <h3 className="mt-1 text-lg font-bold text-dark">
+                        <h3 className="mt-1 text-xl font-extrabold text-dark tracking-tight">
                           {plan.name}
                         </h3>
 
                         {/* Duration */}
-                        <p className="mt-1 text-xs font-medium text-dark/45">
+                        <p className="mt-1 text-xs font-bold text-dark/40 uppercase tracking-wide">
                           {plan.duration} {plan.duration_days ? `(${plan.duration_days} Days)` : ""}
                         </p>
 
                         {/* Price */}
-                        <div className="mt-5 flex items-baseline gap-2">
+                        <div className="mt-6 flex items-baseline gap-2">
                           <span
-                            className={`text-4xl sm:text-5xl font-black tracking-tight ${
+                            className={`text-4.5xl sm:text-5xl font-black tracking-tight ${
                               plan.popular
-                                ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]"
+                                ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] drop-shadow-sm"
                                 : "text-dark"
                             }`}
                           >
                             ৳{(plan.price || 0).toLocaleString()}
                           </span>
                           {plan.oldPrice && (
-                            <span className="text-base font-semibold text-dark/30 line-through decoration-1">
+                            <span className="text-base font-bold text-dark/30 line-through decoration-1 decoration-dark/20">
                               ৳{(plan.oldPrice || 0).toLocaleString()}
                             </span>
                           )}
@@ -232,16 +236,17 @@ const Pricing = () => {
                         {plan.features &&
                           Array.isArray(plan.features) &&
                           plan.features.length > 0 && (
-                            <ul className="mt-6 space-y-2.5 p-0 list-none">
+                            <ul className="mt-8 space-y-3.5 p-0 list-none border-t border-dark/5 pt-6">
                               {plan.features.map((feat, idx) => (
                                 <li
                                   key={idx}
-                                  className="flex items-start gap-2.5 text-sm text-dark/70 animate-[fadeIn_0.3s_ease-out]"
+                                  className="flex items-start gap-3 text-sm text-dark/70 animate-fadeUp"
+                                  style={{ animationDelay: `${idx * 50}ms` }}
                                 >
-                                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/10 text-tertiary">
-                                    <FiCheck className="h-3 w-3 stroke-[3]" />
+                                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/8 text-tertiary ring-1 ring-tertiary/10">
+                                    <FiCheck className="h-3.5 w-3.5 stroke-[3.5]" />
                                   </span>
-                                  <span className="leading-5 font-medium">
+                                  <span className="leading-5 font-bold text-dark/75">
                                     {feat}
                                   </span>
                                 </li>
@@ -254,10 +259,10 @@ const Pricing = () => {
                       <button
                         type="button"
                         onClick={() => handleGetStarted(planId)}
-                        className={`mt-7 w-full block rounded-xl px-6 py-3 text-sm font-bold text-center transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer ${
+                        className={`mt-8 w-full block rounded-xl px-6 py-3.5 text-sm font-black text-center transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border-none shadow-md ${
                           plan.popular
-                            ? "bg-tertiary/10 text-tertiary group-hover:bg-tertiary group-hover:text-white group-hover:shadow-md group-hover:shadow-tertiary/30"
-                            : "bg-white/60 text-dark border border-dark/10 group-hover:bg-white/90 shadow-sm group-hover:shadow-md"
+                            ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white hover:shadow-lg hover:shadow-tertiary/30"
+                            : "bg-dark/5 text-dark hover:bg-dark/10"
                         }`}
                       >
                         Get Started
@@ -268,40 +273,40 @@ const Pricing = () => {
 
                 {/* 3rd Column: DYNAMIC EduBari AI Credits Subscription Card */}
                 {selectedAiPkg && (
-                  <div className="group relative rounded-2xl border p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-dark/5 border-white/40 bg-white/80 shadow-lg shadow-tertiary/5 ring-1 ring-tertiary/10 flex flex-col justify-between animate-[fadeIn_0.5s_ease-out]">
+                  <div className="group relative rounded-2xl border p-8 text-left transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between border-transparent bg-white shadow-[0_20px_40px_-15px_rgba(139,92,246,0.10)] ring-1 ring-[#8B5CF6]/30">
                     <div>
                       {selectedAiPkg.highlight && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold tracking-wide bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/30 uppercase tracking-widest text-[10px]">
+                        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4.5 py-1 rounded-full text-[10px] font-black tracking-widest bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/25 uppercase">
                           Power Up Add-on
                         </div>
                       )}
 
-                      <div className="text-[11px] font-bold text-tertiary uppercase tracking-wider mb-2 flex items-center gap-1">
-                        <FiCpu className="h-3.5 w-3.5 animate-spin" style={{ animationDuration: "3s" }} /> EduBari Global AI Plan
+                      <div className="text-[10px] font-black text-[#8B5CF6] uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                        <FiCpu className="h-4 w-4 animate-spin text-[#8B5CF6]" style={{ animationDuration: "4s" }} /> EduBari Global AI Plan
                       </div>
 
                       {/* Plan Name */}
-                      <h3 className="mt-1 text-lg font-bold text-dark">
+                      <h3 className="mt-1 text-xl font-extrabold text-dark tracking-tight">
                         SaaS AI Credits
                       </h3>
 
                       {/* Access Info */}
-                      <p className="mt-1 text-xs font-medium text-dark/45">
+                      <p className="mt-1 text-xs font-bold text-dark/40 uppercase tracking-wide">
                         Shared Pool (LMS Teacher Panel Only)
                       </p>
 
                       {/* Tier Selector Pills */}
                       {aiPackages.length > 0 && (
-                        <div className="mt-4 flex gap-1 p-1 rounded-xl bg-dark/[0.04] w-max border border-dark/5">
+                        <div className="mt-5 flex gap-1 p-1 rounded-xl bg-dark/[0.03] w-max border border-dark/5">
                           {aiPackages.map((pkg) => (
                             <button
                               key={pkg.id}
                               type="button"
                               onClick={() => setSelectedAiPkg(pkg)}
-                              className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold transition-all cursor-pointer border-none ${
+                              className={`px-3 py-2 rounded-lg text-[10px] font-black tracking-wider transition-all cursor-pointer border-none uppercase ${
                                 selectedAiPkg.id === pkg.id
-                                  ? "bg-white text-tertiary shadow-sm font-black"
-                                  : "bg-transparent text-dark/50 hover:text-dark/80"
+                                  ? "bg-white text-[#8B5CF6] shadow-sm"
+                                  : "bg-transparent text-dark/45 hover:text-dark/70"
                               }`}
                             >
                               {pkg.credits} Credits
@@ -311,46 +316,46 @@ const Pricing = () => {
                       )}
 
                       {/* Price */}
-                      <div className="mt-5 flex items-baseline gap-1.5">
-                        <span className="text-4xl sm:text-5xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
+                      <div className="mt-6 flex items-baseline gap-1.5">
+                        <span className="text-4.5xl sm:text-5xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] drop-shadow-sm">
                           ৳{(selectedAiPkg.price || 0).toLocaleString()}
                         </span>
-                        <span className="text-xs font-bold text-dark/45">
+                        <span className="text-xs font-black text-dark/40 uppercase tracking-wider">
                           / {selectedAiPkg.validityDays} Days
                         </span>
                       </div>
 
                       {/* AI Features */}
-                      <ul className="mt-6 space-y-2.5 p-0 list-none">
-                        <li className="flex items-start gap-2.5 text-sm text-dark/70">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/10 text-tertiary">
-                            <FiCheck className="h-3 w-3 stroke-[3]" />
+                      <ul className="mt-8 space-y-3.5 p-0 list-none border-t border-dark/5 pt-6">
+                        <li className="flex items-start gap-3 text-sm text-dark/70">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#8B5CF6]/8 text-[#8B5CF6] ring-1 ring-[#8B5CF6]/10">
+                            <FiCheck className="h-3.5 w-3.5 stroke-[3.5]" />
                           </span>
-                          <span className="leading-5 font-semibold">
+                          <span className="leading-5 font-bold text-dark/80">
                             Unified {selectedAiPkg.credits} AI Credits Pool
                           </span>
                         </li>
-                        <li className="flex items-start gap-2.5 text-sm text-dark/70">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/10 text-tertiary">
-                            <FiCheck className="h-3 w-3 stroke-[3]" />
+                        <li className="flex items-start gap-3 text-sm text-dark/70">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#8B5CF6]/8 text-[#8B5CF6] ring-1 ring-[#8B5CF6]/10">
+                            <FiCheck className="h-3.5 w-3.5 stroke-[3.5]" />
                           </span>
-                          <span className="leading-5 font-medium">
+                          <span className="leading-5 font-bold text-dark/75">
                             AI Presentation Slides Maker
                           </span>
                         </li>
-                        <li className="flex items-start gap-2.5 text-sm text-dark/70">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/10 text-tertiary">
-                            <FiCheck className="h-3 w-3 stroke-[3]" />
+                        <li className="flex items-start gap-3 text-sm text-dark/70">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#8B5CF6]/8 text-[#8B5CF6] ring-1 ring-[#8B5CF6]/10">
+                            <FiCheck className="h-3.5 w-3.5 stroke-[3.5]" />
                           </span>
-                          <span className="leading-5 font-medium">
+                          <span className="leading-5 font-bold text-dark/75">
                             AI Question Paper Generator
                           </span>
                         </li>
-                        <li className="flex items-start gap-2.5 text-sm text-dark/70">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/10 text-tertiary">
-                            <FiCheck className="h-3 w-3 stroke-[3]" />
+                        <li className="flex items-start gap-3 text-sm text-dark/70">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-500/8 text-green-600 ring-1 ring-green-500/10">
+                            <FiCheck className="h-3.5 w-3.5 stroke-[3.5]" />
                           </span>
-                          <span className="leading-5 font-medium text-amber-600 font-bold">
+                          <span className="leading-5 font-black text-green-600">
                             Teacher Dashboard Privileges
                           </span>
                         </li>
@@ -361,7 +366,7 @@ const Pricing = () => {
                     <button
                       type="button"
                       onClick={handleAiPlanPurchase}
-                      className="mt-7 w-full block rounded-xl px-6 py-3 text-sm font-bold text-center transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/20 hover:shadow-lg border-none"
+                      className="mt-8 w-full block rounded-xl px-6 py-3.5 text-sm font-black text-center transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/20 hover:shadow-lg border-none"
                     >
                       Buy AI Credits
                     </button>
@@ -372,13 +377,13 @@ const Pricing = () => {
           </div>
 
           {/* View All Plans */}
-          <div className="mt-10 text-center">
+          <div className="mt-12 text-center">
             <button
               onClick={() => router.push("/payment-purchase")}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/60 border border-dark/10 text-sm font-bold text-dark hover:bg-white/90 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-dark/15 text-sm font-bold text-dark hover:bg-dark/5 hover:border-dark/25 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
             >
               Explore All Plans
-              <FiArrowRight className="h-4 w-4" />
+              <FiArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
@@ -386,8 +391,8 @@ const Pricing = () => {
 
       {/* Domain Assignment Popup Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-dark/40 backdrop-blur-xs flex items-center justify-center z-[150] animate-[fadeIn_0.2s_ease-out]">
-          <div className="bg-white rounded-3xl border border-dark/10 w-full max-w-md overflow-visible shadow-2xl p-6 relative mx-4">
+        <div className="fixed inset-0 bg-dark/50 backdrop-blur-md flex items-center justify-center z-[150] animate-fadeUp">
+          <div className="bg-white rounded-3xl border border-dark/5 w-full max-w-md overflow-visible shadow-2xl p-7 relative mx-4 animate-[scaleIn_0.3s_cubic-bezier(0.25,1,0.5,1)]">
             <button
               onClick={() => {
                 setIsModalOpen(false);
@@ -395,22 +400,22 @@ const Pricing = () => {
                 setSelectedDomain("");
                 setFilteredClients([]);
               }}
-              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-dark/5 hover:bg-dark/10 text-dark/50 hover:text-dark flex items-center justify-center transition-all cursor-pointer border-none"
+              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-dark/5 hover:bg-dark/10 text-dark/40 hover:text-dark flex items-center justify-center transition-all cursor-pointer border-none"
             >
               <FiX className="h-4 w-4" />
             </button>
 
-            <div className="text-center mb-5">
-              <div className="h-12 w-12 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center mx-auto mb-3 shadow-inner">
+            <div className="text-center mb-6">
+              <div className="h-12 w-12 rounded-2xl bg-tertiary/8 text-tertiary flex items-center justify-center mx-auto mb-4.5 shadow-inner">
                 <FiShield className="h-6 w-6 animate-pulse" />
               </div>
-              <h3 className="text-base font-black text-dark tracking-tight">AI Credits Domain Top-up</h3>
-              <p className="text-xs text-dark/45 mt-1 leading-5">Search and select your institutional verified domain to buy credits for your Teacher panel.</p>
+              <h3 className="text-lg font-black text-dark tracking-tight">AI Credits Domain Top-up</h3>
+              <p className="text-xs text-dark/50 mt-2 leading-relaxed max-w-xs mx-auto">Search and select your institutional verified domain to buy credits for your Teacher panel.</p>
             </div>
 
-            <form onSubmit={handleModalSubmit} className="space-y-4 relative">
+            <form onSubmit={handleModalSubmit} className="space-y-5 relative">
               <div className="relative">
-                <label className="block text-[9px] font-extrabold uppercase tracking-widest text-dark/40 mb-1">Search Institutional Domain</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-dark/40 mb-1.5">Search Institutional Domain</label>
                 <input
                   type="text"
                   required
@@ -418,17 +423,17 @@ const Pricing = () => {
                   value={inputDomain}
                   onChange={(e) => handleDomainInputChange(e.target.value)}
                   onFocus={() => setSearchFocused(true)}
-                  className={`w-full rounded-xl border px-4 py-3 text-sm font-semibold outline-none text-center bg-dark/[0.01] transition-all ${
+                  className={`w-full rounded-xl border px-4 py-3 text-sm font-extrabold outline-none text-center bg-dark/[0.01] transition-all duration-300 ${
                     selectedDomain 
-                      ? "border-green-400 bg-green-50/10 text-green-700 font-extrabold" 
-                      : "border-dark/10 focus:border-tertiary/50 text-dark"
+                      ? "border-green-400 bg-green-50/20 text-green-700 font-extrabold" 
+                      : "border-dark/10 focus:border-[#8B5CF6]/50 focus:ring-4 focus:ring-[#8B5CF6]/5 text-dark"
                   }`}
                 />
 
                 {/* Autocomplete Dropdown Search Results */}
                 {searchFocused && filteredClients.length > 0 && (
-                  <div className="absolute left-0 right-0 mt-2 bg-white rounded-2xl border border-dark/10 shadow-2xl py-2 z-[200] max-h-[220px] overflow-y-auto animate-[fadeInUp_0.15s_ease-out]">
-                    <p className="px-4 py-1 text-[8px] font-extrabold uppercase tracking-wider text-dark/30 border-b border-dark/5 mb-1">
+                  <div className="absolute left-0 right-0 mt-2 bg-white rounded-2xl border border-dark/10 shadow-2xl py-2.5 z-[200] max-h-[220px] overflow-y-auto animate-fadeUp">
+                    <p className="px-4 py-1.5 text-[9px] font-black uppercase tracking-widest text-dark/30 border-b border-dark/5 mb-1.5">
                       Matched Client Domains
                     </p>
                     {filteredClients.map((client) => (
@@ -436,13 +441,13 @@ const Pricing = () => {
                         key={client.id}
                         type="button"
                         onClick={() => handleSelectClient(client)}
-                        className="w-full px-4 py-2.5 text-left hover:bg-dark/[0.03] flex items-center justify-between transition-colors border-none bg-transparent cursor-pointer"
+                        className="w-full px-4 py-3 text-left hover:bg-dark/[0.02] flex items-center justify-between transition-colors border-none bg-transparent cursor-pointer"
                       >
                         <div>
-                          <p className="text-xs font-bold text-dark">{client.client_name}</p>
-                          <code className="text-3xs font-mono font-semibold text-tertiary mt-0.5 block">{client.domain}</code>
+                          <p className="text-xs font-black text-dark">{client.client_name}</p>
+                          <code className="text-[10px] font-mono font-bold text-tertiary mt-0.5 block">{client.domain}</code>
                         </div>
-                        <span className="text-[10px] font-extrabold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded uppercase">
+                        <span className="text-[10px] font-black text-tertiary bg-tertiary/8 px-2.5 py-1 rounded-lg uppercase tracking-wide">
                           Select
                         </span>
                       </button>
@@ -452,9 +457,9 @@ const Pricing = () => {
 
                 {/* Selected Status Badge */}
                 {selectedDomain && (
-                  <div className="mt-2.5 px-3.5 py-2.5 rounded-xl bg-green-500/8 border border-green-200/50 text-green-700 text-3xs font-extrabold text-center flex items-center justify-center gap-1.5 animate-[fadeIn_0.2s_ease-out]">
+                  <div className="mt-3 px-4 py-3 rounded-xl bg-green-500/8 border border-green-200/50 text-green-700 text-xs font-bold text-center flex items-center justify-center gap-2 animate-fadeUp">
                     <span className="h-2 w-2 rounded-full bg-green-500 animate-ping"></span>
-                    Verified Domain selected: <code className="font-mono bg-green-100/50 px-1 py-0.5 rounded text-2xs">{selectedDomain}</code>
+                    Verified Domain selected: <code className="font-mono bg-white px-2 py-0.5 rounded border border-green-200 text-xs">{selectedDomain}</code>
                   </div>
                 )}
               </div>
@@ -462,7 +467,7 @@ const Pricing = () => {
               <button
                 type="submit"
                 disabled={!selectedDomain}
-                className={`w-full py-3.5 rounded-xl text-xs font-bold transition-all shadow-md border-none ${
+                className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 shadow-md border-none ${
                   selectedDomain 
                     ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 cursor-pointer" 
                     : "bg-dark/5 text-dark/25 cursor-not-allowed"
