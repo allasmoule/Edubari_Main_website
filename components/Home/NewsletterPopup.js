@@ -54,8 +54,9 @@ const NewsletterPopup = ({ isOpen, onClose }) => {
 
         {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 h-12 w-12 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white shadow-md shadow-red-500/25 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-none"
+          className="absolute top-4 right-4 z-50 h-12 w-12 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white shadow-md shadow-red-500/25 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-none"
           title="Close"
         >
           <FiX className="h-6 w-6" />
