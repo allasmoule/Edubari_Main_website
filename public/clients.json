@@ -1,0 +1,121 @@
+{
+  "clients": [
+    {
+      "id": 1,
+      "Client_Image": "https://i.postimg.cc/MHsjvxrm/premium-photo-1689708721750-8a0e6dc14cee.avif",
+      "Client_Name": "Dr. Mahmud Hasan",
+      "Client_Designation": "Faculty",
+      "Client_Institutte": "Dhaka University"
+    },
+    {
+      "id": 2,
+      "Client_Image": "https://i.postimg.cc/MHsjvxrm/premium-photo-1689708721750-8a0e6dc14cee.avif",
+      "Client_Name": "Prof. Ayesha Rahman",
+      "Client_Designation": "Faculty",
+      "Client_Institutte": "Dhaka University"
+    },
+    {
+      "id": 3,
+      "Client_Image": "https://i.postimg.cc/MHsjvxrm/premium-photo-1689708721750-8a0e6dc14cee.avif",
+      "Client_Name": "Dr. Tanvir Ahmed",
+      "Client_Designation": "Faculty",
+      "Client_Institutte": "Dhaka University"
+    },
+    {
+      "id": 4,
+      "Client_Image": "https://i.postimg.cc/MHsjvxrm/premium-photo-1689708721750-8a0e6dc14cee.avif",
+      "Client_Name": "Dr. Nusrat Jahan",
+      "Client_Designation": "Faculty",
+      "Client_Institutte": "Dhaka University"
+    },
+    {
+      "id": 5,
+      "Client_Image": "https://i.postimg.cc/MHsjvxrm/premium-photo-1689708721750-8a0e6dc14cee.avif",
+      "Client_Name": "Prof. Saiful Islam",
+      "Client_Designation": "Faculty",
+      "Client_Institutte": "Dhaka University"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "Ali Muzahid",
+      "role": "Founder",
+      "company": "GenTech Academy",
+      "avatar": "https://ui-avatars.com/api/?name=Ali+Muzahid&background=2563EB&color=fff&size=128&font-size=0.4&bold=true",
+      "rating": 5,
+      "text": "বিভিন্ন সিস্টেম ব্যবহার করার পরে আমার অভিজ্ঞতা খুব খারাপ ছিল, তারপর EduBari-এর খোঁজ পেলাম। পুরো প্রতিষ্ঠানের ডিজিটাল ম্যানেজমেন্ট এখন এক প্ল্যাটফর্মে! সাপোর্ট এবং সুযোগ-সুবিধা সব কিছু মিলে আমি শতভাগ সন্তুষ্ট।",
+      "source": "google"
+    },
+    {
+      "id": 2,
+      "name": "Shahadat Hosain",
+      "role": "Principal",
+      "company": "SH Academy",
+      "avatar": "https://ui-avatars.com/api/?name=Shahadat+Hosain&background=662200&color=fff&size=128&font-size=0.4&bold=true",
+      "rating": 5,
+      "text": "EduBari ব্যবহারের আগেই তাদের সাপোর্ট টিম অসাধারণ সহায়তা দিয়েছেন। পুরো সেটআপ তারা করে দিয়েছেন ২৪ ঘণ্টার মধ্যে। ইনশাআল্লাহ দীর্ঘদিন ব্যবহার করব।",
+      "source": "trustpilot"
+    },
+    {
+      "id": 3,
+      "name": "Tareful Islam",
+      "role": "IT Head",
+      "company": "Greenfield School",
+      "avatar": "https://ui-avatars.com/api/?name=Tareful+Islam&background=8B5CF6&color=fff&size=128&font-size=0.4&bold=true",
+      "rating": 5,
+      "text": "They offer the best after-sales service. The team is incredibly friendly and responsive. Our entire school management is now digital thanks to EduBari.",
+      "source": "google"
+    },
+    {
+      "id": 4,
+      "name": "Nusrat Jahan",
+      "role": "Vice Principal",
+      "company": "Sunrise Academy",
+      "avatar": "https://ui-avatars.com/api/?name=Nusrat+Jahan&background=10B981&color=fff&size=128&font-size=0.4&bold=true",
+      "rating": 5,
+      "text": "Awesome support and seamless experience! Attendance tracking and result management have become so much easier for our teachers. Highly recommended for any institution.",
+      "source": "trustpilot"
+    },
+    {
+      "id": 5,
+      "name": "Tanzimul Islam",
+      "role": "Administrator",
+      "company": "Bright Future School",
+      "avatar": "https://ui-avatars.com/api/?name=Tanzimul+Islam&background=F59E0B&color=fff&size=128&font-size=0.4&bold=true",
+      "rating": 5,
+      "text": "Speed is blazing fast and the dashboard tools are incredibly intuitive. We migrated from manual management to EduBari in just a week. Best decision we made!",
+      "source": "google"
+    },
+    {
+      "id": 6,
+      "name": "Imrul Kayes",
+      "role": "Director",
+      "company": "Modern Academy",
+      "avatar": "https://ui-avatars.com/api/?name=Imrul+Kayes&background=EF4444&color=fff&size=128&font-size=0.4&bold=true",
+      "rating": 5,
+      "text": "Best platform for educational institution management. The fee collection and result publishing features alone saved us countless hours every month.",
+      "source": "google"
+    },
+    {
+      "id": 7,
+      "name": "Rafiq Ahmed",
+      "role": "Founder",
+      "company": "Pioneer Institute",
+      "avatar": "https://ui-avatars.com/api/?name=Rafiq+Ahmed&background=06B6D4&color=fff&size=128&font-size=0.4&bold=true",
+      "rating": 5,
+      "text": "আমাদের প্রতিষ্ঠানের সম্পূর্ণ ম্যানেজমেন্ট এখন EduBari-তে। শিক্ষক, ছাত্র, অভিভাবক সবাই খুশি। ফি ম্যানেজমেন্ট এবং রেজাল্ট পাবলিশিং অসাধারণ!",
+      "source": "trustpilot"
+    },
+    {
+      "id": 8,
+      "name": "Sabrina Akter",
+      "role": "Academic Head",
+      "company": "Scholars Academy",
+      "avatar": "https://ui-avatars.com/api/?name=Sabrina+Akter&background=EC4899&color=fff&size=128&font-size=0.4&bold=true",
+      "rating": 5,
+      "text": "The online exam system is a game-changer! We can now conduct exams remotely with auto-grading. The analytics dashboard helps us track student performance effortlessly.",
+      "source": "google"
+    }
+  ]
+}
