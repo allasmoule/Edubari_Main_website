@@ -87,7 +87,7 @@ export async function GET(request) {
         await updatePurchaseRequestStatus(req.id, "approved");
 
         // Redirect back to LMS with success
-        const lmsRedirect = `${redirectUrl}${redirectUrl.includes("?") ? "&" : "?"}payment=success&txn_id=${sessionId}`;
+        const lmsRedirect = `${redirectUrl}${redirectUrl.includes("?") ? "&" : "?"}payment=success&txn_id=${sessionId}&credits_added=${matchedPkg.credits}`;
         return NextResponse.redirect(lmsRedirect);
       }
     }

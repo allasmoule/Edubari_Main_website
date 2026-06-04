@@ -20,6 +20,18 @@ const WorkProofGrid = ({ activeCategory = "All" }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [isIframe, setIsIframe] = useState(false);
+  const [currentHost, setCurrentHost] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsIframe(window.self !== window.top);
+      setCurrentHost(window.location.host);
+      setIsMounted(true);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchWorkProofs = async () => {
       setLoading(true);
@@ -71,6 +83,29 @@ const WorkProofGrid = ({ activeCategory = "All" }) => {
           filtered.map((site) => {
             const siteId = site.id || site._id;
             const link = site.project_url || site.link || "";
+            const previewUrl = toPreviewUrl(link);
+            const shouldRenderIframe = (() => {
+              if (!isMounted) return false;
+              if (!previewUrl) return false;
+              if (isIframe) return false;
+              try {
+                const parsed = new URL(previewUrl);
+                const host = parsed.host.toLowerCase();
+                const current = currentHost.toLowerCase();
+                if (
+                  host === current ||
+                  current.includes(host) ||
+                  host.includes(current) ||
+                  host.includes("localhost") ||
+                  host.includes("127.0.0.1") ||
+                  host.includes("edubari")
+                ) {
+                  return false;
+                }
+              } catch (e) {}
+              return true;
+            })();
+
             return (
               <div
                 key={siteId}
@@ -87,9 +122,9 @@ const WorkProofGrid = ({ activeCategory = "All" }) => {
                     </span>
                   </div>
 
-                  {toPreviewUrl(link) ? (
+                  {shouldRenderIframe ? (
                     <iframe
-                      src={toPreviewUrl(link)}
+                      src={previewUrl}
                       title={`${site.title} preview`}
                       loading="lazy"
                       scrolling="no"

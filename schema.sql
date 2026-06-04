@@ -385,9 +385,9 @@ ON CONFLICT (domain) DO NOTHING;
 -- Seed default AI package plans (Starter, Pro, Power Packs)
 INSERT INTO public.ai_packages (id, name, credits, price, validity_days, is_active, highlight, currency)
 VALUES
-  ('b0000000-0000-0000-0000-000000000001', 'Starter Pack', 15, 99.00, 30, TRUE, FALSE, 'BDT'),
-  ('b0000000-0000-0000-0000-000000000002', 'Pro Pack', 50, 179.00, 30, TRUE, TRUE, 'BDT'),
-  ('b0000000-0000-0000-0000-000000000003', 'Power Pack', 100, 299.00, 30, TRUE, FALSE, 'BDT')
+  ('b0000000-0000-0000-0000-000000000001', 'Starter Pack', 5, 99.00, 30, TRUE, FALSE, 'BDT'),
+  ('b0000000-0000-0000-0000-000000000002', 'Pro Pack', 10, 179.00, 30, TRUE, TRUE, 'BDT'),
+  ('b0000000-0000-0000-0000-000000000003', 'Power Pack', 20, 299.00, 30, TRUE, FALSE, 'BDT')
 ON CONFLICT (id) DO NOTHING;
 
 --------------------------------------------------------------------------------

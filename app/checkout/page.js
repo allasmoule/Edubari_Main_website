@@ -10,7 +10,8 @@ import {
   FiCreditCard,
   FiAlertCircle,
   FiShield,
-  FiInfo
+  FiInfo,
+  FiX
 } from "react-icons/fi";
 
 function CheckoutContent() {
@@ -39,13 +40,31 @@ function CheckoutContent() {
 
   // Simulated Gateway Modal State
   const [isGatewayOpen, setIsGatewayOpen] = useState(false);
-  const [gatewayStep, setGatewayStep] = useState(1); // 1: input, 2: otp, 3: pin/success, 4: processing
+  const [gatewayStep, setGatewayStep] = useState(1); // 1: input, 2: otp, 3: pin/success, 4: processing, 5: success/done
   const [gatewayPhone, setGatewayPhone] = useState("");
   const [gatewayOtp, setGatewayOtp] = useState("");
   const [gatewayPin, setGatewayPin] = useState("");
   
   // Card specific
   const [cardData, setCardData] = useState({ number: "", expiry: "", cvc: "" });
+  
+  // Cross-origin redirect validation & state
+  const [lmsRedirectUrl, setLmsRedirectUrl] = useState("");
+
+  const safeRedirectUrl = (() => {
+    try {
+      if (redirectUrl.startsWith("/")) return redirectUrl;
+      const parsed = new URL(redirectUrl);
+      // Standard domain or subdomain matching
+      if (parsed.hostname === domain || parsed.hostname.endsWith("." + domain) || domain === "localhost" || parsed.hostname === "localhost" || domain.includes("localhost")) {
+        return redirectUrl;
+      }
+    } catch (e) {}
+    // Fallback to secure home page on client's domain
+    return domain.includes("localhost") || domain === "localhost"
+      ? `http://${domain}/admin/ai-board`
+      : `https://${domain}/admin/ai-board`;
+  })();
 
   useEffect(() => {
     fetchData();
@@ -127,8 +146,8 @@ function CheckoutContent() {
       if (!res.ok) throw new Error("Failed to submit purchase request");
 
       // Redirect back to LMS with pending status
-      const lmsRedirect = `${redirectUrl}${redirectUrl.includes("?") ? "&" : "?"}payment=pending&txn_id=${formData.transactionId}`;
-      router.push(lmsRedirect);
+      const lmsRedirect = `${safeRedirectUrl}${safeRedirectUrl.includes("?") ? "&" : "?"}payment=pending&txn_id=${formData.transactionId}`;
+      window.location.href = lmsRedirect;
     } catch (err) {
       alert(`Error: ${err.message}`);
       setSubmitting(false);
@@ -163,11 +182,15 @@ function CheckoutContent() {
 
       if (!res.ok) throw new Error("Failed to process transaction callback");
 
-      // Delay slightly for natural feel
+      // Setup success redirect URL
+      const lmsRedirect = `${safeRedirectUrl}${safeRedirectUrl.includes("?") ? "&" : "?"}payment=success&txn_id=${txnId}&credits_added=${selectedPkg.credits}`;
+      setLmsRedirectUrl(lmsRedirect);
+      setGatewayStep(5); // Show success screen
+
+      // Delay slightly so the user sees the confirmation page
       setTimeout(() => {
-        const lmsRedirect = `${redirectUrl}${redirectUrl.includes("?") ? "&" : "?"}payment=success&txn_id=${txnId}`;
-        router.push(lmsRedirect);
-      }, 2000);
+        window.location.href = lmsRedirect;
+      }, 3500);
     } catch (err) {
       alert(`Callback Error: ${err.message}`);
       setGatewayStep(1);
@@ -556,6 +579,29 @@ function CheckoutContent() {
                   </div>
                 )}
 
+                {gatewayStep === 5 && (
+                  <div className="w-full py-8 text-center space-y-4">
+                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto animate-bounce">
+                      <FiCheck className="text-3xl text-white font-extrabold" />
+                    </div>
+                    <h4 className="text-lg font-black tracking-tight text-white m-0">Payment Successful!</h4>
+                    <p className="text-xs text-white/80 max-w-xs mx-auto">
+                      ৳{selectedPkg.price} has been charged. {selectedPkg.credits} credits are credited to {domain}.
+                    </p>
+                    <div className="pt-2">
+                      <a
+                        href={lmsRedirectUrl}
+                        className="inline-block bg-white text-[#E2136E] font-black text-xs px-6 py-3 rounded-xl transition-all hover:bg-white/90 decoration-none"
+                      >
+                        Return to LMS Now
+                      </a>
+                    </div>
+                    <p className="text-[10px] text-white/50 animate-pulse pt-2">
+                      Redirecting automatically in a moment...
+                    </p>
+                  </div>
+                )}
+
                 <div className="w-full mt-6 border-t border-white/20 pt-3 flex items-center justify-between text-[8px] text-white/50 font-bold uppercase">
                   <span>SSL SECURE PAY</span>
                   <span>IPN AUTO SYNC</span>
@@ -636,6 +682,29 @@ function CheckoutContent() {
                   <div className="py-12 text-center space-y-4">
                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-tertiary mx-auto"></div>
                     <p className="text-xs font-bold text-white/60">Processing stripe authorization...</p>
+                  </div>
+                )}
+
+                {gatewayStep === 5 && (
+                  <div className="py-8 text-center space-y-4">
+                    <div className="w-16 h-16 bg-tertiary/20 rounded-full flex items-center justify-center mx-auto animate-bounce">
+                      <FiCheck className="text-3xl text-tertiary font-extrabold" />
+                    </div>
+                    <h4 className="text-lg font-black tracking-tight text-white m-0">Payment Authorized!</h4>
+                    <p className="text-xs text-white/60 max-w-xs mx-auto">
+                      ৳{selectedPkg.price} has been charged. {selectedPkg.credits} credits are credited to {domain}.
+                    </p>
+                    <div className="pt-2">
+                      <a
+                        href={lmsRedirectUrl}
+                        className="inline-block bg-tertiary hover:bg-tertiary-dark text-white font-black text-xs px-6 py-3 rounded-xl transition-all decoration-none"
+                      >
+                        Return to LMS Now
+                      </a>
+                    </div>
+                    <p className="text-[10px] text-white/40 animate-pulse pt-2">
+                      Redirecting automatically in a moment...
+                    </p>
                   </div>
                 )}
 
