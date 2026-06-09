@@ -26,6 +26,15 @@ const Pricing = () => {
     fetchPlans();
     fetchAiPackages();
     fetchClients();
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlDomain = params.get("domain");
+      if (urlDomain) {
+        setInputDomain(urlDomain);
+        setSelectedDomain(urlDomain);
+      }
+    }
   }, []);
 
   const fetchClients = async () => {
@@ -79,7 +88,14 @@ const Pricing = () => {
   };
 
   const handleAiPlanPurchase = () => {
-    setIsModalOpen(true);
+    if (selectedDomain) {
+      const redirectUrl = selectedDomain.includes("localhost")
+        ? `http://${selectedDomain}/admin/exam-management`
+        : `https://${selectedDomain}/admin/exam-management`;
+      router.push(`/checkout?domain=${selectedDomain}&package_id=${selectedAiPkg.id}&redirect_url=${encodeURIComponent(redirectUrl)}`);
+    } else {
+      setIsModalOpen(true);
+    }
   };
 
   const handleDomainInputChange = (val) => {

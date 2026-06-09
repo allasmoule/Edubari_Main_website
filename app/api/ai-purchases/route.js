@@ -4,7 +4,8 @@ import {
   updatePurchaseRequestStatus, 
   getDomainBalances, 
   getDomainTransactions,
-  getDomainCredits
+  getDomainCredits,
+  createAiPurchaseRequest
 } from "@/lib/ai-database";
 
 export async function GET(request) {
@@ -44,19 +45,30 @@ export async function POST(request) {
     const body = await request.json();
     const { requestId, status, reason } = body;
 
-    if (!requestId || !status) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
+    if (requestId) {
+      if (!status) {
+        return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      }
 
-    if (status !== "approved" && status !== "rejected") {
-      return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
-    }
+      if (status !== "approved" && status !== "rejected") {
+        return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
+      }
 
-    const updatedRequest = await updatePurchaseRequestStatus(requestId, status, reason);
-    return NextResponse.json({
-      message: `Purchase request ${status} successfully.`,
-      request: updatedRequest,
-    });
+      const updatedRequest = await updatePurchaseRequestStatus(requestId, status, reason);
+      return NextResponse.json({
+        message: `Purchase request ${status} successfully.`,
+        request: updatedRequest,
+      });
+    } else {
+      // Creation path (e.g. from checkout manual payment submission)
+      const { domain, packageId } = body;
+      if (!domain || !packageId) {
+        return NextResponse.json({ error: "Missing required fields: domain and packageId are required" }, { status: 400 });
+      }
+
+      const newRequest = await createAiPurchaseRequest(body);
+      return NextResponse.json(newRequest, { status: 201 });
+    }
   } catch (error) {
     console.error("Error in POST /api/ai-purchases:", error);
     return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
