@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS public.domain_ai_transactions (
     teacher_id UUID NOT NULL, -- The specific teacher who used the credit
     teacher_name VARCHAR(255),
     type VARCHAR(50) NOT NULL CHECK (type IN ('purchase', 'usage', 'expiry', 'refund')),
-    feature VARCHAR(50) NOT NULL CHECK (feature IN ('presentation', 'question_maker', 'billing')),
+    feature VARCHAR(50) NOT NULL CHECK (feature IN ('presentation', 'question_maker', 'batch_cover', 'billing')),
     amount INT NOT NULL, -- e.g. -1 for generation, +50 for package purchase
     description TEXT,
     created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
