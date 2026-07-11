@@ -26,7 +26,7 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false,
           </div>
 
           {/* Plan Cards */}
-          <div className="mt-12 lg:mt-14 grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto items-stretch">
+          <div className="mt-12 lg:mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 max-w-7xl mx-auto items-stretch">
             {loading ? (
               <div className="col-span-full text-center py-12">
                 <FiLoader className="w-8 h-8 mx-auto text-tertiary animate-spin mb-3" />

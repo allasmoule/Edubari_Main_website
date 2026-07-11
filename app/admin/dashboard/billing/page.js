@@ -78,7 +78,11 @@ export default function AdminBillingPage() {
     max_students: 200,
     max_instructors: 10,
     price: 1500,
-    featuresInput: ""
+    featuresInput: "",
+    plan_tier: "free",
+    max_batches: 1,
+    monthly_ai_credits: 0,
+    show_branding: true,
   });
   // Subscription Form
   const [subForm, setSubForm] = useState({
@@ -204,7 +208,11 @@ export default function AdminBillingPage() {
         max_students: Number(planForm.max_students),
         max_instructors: Number(planForm.max_instructors),
         price: Number(planForm.price),
-        features: featuresArray
+        features: featuresArray,
+        plan_tier: planForm.plan_tier,
+        max_batches: Number(planForm.max_batches),
+        monthly_ai_credits: Number(planForm.monthly_ai_credits),
+        show_branding: planForm.show_branding,
       };
 
       const response = await fetch(url, {
@@ -700,7 +708,11 @@ export default function AdminBillingPage() {
                             max_students: plan.max_students,
                             max_instructors: plan.max_instructors,
                             price: plan.price,
-                            featuresInput: plan.features.join(", ")
+                            featuresInput: plan.features.join(", "),
+                            plan_tier: plan.plan_tier || "free",
+                            max_batches: plan.max_batches || 1,
+                            monthly_ai_credits: plan.monthly_ai_credits || 0,
+                            show_branding: plan.show_branding ?? true,
                           });
                           setPlanModalOpen(true);
                         }}
@@ -1050,6 +1062,61 @@ export default function AdminBillingPage() {
                     onChange={(e) => setPlanForm({ ...planForm, max_instructors: e.target.value })}
                     className="w-full rounded-xl border border-dark/10 bg-white px-4 py-3 text-xs font-semibold text-dark outline-none focus:border-tertiary transition-all"
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-dark/60 uppercase">Plan Tier</label>
+                  <select
+                    value={planForm.plan_tier}
+                    onChange={(e) => setPlanForm({ ...planForm, plan_tier: e.target.value })}
+                    className="w-full rounded-xl border border-dark/10 bg-white px-4 py-3 text-xs font-semibold text-dark outline-none focus:border-tertiary transition-all"
+                  >
+                    <option value="free">Free</option>
+                    <option value="starter">Starter</option>
+                    <option value="professional">Professional</option>
+                    <option value="business">Business</option>
+                    <option value="enterprise">Enterprise</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-dark/60 uppercase">Max Batches</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={planForm.max_batches}
+                    onChange={(e) => setPlanForm({ ...planForm, max_batches: e.target.value })}
+                    className="w-full rounded-xl border border-dark/10 bg-white px-4 py-3 text-xs font-semibold text-dark outline-none focus:border-tertiary transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-dark/60 uppercase">Monthly AI Credits</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={planForm.monthly_ai_credits}
+                    onChange={(e) => setPlanForm({ ...planForm, monthly_ai_credits: e.target.value })}
+                    className="w-full rounded-xl border border-dark/10 bg-white px-4 py-3 text-xs font-semibold text-dark outline-none focus:border-tertiary transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5 flex items-end">
+                  <label className="flex items-center gap-2 cursor-pointer select-none pb-3.5">
+                    <input
+                      type="checkbox"
+                      checked={planForm.show_branding}
+                      onChange={(e) => setPlanForm({ ...planForm, show_branding: e.target.checked })}
+                      className="rounded border-dark/10 text-tertiary focus:ring-tertiary"
+                    />
+                    <span className="text-xs font-bold text-dark/60 uppercase">Show Branding</span>
+                  </label>
                 </div>
               </div>
 

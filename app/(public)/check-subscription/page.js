@@ -326,15 +326,29 @@ export default function CheckSubscriptionPage() {
                 {activeSub?.plans && (
                   <div className="rounded-xl border border-dark/5 bg-dark/[0.015] p-5 space-y-4">
                     <span className="text-[10px] font-bold text-dark/40 uppercase block tracking-wider">Resource Allocation & Quotas</span>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       <div className="p-3 bg-white border border-dark/5 rounded-xl">
-                        <span className="text-[10px] text-dark/45 block font-bold">Max Student Threshold</span>
-                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.max_students}</span>
+                        <span className="text-[10px] text-dark/45 block font-bold">Students</span>
+                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.max_students ?? 0}</span>
                       </div>
                       <div className="p-3 bg-white border border-dark/5 rounded-xl">
-                        <span className="text-[10px] text-dark/45 block font-bold">Max Instructor Threshold</span>
-                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.max_instructors}</span>
+                        <span className="text-[10px] text-dark/45 block font-bold">Instructors</span>
+                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.max_instructors ?? 0}</span>
                       </div>
+                      <div className="p-3 bg-white border border-dark/5 rounded-xl">
+                        <span className="text-[10px] text-dark/45 block font-bold">Batches</span>
+                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.max_batches ?? 1}</span>
+                      </div>
+                      <div className="p-3 bg-white border border-dark/5 rounded-xl">
+                        <span className="text-[10px] text-dark/45 block font-bold">AI Credits/Mo</span>
+                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.monthly_ai_credits ?? 0}</span>
+                      </div>
+                    </div>
+                    <div className="px-3 py-2.5 rounded-lg bg-white border border-dark/5 text-[10px] font-bold text-dark/65 flex justify-between items-center">
+                      <span>Branding Requirements:</span>
+                      <span className={activeSub.plans.show_branding ? "text-amber-600" : "text-emerald-600 font-extrabold"}>
+                        {activeSub.plans.show_branding ? "Powered by EDUBARI forced branding" : "Branding Removed (Whitelabel)"}
+                      </span>
                     </div>
                   </div>
                 )}

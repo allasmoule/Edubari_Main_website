@@ -50,6 +50,19 @@ CREATE TABLE public.plans (
     max_instructors INTEGER NOT NULL,
     price NUMERIC(10, 2) NOT NULL,
     features TEXT[] NOT NULL, -- Array of plan features
+    plan_tier VARCHAR(50) DEFAULT 'free', -- 'free', 'starter', 'professional', 'business', 'enterprise'
+    max_batches INTEGER DEFAULT 1,
+    monthly_ai_credits INTEGER DEFAULT 0,
+    show_branding BOOLEAN DEFAULT true,
+    is_active BOOLEAN DEFAULT true,
+    sort_order INTEGER DEFAULT 0,
+    feature_gates JSONB DEFAULT '{}'::jsonb,
+    old_price NUMERIC(10, 2),
+    price_label VARCHAR(255),
+    duration VARCHAR(100),
+    description TEXT,
+    popular BOOLEAN DEFAULT false,
+    badge VARCHAR(100),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -352,10 +365,13 @@ ALTER TABLE public.collected_leads DISABLE ROW LEVEL SECURITY;
 --------------------------------------------------------------------------------
 
 -- Seed Standard SaaS Plans
-INSERT INTO public.plans (id, plan_name, duration_days, max_students, max_instructors, price, features)
+INSERT INTO public.plans (id, plan_name, duration_days, max_students, max_instructors, price, features, plan_tier, max_batches, monthly_ai_credits, show_branding, is_active, sort_order, feature_gates)
 VALUES 
-('d5d992f0-583d-4c3e-9bf2-78d10b7f8df1', 'Basic Plan', 30, 200, 10, 1500.00, ARRAY['Smart Student Profiles', 'Basic SMS Alerts', 'Fees Management', 'Attendance Tracker']),
-('e8b093f1-694e-5d4f-acf3-89e21c8f9ef2', 'Standard Plan', 365, 1000, 50, 45000.00, ARRAY['All Basic Features', 'Advanced Exam Reports', 'Unlimited SMS Alerts', 'Interactive Mobile App Demo', 'Premium Support'])
+('f0000000-0000-0000-0000-000000000001', 'EDUBARI Free', 365, 20, 1, 0.00, ARRAY['Limited Personal Website', 'Personal Profile', 'Limited Student Management', '1 Batch Management', 'Basic Class & Exam System', 'Basic Attendance', 'Basic Payment Tracking', 'Limited Online Class', 'Limited AI Presentation Maker', 'Powered by EDUBARI Branding', '2 AI Credits / Month'], 'free', 1, 2, TRUE, TRUE, 1, '{"personal_website": true, "online_class": true, "recorded_class": false, "ai_presentation": true, "ai_presentation_limited": true, "guardian_portal": false, "advanced_analytics": false, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": false, "student_performance": false, "assignment_system": false, "payment_tracking": true}'::jsonb),
+('f0000000-0000-0000-0000-000000000002', 'EDUBARI Starter', 30, 100, 1, 250.00, ARRAY['Personal Digital Academy', 'Personal Website & Profile', 'Student & Batch Management', 'Monthly Payment & Due Tracking', 'Online & Recorded Class', 'Exam, Result & Assignment', 'Auto Attendance', 'AI Presentation Maker', 'Student Performance Tracking', 'Course Management', '10 AI Credits / Month'], 'starter', 5, 10, FALSE, TRUE, 2, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": false, "advanced_analytics": false, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true}'::jsonb),
+('f0000000-0000-0000-0000-000000000003', 'EDUBARI Professional', 30, 300, 1, 350.00, ARRAY['Starter Plan-এর সকল সুবিধা', 'অধিক Student & Batch', 'Advanced Student Analytics', 'Guardian Portal', 'Smart Payment Tracking', 'Advanced AI Tools', 'Personal Branded Platform', 'Online + Offline Class', 'Advanced Reports & Analytics', 'Priority Support', '15 AI Credits / Month'], 'professional', 15, 15, FALSE, TRUE, 3, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true}'::jsonb),
+('f0000000-0000-0000-0000-000000000004', 'EDUBARI Business', 30, 500, 10, 550.00, ARRAY['Multiple Teacher Management', 'Student & Batch Management', 'Batch-wise Payment System', 'Teacher Activity Tracking', 'Student Performance Tracking', 'Guardian Portal & Notification', 'Teacher Salary Management', 'Online + Offline Class', 'Exam, Assignment & Result', 'AI Presentation Maker', 'Branded Website & Platform', 'Advanced Analytics', '30 AI Credits / Month'], 'business', 30, 30, FALSE, TRUE, 4, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": true, "salary_management": true, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true}'::jsonb),
+('f0000000-0000-0000-0000-000000000005', 'EDUBARI Enterprise', 30, 2000, 50, 700.00, ARRAY['Complete Institution Management', 'Multiple Teacher & Student Management', 'Department & Campus Management', 'Teacher Class Tracking', 'Auto Attendance System', 'Student Performance Analytics', 'Guardian Monitoring', 'Payment & Salary Management', 'AI-Powered Education Tools', 'Custom Website & App', 'Central Digital Dashboard', 'Upazila & District Level Monitoring', 'Advanced Analytics & Reports', 'Dedicated Support', 'Custom Development & Integration', '50 AI Credits / Month'], 'enterprise', 999, 50, FALSE, TRUE, 5, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": true, "salary_management": true, "custom_branding": true, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true, "custom_development": true}'::jsonb)
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed Standard Active Clients (For local & live tenant testing)
@@ -371,11 +387,11 @@ ON CONFLICT (id) DO NOTHING;
 -- Seed Client Subscriptions
 INSERT INTO public.subscriptions (id, client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status)
 VALUES
-('a1000000-0000-0000-0000-000000000001', 'c1000000-0000-0000-0000-000000000001', 'e8b093f1-694e-5d4f-acf3-89e21c8f9ef2', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid'),
-('a1000000-0000-0000-0000-000000000002', 'c1000000-0000-0000-0000-000000000002', 'd5d992f0-583d-4c3e-9bf2-78d10b7f8df1', NOW(), NOW() + INTERVAL '30 days', NOW() + INTERVAL '37 days', TRUE, 'paid'),
-('a1000000-0000-0000-0000-000000000003', 'c1000000-0000-0000-0000-000000000003', 'e8b093f1-694e-5d4f-acf3-89e21c8f9ef2', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid'),
-('a1000000-0000-0000-0000-000000000101', 'c1000000-0000-0000-0000-000000000101', 'e8b093f1-694e-5d4f-acf3-89e21c8f9ef2', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid'),
-('a1000000-0000-0000-0000-000000000102', 'c1000000-0000-0000-0000-000000000102', 'e8b093f1-694e-5d4f-acf3-89e21c8f9ef2', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid')
+('a1000000-0000-0000-0000-000000000001', 'c1000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000005', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid'),
+('a1000000-0000-0000-0000-000000000002', 'c1000000-0000-0000-0000-000000000002', 'f0000000-0000-0000-0000-000000000002', NOW(), NOW() + INTERVAL '30 days', NOW() + INTERVAL '37 days', TRUE, 'paid'),
+('a1000000-0000-0000-0000-000000000003', 'c1000000-0000-0000-0000-000000000003', 'f0000000-0000-0000-0000-000000000003', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid'),
+('a1000000-0000-0000-0000-000000000101', 'c1000000-0000-0000-0000-000000000101', 'f0000000-0000-0000-0000-000000000005', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid'),
+('a1000000-0000-0000-0000-000000000102', 'c1000000-0000-0000-0000-000000000102', 'f0000000-0000-0000-0000-000000000005', NOW(), NOW() + INTERVAL '365 days', NOW() + INTERVAL '372 days', TRUE, 'paid')
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed AI Credits for the domains

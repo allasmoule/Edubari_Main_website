@@ -186,138 +186,135 @@ const Pricing = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-                {/* Renders first 2 standard plans */}
-                {plans.slice(0, 2).map((plan) => {
-                  const planId = plan.id || plan._id;
-                  return (
-                    <div
-                      key={planId}
-                      className={`group relative rounded-2xl border p-6 text-left transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between ${
-                        plan.popular
-                          ? "border-transparent bg-white shadow-[0_20px_40px_-15px_rgba(37,99,235,0.12)] ring-2 ring-tertiary/40"
-                          : "border-white bg-white/70 backdrop-blur-xs hover:shadow-xl hover:shadow-dark/5 hover:border-tertiary/20"
-                      }`}
-                    >
-                      <div>
-                        {/* Badge */}
-                        {plan.badge && (
-                          <div
-                            className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[9px] font-black tracking-widest uppercase shadow-md ${
-                              plan.popular
-                                ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-tertiary/25"
-                                : "bg-[#F59E0B]/10 text-[#D97706] border border-[#F59E0B]/20"
+              <div className="space-y-12">
+                {/* 5-Tier Plans Grid */}
+                <div>
+                  <h3 className="text-center text-sm font-black text-dark/50 mb-6 uppercase tracking-widest">
+                    LMS Subscription Plans
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-stretch">
+                    {plans.map((plan) => {
+                      const planId = plan.id || plan._id;
+                      const isPopular = plan.plan_tier === 'professional';
+                      return (
+                        <div
+                          key={planId}
+                          className={`group relative rounded-2xl border p-5 text-left transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between ${
+                            isPopular
+                              ? "border-transparent bg-white shadow-[0_20px_40px_-15px_rgba(37,99,235,0.12)] ring-2 ring-tertiary/40"
+                              : "border-white bg-white/70 backdrop-blur-xs hover:shadow-xl hover:shadow-dark/5 hover:border-tertiary/20"
+                          }`}
+                        >
+                          <div>
+                            {/* Badge */}
+                            {(plan.badge || isPopular) && (
+                              <div
+                                className={`absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[8px] font-black tracking-widest uppercase shadow-md ${
+                                  isPopular
+                                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-tertiary/25"
+                                    : "bg-[#F59E0B]/10 text-[#D97706] border border-[#F59E0B]/20"
+                                }`}
+                              >
+                                {plan.badge || "RECOMMENDED"}
+                              </div>
+                            )}
+
+                            {/* Popular label */}
+                            {isPopular && (
+                              <div className="text-[9px] font-black text-tertiary uppercase tracking-widest mb-1">
+                                Most Popular
+                              </div>
+                            )}
+
+                            {/* Plan Name */}
+                            <h3 className="mt-1 text-lg font-extrabold text-dark tracking-tight leading-snug">
+                              {plan.name}
+                            </h3>
+
+                            {/* Duration */}
+                            <p className="mt-0.5 text-[10px] font-bold text-dark/40 uppercase tracking-wide">
+                              {plan.duration} {plan.duration_days ? `(${plan.duration_days} Days)` : ""}
+                            </p>
+
+                            {/* Price */}
+                            <div className="mt-3 flex items-baseline gap-1">
+                              <span
+                                className={`text-2xl sm:text-3xl font-black tracking-tight ${
+                                  isPopular
+                                    ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] drop-shadow-sm"
+                                    : "text-dark"
+                                }`}
+                              >
+                                ৳{(plan.price || 0).toLocaleString()}
+                              </span>
+                              {plan.oldPrice && (
+                                <span className="text-xs font-bold text-dark/30 line-through decoration-1 decoration-dark/20">
+                                  ৳{(plan.oldPrice || 0).toLocaleString()}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Features */}
+                            {plan.features &&
+                              Array.isArray(plan.features) &&
+                              plan.features.length > 0 && (
+                                <ul className="mt-3 space-y-1.5 p-0 list-none border-t border-dark/5 pt-3">
+                                  {plan.features.map((feat, idx) => (
+                                    <li
+                                      key={idx}
+                                      className="flex items-start gap-2 text-[11px] text-dark/70"
+                                    >
+                                      <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-tertiary/8 text-tertiary ring-1 ring-tertiary/10">
+                                        <FiCheck className="h-2 w-2 stroke-[3.5]" />
+                                      </span>
+                                      <span className="leading-3.5 font-bold text-dark/75">
+                                        {feat}
+                                      </span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                          </div>
+
+                          {/* CTA */}
+                          <button
+                            type="button"
+                            onClick={() => handleGetStarted(planId)}
+                            className={`mt-4 w-full block rounded-xl px-4 py-2.5 text-[10px] font-black text-center uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer shadow-md ${
+                              isPopular
+                                ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white hover:shadow-lg hover:shadow-tertiary/30 border-none"
+                                : "bg-white hover:bg-tertiary/5 text-tertiary border border-tertiary/30 hover:border-tertiary/50 hover:shadow-sm"
                             }`}
                           >
-                            {plan.badge}
-                          </div>
-                        )}
-
-                        {/* Popular label */}
-                        {plan.popular && (
-                          <div className="text-[9px] font-black text-tertiary uppercase tracking-widest mb-1.5">
-                            Most Popular
-                          </div>
-                        )}
-
-                        {/* Plan Name */}
-                        <h3 className="mt-1 text-xl font-extrabold text-dark tracking-tight">
-                          {plan.name}
-                        </h3>
-
-                        {/* Duration */}
-                        <p className="mt-1 text-xs font-bold text-dark/40 uppercase tracking-wide">
-                          {plan.duration} {plan.duration_days ? `(${plan.duration_days} Days)` : ""}
-                        </p>
-
-                        {/* Price */}
-                        <div className="mt-4 flex items-baseline gap-1.5">
-                          <span
-                            className={`text-3.5xl sm:text-4xl font-black tracking-tight ${
-                              plan.popular
-                                ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] drop-shadow-sm"
-                                : "text-dark"
-                            }`}
-                          >
-                            ৳{(plan.price || 0).toLocaleString()}
-                          </span>
-                          {plan.oldPrice && (
-                            <span className="text-sm font-bold text-dark/30 line-through decoration-1 decoration-dark/20">
-                              ৳{(plan.oldPrice || 0).toLocaleString()}
-                            </span>
-                          )}
+                            Get Started
+                          </button>
                         </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                        {/* Features */}
-                        {plan.features &&
-                          Array.isArray(plan.features) &&
-                          plan.features.length > 0 && (
-                            <ul className="mt-4 space-y-2 p-0 list-none border-t border-dark/5 pt-4">
-                              {plan.features.map((feat, idx) => (
-                                <li
-                                  key={idx}
-                                  className="flex items-start gap-2.5 text-xs text-dark/70 animate-fadeUp"
-                                  style={{ animationDelay: `${idx * 40}ms` }}
-                                >
-                                  <span className="mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full bg-tertiary/8 text-tertiary ring-1 ring-tertiary/10">
-                                    <FiCheck className="h-3 w-3 stroke-[3.5]" />
-                                  </span>
-                                  <span className="leading-4 font-bold text-dark/75">
-                                    {feat}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                      </div>
-
-                      {/* CTA */}
-                      <button
-                        type="button"
-                        onClick={() => handleGetStarted(planId)}
-                        className={`mt-5 w-full block rounded-xl px-5 py-3 text-xs font-black text-center uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer shadow-md ${
-                          plan.popular
-                            ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white hover:shadow-lg hover:shadow-tertiary/30 border-none"
-                            : "bg-white hover:bg-tertiary/5 text-tertiary border border-tertiary/30 hover:border-tertiary/50 hover:shadow-sm"
-                        }`}
-                      >
-                        Get Started
-                      </button>
-                    </div>
-                  );
-                })}
-
-                {/* 3rd Column: DYNAMIC EduBari AI Credits Subscription Card */}
+                {/* AI Credits Banner Section */}
                 {selectedAiPkg && (
-                  <div className="group relative rounded-2xl border p-6 text-left transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between border-transparent bg-white shadow-[0_20px_40px_-15px_rgba(139,92,246,0.10)] ring-1 ring-[#8B5CF6]/30">
-                    <div>
-                      {selectedAiPkg.highlight && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[9px] font-black tracking-widest bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/25 uppercase">
-                          Power Up Add-on
-                        </div>
-                      )}
-
-                      <div className="text-[9px] font-black text-[#8B5CF6] uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                        <FiCpu className="h-3.5 w-3.5 animate-spin text-[#8B5CF6]" style={{ animationDuration: "4s" }} /> EduBari Global AI Plan
+                  <div className="max-w-3xl mx-auto rounded-3xl border border-white/60 bg-white/70 backdrop-blur-md p-6 sm:p-8 shadow-xl shadow-dark/3 flex flex-col md:flex-row items-center justify-between gap-6 ring-1 ring-[#8B5CF6]/20">
+                    <div className="space-y-4 text-left max-w-md">
+                      <div className="text-[9px] font-black text-[#8B5CF6] uppercase tracking-widest flex items-center gap-1.5">
+                        <FiCpu className="h-4.5 w-4.5 animate-spin text-[#8B5CF6]" style={{ animationDuration: "4s" }} /> EduBari Global AI Add-on
                       </div>
-
-                      {/* Plan Name */}
-                      <h3 className="mt-1 text-xl font-extrabold text-dark tracking-tight">
-                        SaaS AI Credits
+                      <h3 className="text-xl font-extrabold text-dark tracking-tight">
+                        Power Up with AI Credits
                       </h3>
-
-                      {/* Access Info */}
-                      <p className="mt-0.5 text-[10px] font-bold text-dark/40 uppercase tracking-wide">
-                        Shared Pool (LMS Teacher Panel Only)
+                      <p className="text-xs text-dark/60 font-medium leading-relaxed">
+                        Add a shared AI credit pool to your school subdomain to unlock advanced Presentation Slide Maker and Question Maker operations inside the Teacher panel.
                       </p>
-
+                      
                       {/* Tier Selector Pills */}
                       {aiPackages.length > 0 && (
-                        <div className="mt-4">
+                        <div className="pt-2">
                           <label className="block text-[9px] font-black uppercase tracking-widest text-[#8B5CF6] mb-1.5">
                             Select Credits Package:
                           </label>
-                          <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-100/70 border border-slate-200/50">
+                          <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-100/70 border border-slate-200/50 max-w-xs">
                             {aiPackages.map((pkg) => {
                               const isSelected = selectedAiPkg.id === pkg.id;
                               return (
@@ -325,7 +322,7 @@ const Pricing = () => {
                                   key={pkg.id}
                                   type="button"
                                   onClick={() => setSelectedAiPkg(pkg)}
-                                  className={`relative py-1.5 px-0.5 rounded-lg text-xs font-black tracking-tight transition-all duration-300 cursor-pointer border flex flex-col items-center justify-center ${
+                                  className={`relative py-1 px-0.5 rounded-lg text-xs font-black tracking-tight transition-all duration-300 cursor-pointer border flex flex-col items-center justify-center ${
                                     isSelected
                                       ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white border-transparent shadow-md scale-102"
                                       : "bg-white text-dark/70 hover:text-dark border-gray-200/80 hover:border-tertiary/30"
@@ -341,9 +338,10 @@ const Pricing = () => {
                           </div>
                         </div>
                       )}
+                    </div>
 
-                      {/* Price */}
-                      <div className="mt-4 flex items-baseline gap-1">
+                    <div className="shrink-0 flex flex-col items-center justify-center p-6 bg-linear-to-br from-[#8B5CF6]/5 to-[#7c3aed]/5 rounded-2xl border border-[#8B5CF6]/15 min-w-[240px]">
+                      <div className="flex items-baseline gap-1.5 mb-4">
                         <span className="text-3.5xl sm:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] drop-shadow-sm">
                           ৳{(selectedAiPkg.price || 0).toLocaleString()}
                         </span>
@@ -351,52 +349,15 @@ const Pricing = () => {
                           / {selectedAiPkg.validityDays} Days
                         </span>
                       </div>
-
-                      {/* AI Features */}
-                      <ul className="mt-4 space-y-2 p-0 list-none border-t border-dark/5 pt-4">
-                        <li className="flex items-start gap-2.5 text-xs text-dark/70">
-                          <span className="mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full bg-[#8B5CF6]/8 text-[#8B5CF6] ring-1 ring-[#8B5CF6]/10">
-                            <FiCheck className="h-3 w-3 stroke-[3.5]" />
-                          </span>
-                          <span className="leading-4 font-bold text-dark/80">
-                            Unified {selectedAiPkg.credits} AI Credits Pool
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-2.5 text-xs text-dark/70">
-                          <span className="mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full bg-[#8B5CF6]/8 text-[#8B5CF6] ring-1 ring-[#8B5CF6]/10">
-                            <FiCheck className="h-3 w-3 stroke-[3.5]" />
-                          </span>
-                          <span className="leading-4 font-bold text-dark/75">
-                            AI Presentation Slides Maker
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-2.5 text-xs text-dark/70">
-                          <span className="mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full bg-[#8B5CF6]/8 text-[#8B5CF6] ring-1 ring-[#8B5CF6]/10">
-                            <FiCheck className="h-3 w-3 stroke-[3.5]" />
-                          </span>
-                          <span className="leading-4 font-bold text-dark/75">
-                            AI Question Paper Generator
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-2.5 text-xs text-dark/70">
-                          <span className="mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full bg-green-500/8 text-green-600 ring-1 ring-green-500/10">
-                            <FiCheck className="h-3 w-3 stroke-[3.5]" />
-                          </span>
-                          <span className="leading-4 font-black text-green-600">
-                            Teacher Dashboard Privileges
-                          </span>
-                        </li>
-                      </ul>
+                      
+                      <button
+                        type="button"
+                        onClick={handleAiPlanPurchase}
+                        className="w-full py-3.5 px-6 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer bg-linear-to-r from-[#8B5CF6] to-[#7c3aed] text-white shadow-md shadow-[#8B5CF6]/20 hover:shadow-lg border-none"
+                      >
+                        Buy AI Credits
+                      </button>
                     </div>
-
-                    {/* CTA */}
-                    <button
-                      type="button"
-                      onClick={handleAiPlanPurchase}
-                      className="mt-5 w-full block rounded-xl px-5 py-3 text-xs font-black text-center transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer bg-linear-to-r from-[#8B5CF6] to-[#7c3aed] text-white shadow-md shadow-[#8B5CF6]/20 hover:shadow-lg border-none uppercase tracking-wider"
-                    >
-                      Buy AI Credits
-                    </button>
                   </div>
                 )}
               </div>

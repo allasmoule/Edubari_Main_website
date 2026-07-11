@@ -94,13 +94,21 @@ const PlanModal = ({ plan, onSave, onClose, saving }) => {
   const [form, setForm] = useState({
     id: plan?.id || plan?._id || undefined,
     name: plan?.name || "",
-    durationDays: plan?.durationDays || 30,
+    durationDays: plan?.durationDays || plan?.duration_days || 30,
     price: plan?.price || "",
     oldPrice: plan?.oldPrice || plan?.old_price || "",
     badge: plan?.badge || "",
     popular: plan?.popular || false,
-    active: plan?.active ?? true,
+    active: plan?.active ?? plan?.is_active ?? true,
     features: plan?.features || [],
+    planTier: plan?.planTier || plan?.plan_tier || "free",
+    maxStudents: plan?.maxStudents || plan?.max_students || 200,
+    maxInstructors: plan?.maxInstructors || plan?.max_instructors || 10,
+    maxBatches: plan?.maxBatches || plan?.max_batches || 1,
+    monthlyAiCredits: plan?.monthlyAiCredits || plan?.monthly_ai_credits || 0,
+    showBranding: plan?.showBranding ?? plan?.show_branding ?? true,
+    sortOrder: plan?.sortOrder || plan?.sort_order || 0,
+    featureGates: plan?.featureGates || plan?.feature_gates || {},
   });
   const [errors, setErrors] = useState({});
 
@@ -109,7 +117,7 @@ const PlanModal = ({ plan, onSave, onClose, saving }) => {
     if (!form.name.trim()) errs.name = "Plan name is required";
     if (!form.durationDays || form.durationDays < 1)
       errs.durationDays = "Duration must be at least 1 day";
-    if (!form.price || Number(form.price) < 0) errs.price = "Price is required";
+    if (form.price === "" || Number(form.price) < 0) errs.price = "Price is required";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -138,6 +146,11 @@ const PlanModal = ({ plan, onSave, onClose, saving }) => {
       durationDays: days,
       duration: durationLabel,
       badge: form.badge.trim() || null,
+      maxStudents: Number(form.maxStudents),
+      maxInstructors: Number(form.maxInstructors),
+      maxBatches: Number(form.maxBatches),
+      monthlyAiCredits: Number(form.monthlyAiCredits),
+      sortOrder: Number(form.sortOrder),
     });
   };
 
@@ -281,6 +294,88 @@ const PlanModal = ({ plan, onSave, onClose, saving }) => {
             </div>
           </div>
 
+          {/* Plan Tier and Sort Order */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-dark/70 mb-2">
+                Plan Tier *
+              </label>
+              <select
+                value={form.planTier}
+                onChange={(e) => setForm({ ...form, planTier: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
+              >
+                <option value="free">Free</option>
+                <option value="starter">Starter</option>
+                <option value="professional">Professional</option>
+                <option value="business">Business</option>
+                <option value="enterprise">Enterprise</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-dark/70 mb-2">
+                Sort Order
+              </label>
+              <input
+                type="number"
+                value={form.sortOrder}
+                onChange={(e) => setForm({ ...form, sortOrder: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* Limits */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-dark/70 mb-2">
+                Max Students *
+              </label>
+              <input
+                type="number"
+                value={form.maxStudents}
+                onChange={(e) => setForm({ ...form, maxStudents: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-dark/70 mb-2">
+                Max Instructors *
+              </label>
+              <input
+                type="number"
+                value={form.maxInstructors}
+                onChange={(e) => setForm({ ...form, maxInstructors: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-dark/70 mb-2">
+                Max Batches *
+              </label>
+              <input
+                type="number"
+                value={form.maxBatches}
+                onChange={(e) => setForm({ ...form, maxBatches: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-dark/70 mb-2">
+                Monthly AI Credits *
+              </label>
+              <input
+                type="number"
+                value={form.monthlyAiCredits}
+                onChange={(e) => setForm({ ...form, monthlyAiCredits: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
+              />
+            </div>
+          </div>
+
           {/* Badge */}
           <div>
             <label className="block text-sm font-semibold text-dark/70 mb-2">
@@ -302,38 +397,57 @@ const PlanModal = ({ plan, onSave, onClose, saving }) => {
           />
 
           {/* Toggles */}
-          <div className="flex items-center gap-6 pt-1">
+          <div className="flex flex-col gap-3 pt-1">
+            <div className="flex items-center gap-6">
+              <label className="flex items-center gap-2.5 cursor-pointer select-none group">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, popular: !form.popular })}
+                  className="cursor-pointer bg-transparent border-none p-0 flex items-center"
+                >
+                  {form.popular ? (
+                    <FiToggleRight className="w-7 h-7 text-tertiary" />
+                  ) : (
+                    <FiToggleLeft className="w-7 h-7 text-dark/25" />
+                  )}
+                </button>
+                <span className="text-sm font-semibold text-dark/60 group-hover:text-dark/80 transition-colors">
+                  Popular
+                </span>
+              </label>
+
+              <label className="flex items-center gap-2.5 cursor-pointer select-none group">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, active: !form.active })}
+                  className="cursor-pointer bg-transparent border-none p-0 flex items-center"
+                >
+                  {form.active ? (
+                    <FiToggleRight className="w-7 h-7 text-emerald-500" />
+                  ) : (
+                    <FiToggleLeft className="w-7 h-7 text-dark/25" />
+                  )}
+                </button>
+                <span className="text-sm font-semibold text-dark/60 group-hover:text-dark/80 transition-colors">
+                  Active
+                </span>
+              </label>
+            </div>
+
             <label className="flex items-center gap-2.5 cursor-pointer select-none group">
               <button
                 type="button"
-                onClick={() => setForm({ ...form, popular: !form.popular })}
+                onClick={() => setForm({ ...form, showBranding: !form.showBranding })}
                 className="cursor-pointer bg-transparent border-none p-0 flex items-center"
               >
-                {form.popular ? (
+                {form.showBranding ? (
                   <FiToggleRight className="w-7 h-7 text-tertiary" />
                 ) : (
                   <FiToggleLeft className="w-7 h-7 text-dark/25" />
                 )}
               </button>
               <span className="text-sm font-semibold text-dark/60 group-hover:text-dark/80 transition-colors">
-                Popular
-              </span>
-            </label>
-
-            <label className="flex items-center gap-2.5 cursor-pointer select-none group">
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, active: !form.active })}
-                className="cursor-pointer bg-transparent border-none p-0 flex items-center"
-              >
-                {form.active ? (
-                  <FiToggleRight className="w-7 h-7 text-emerald-500" />
-                ) : (
-                  <FiToggleLeft className="w-7 h-7 text-dark/25" />
-                )}
-              </button>
-              <span className="text-sm font-semibold text-dark/60 group-hover:text-dark/80 transition-colors">
-                Active
+                Show Edubari Branding
               </span>
             </label>
           </div>
@@ -935,15 +1049,18 @@ export default function AdminPlansPage() {
 
                   {/* Body */}
                   <div className="flex-1 mt-1 pr-6">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center flex-wrap gap-2">
                       <h3 className="text-base font-bold text-dark">{plan.name}</h3>
+                      <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-tertiary/10 text-tertiary tracking-wide uppercase">
+                        {plan.planTier || plan.plan_tier || 'free'}
+                      </span>
                       {!plan.active && (
                         <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-dark/10 text-dark/45 tracking-wide uppercase">
                           Inactive
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-dark/45 font-medium mt-0.5">Duration: {plan.duration}</p>
+                    <p className="text-xs text-dark/45 font-medium mt-0.5">Duration: {plan.duration} {plan.sortOrder ? `(Order: ${plan.sortOrder})` : ""}</p>
 
                     <div className="mt-4 flex items-baseline gap-2">
                       <span className="text-3xl font-black text-dark">৳{price.toLocaleString()}</span>
@@ -954,11 +1071,20 @@ export default function AdminPlansPage() {
                       )}
                     </div>
 
+                    {/* New Tier Plan Limits Info */}
+                    <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-100 grid grid-cols-2 gap-2 text-[10px] font-extrabold text-dark/70">
+                      <div>Students: <span className="text-tertiary">{plan.maxStudents ?? plan.max_students ?? 0}</span></div>
+                      <div>Teachers: <span className="text-tertiary">{plan.maxInstructors ?? plan.max_instructors ?? 0}</span></div>
+                      <div>Batches: <span className="text-tertiary">{plan.maxBatches ?? plan.max_batches ?? 0}</span></div>
+                      <div>AI Credits/Mo: <span className="text-tertiary">{plan.monthlyAiCredits ?? plan.monthly_ai_credits ?? 0}</span></div>
+                      <div className="col-span-2 border-t border-slate-100 pt-1 mt-1">Branding: <span className={plan.showBranding ?? plan.show_branding ? "text-amber-600" : "text-emerald-600"}>{plan.showBranding ?? plan.show_branding ? "Powered by Edubari" : "Custom Brand"}</span></div>
+                    </div>
+
                     <p className="text-xs text-dark/50 leading-relaxed mt-3">{plan.description}</p>
                     {plan.features && plan.features.length > 0 && (
-                      <ul className="mt-5 space-y-2">
+                      <ul className="mt-4 space-y-1.5">
                         {plan.features.slice(0, 4).map((feat, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-xs text-dark/65 font-medium">
+                          <li key={idx} className="flex items-start gap-2 text-[11px] text-dark/65 font-bold">
                             <FiCheck className="w-3.5 h-3.5 text-tertiary shrink-0 mt-0.5 stroke-[3]" />
                             <span className="line-clamp-1">{feat}</span>
                           </li>
