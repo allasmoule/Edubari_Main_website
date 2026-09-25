@@ -236,20 +236,20 @@ const DomainSearch = () => {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-tertiary"></span>
                 </span>
-                Domain Availability Checker
+                School Availability Checker
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-dark leading-tight">
                 Find Your Perfect{" "}
                 <span className="relative inline-block">
                   <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary via-secondary to-accent">
-                    Domain Name
+                    School Name
                   </span>
                 </span>
               </h2>
 
               <p className="mt-2 text-sm sm:text-base text-dark/60 font-medium">
-                Enter your institution or brand name to check domain availability instantly.
+                Enter your school or institution name to check availability instantly.
               </p>
             </div>
 
@@ -291,7 +291,7 @@ const DomainSearch = () => {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Enter a name (e.g., myschool or botbari)"
+                    placeholder="Enter school name (e.g., myschool or botbari)"
                     className="flex-1 bg-transparent border-none outline-none px-4 sm:px-6 py-5 sm:py-6 text-dark text-base sm:text-xl placeholder:text-dark/30 font-bold w-full"
                   />
                   <button
@@ -317,9 +317,9 @@ const DomainSearch = () => {
             </form>
           </div>
 
-          {/* Category Cards Section (School, College, Madrasha, Single Teacher) */}
-          <div className="mt-10 max-w-4xl mx-auto">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {/* Category Cards Section (School, College, Madrasha, Single Teacher - Compact & Smaller) */}
+          <div className="mt-6 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {CATEGORIES.map((cat) => {
                 const IconComponent = cat.icon;
                 const isSelected = selectedCategory === cat.id;
@@ -329,23 +329,23 @@ const DomainSearch = () => {
                     key={cat.id}
                     type="button"
                     onClick={() => handleCategoryClick(cat)}
-                    className={`group p-5 rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer ${
+                    className={`group px-3 py-2.5 rounded-xl border transition-all duration-300 flex items-center justify-center gap-2.5 text-center cursor-pointer ${
                       cat.bgColor
                     } ${cat.hoverBg} ${
                       isSelected
-                        ? "border-tertiary ring-2 ring-tertiary/30 shadow-lg scale-[1.02]"
+                        ? "border-tertiary ring-2 ring-tertiary/30 shadow-md scale-[1.02]"
                         : cat.borderColor
-                    } backdrop-blur-sm`}
+                    } backdrop-blur-xs`}
                   >
                     <div
-                      className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110 ${cat.bgColor} ${cat.textColor} shadow-xs border ${cat.borderColor}`}
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 ${cat.bgColor} ${cat.textColor} border ${cat.borderColor}`}
                     >
-                      <IconComponent className="w-7 h-7" />
+                      <IconComponent className="w-4 h-4" />
                     </div>
 
-                    <h3 className={`text-base sm:text-lg font-extrabold ${cat.textColor}`}>
+                    <span className={`text-xs sm:text-sm font-bold truncate ${cat.textColor}`}>
                       {cat.label}
-                    </h3>
+                    </span>
                   </button>
                 );
               })}
