@@ -254,19 +254,19 @@ const DomainSearch = () => {
   return (
     <section
       ref={sectionRef}
-      className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-14 bg-slate-50/50 relative overflow-hidden"
+      className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-14 bg-slate-50/50 relative overflow-hidden select-none"
     >
       {/* Main Centered Card Container */}
       <div
         className={`transition-all duration-1000 transform ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-        } w-full max-w-[1100px] mx-auto rounded-[36px] border border-blue-100/80 bg-gradient-to-b from-white via-slate-50/30 to-blue-50/20 shadow-[0_20px_60px_-15px_rgba(59,130,246,0.07)] backdrop-blur-xl overflow-hidden relative p-8 sm:p-14 md:p-16`}
+        } w-full max-w-[1100px] mx-auto rounded-[36px] border border-blue-100/80 bg-gradient-to-b from-white via-slate-50/40 to-blue-50/30 shadow-[0_25px_70px_-15px_rgba(59,130,246,0.12)] backdrop-blur-xl overflow-hidden relative p-8 sm:p-14 md:p-16`}
       >
         {/* Floating Top-Right Video "How to purchase" Button */}
         <button
           type="button"
           onClick={() => setVideoModalOpen(true)}
-          className="sm:absolute sm:top-8 sm:right-8 mx-auto mb-6 sm:mb-0 group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-xs font-bold border-none cursor-pointer shrink-0"
+          className="sm:absolute sm:top-8 sm:right-8 mx-auto mb-6 sm:mb-0 group inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-[0_6px_20px_-4px_rgba(79,70,229,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-xs font-black tracking-wider uppercase border-none cursor-pointer shrink-0"
         >
           <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
             <FaPlay className="w-2.5 h-2.5 ml-0.5" />
@@ -277,7 +277,7 @@ const DomainSearch = () => {
         {/* Centered Main Content */}
         <div className="max-w-3xl mx-auto text-center">
           {/* Centered Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200/60 shadow-xs text-blue-600 text-xs font-bold uppercase tracking-wider mb-6">
+          <div className="inline-flex items-center gap-2 px-4.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/60 shadow-xs text-blue-600 text-xs font-black uppercase tracking-wider mb-6">
             <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
             {t("domainSearch.badge")}
           </div>
@@ -298,7 +298,7 @@ const DomainSearch = () => {
           {/* Search Bar Form */}
           <div className="mt-10 max-w-3xl mx-auto">
             <form onSubmit={handleSearch}>
-              <div className="relative rounded-full p-1.5 sm:p-2 bg-gradient-to-r from-blue-200/60 via-indigo-200/60 to-purple-200/60 shadow-lg transition-all duration-300 hover:shadow-blue-500/10 border border-blue-200/50">
+              <div className="relative rounded-full p-2 bg-gradient-to-r from-blue-300/80 via-indigo-300/80 to-purple-300/80 shadow-[0_12px_30px_-8px_rgba(59,130,246,0.25)] transition-all duration-300 hover:shadow-blue-500/20 border border-blue-200/60">
                 <div className="relative flex items-center bg-white rounded-full overflow-hidden">
                   <div className="pl-6 text-slate-400">
                     <FiGlobe className="h-6 w-6" />
@@ -309,13 +309,13 @@ const DomainSearch = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder={t("domainSearch.placeholder")}
-                    className="flex-1 bg-transparent border-none outline-none px-4 sm:px-6 py-4 sm:py-5 text-slate-800 text-base sm:text-lg placeholder:text-slate-400 font-semibold w-full"
+                    className="flex-1 bg-transparent border-none outline-none px-4 sm:px-6 py-4 sm:py-5 text-slate-800 text-base sm:text-lg placeholder:text-slate-400 font-extrabold w-full"
                   />
                   <button
                     id="domain-search-btn"
                     type="submit"
                     disabled={isSearching || !searchTerm.trim()}
-                    className="mr-1.5 sm:mr-2 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3.5 sm:py-4 text-white text-base font-bold shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
+                    className="mr-1.5 sm:mr-2 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3.5 sm:py-4 text-white text-base font-black uppercase tracking-wider shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.45)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
                   >
                     {isSearching ? (
                       <>
@@ -334,8 +334,8 @@ const DomainSearch = () => {
             </form>
           </div>
 
-          {/* Centered Category Badges (School, College, Madrasha, Single Teacher) */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          {/* 3D Smart Category Badges (School, College, Madrasha, Single Teacher) */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
             {categories.map((cat) => {
               const IconComponent = cat.icon;
               const isSelected = selectedCategory === cat.id;
@@ -345,11 +345,11 @@ const DomainSearch = () => {
                   key={cat.id}
                   type="button"
                   onClick={() => handleCategoryClick(cat)}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
+                  className={`inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl border text-xs sm:text-sm font-extrabold transition-all duration-300 cursor-pointer shadow-[0_4px_0_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)] active:translate-y-0.5 active:shadow-none ${
                     isSelected ? cat.activeColor : cat.bgColor
                   }`}
                 >
-                  <IconComponent className="w-4 h-4 shrink-0" />
+                  <IconComponent className="w-4.5 h-4.5 shrink-0" />
                   <span>{cat.label}</span>
                 </button>
               );
@@ -359,7 +359,7 @@ const DomainSearch = () => {
           {/* Error Message */}
           {error && (
             <div className="mt-8 max-w-2xl mx-auto text-center">
-              <p className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-sm font-bold">
+              <p className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-sm font-bold shadow-sm">
                 <FiXCircle className="h-5 w-5 shrink-0" />
                 {error}
               </p>
@@ -368,70 +368,98 @@ const DomainSearch = () => {
         </div>
       </div>
 
-      {/* ── SEARCH RESULTS FULL POPUP MODAL ── */}
+      {/* ── 3D SMART SEARCH RESULTS FULL POPUP MODAL ── */}
       {resultsModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl relative flex flex-col animate-[scaleIn_0.25s_ease-out]">
-            {/* Modal Header */}
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-white">
+        <div className="fixed inset-0 z-[200] bg-slate-950/75 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 select-none">
+          <div className="bg-white rounded-[36px] border-t-2 border-l border-white/80 border-r border-b-[6px] border-slate-300/80 w-full max-w-4xl max-h-[92vh] overflow-hidden shadow-[0_30px_90px_-20px_rgba(37,99,235,0.35)] relative flex flex-col animate-modal3d">
+            
+            {/* Ambient Gloss Illumination */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -ml-32 -mb-32" />
+
+            {/* 3D Modal Header */}
+            <div className="px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-white relative z-10">
               <div>
-                <div className="flex items-center gap-2.5">
-                  <h3 className="text-xl font-black text-slate-900">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                     {t("domainSearch.modalTitle")} <span className="text-blue-600">"{searchTerm}"</span>
                   </h3>
-                  <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase">
+                  <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
                     {results.length} found
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 font-medium mt-1">
+                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
                   {t("domainSearch.modalSub")}
                 </p>
               </div>
 
-              {/* Cross (Close) Button */}
+              {/* 3D Cross (Close) Button */}
               <button
                 type="button"
                 onClick={() => setResultsModalOpen(false)}
-                className="w-10 h-10 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 flex items-center justify-center transition cursor-pointer border-none"
+                className="w-11 h-11 rounded-2xl bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_3px_0_rgba(0,0,0,0.08)] cursor-pointer border-none shrink-0"
               >
-                <FiX className="w-5 h-5" />
+                <FiX className="w-6 h-6" />
               </button>
             </div>
 
-            {/* Modal Body - Results Grid */}
-            <div className="p-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {results.map((result) => {
+            {/* 3D Modal Body - Smart 3D Boxes Grid */}
+            <div className="p-5 sm:p-8 overflow-y-auto max-h-[68vh] custom-scrollbar relative z-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {results.map((result, idx) => {
                   const { base, tld } = splitDomainName(result.domain);
                   const price = getDomainPrice(result.domain);
 
                   return (
                     <div
                       key={result.domain}
-                      className={`rounded-2xl p-5 border transition-all duration-300 flex flex-col justify-between gap-4 ${
+                      className={`group relative rounded-2xl p-5 sm:p-6 transition-all duration-400 flex flex-col justify-between gap-5 transform hover:-translate-y-2 hover:rotate-[0.5deg] ${
                         result.isFree
-                          ? "border-emerald-300 bg-emerald-50/40 shadow-xs hover:shadow-md"
+                          ? "border-2 border-emerald-400 border-b-[6px] border-b-emerald-600 bg-gradient-to-b from-emerald-50/80 via-white to-emerald-50/40 shadow-[0_12px_30px_-8px_rgba(16,185,129,0.25)] hover:shadow-[0_20px_40px_-10px_rgba(16,185,129,0.35)] ring-2 ring-emerald-500/20"
                           : result.available
-                          ? "border-slate-200 bg-white shadow-xs hover:shadow-md hover:border-blue-300"
-                          : "border-slate-200/60 bg-slate-50/60 opacity-60"
+                          ? "border-2 border-slate-200 border-b-[6px] border-b-blue-600/80 bg-gradient-to-b from-white to-blue-50/20 shadow-[0_10px_25px_-8px_rgba(37,99,235,0.1)] hover:shadow-[0_20px_35px_-10px_rgba(37,99,235,0.22)] hover:border-blue-400"
+                          : "border-2 border-slate-200/80 border-b-[4px] border-b-slate-300 bg-slate-100/60 opacity-65"
                       }`}
+                      style={{
+                        animationDelay: `${idx * 60}ms`,
+                      }}
                     >
-                      <div>
-                        <p
-                          className={`text-lg font-bold break-all ${
-                            result.available ? "text-slate-800" : "text-slate-400 line-through"
-                          }`}
-                        >
-                          {base}
-                          <span className={result.available ? "text-blue-600" : "text-slate-400"}>
-                            {tld}
-                          </span>
-                        </p>
+                      {/* Top Badge for Free domain */}
+                      {result.isFree && (
+                        <div className="absolute -top-3.5 left-5 px-3 py-0.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[9px] font-black uppercase tracking-widest shadow-md shadow-emerald-600/30 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                          ⭐ 100% FREE / ফ্রি ডোমেইন
+                        </div>
+                      )}
 
-                        <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold">
+                      <div>
+                        {/* Domain Title */}
+                        <div className="flex items-start justify-between gap-2">
+                          <p
+                            className={`text-lg sm:text-xl font-black break-all leading-snug ${
+                              result.available ? "text-slate-900" : "text-slate-400 line-through"
+                            }`}
+                          >
+                            {base}
+                            <span
+                              className={
+                                result.isFree
+                                  ? "text-emerald-600"
+                                  : result.available
+                                  ? "text-blue-600"
+                                  : "text-slate-400"
+                              }
+                            >
+                              {tld}
+                            </span>
+                          </p>
+                        </div>
+
+                        {/* Availability Pill */}
+                        <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-slate-200 text-[11px] font-extrabold shadow-xs">
                           <span
                             className={`h-2 w-2 rounded-full ${
-                              result.isFree || result.available ? "bg-emerald-500" : "bg-rose-400"
+                              result.isFree || result.available ? "bg-emerald-500 animate-pulse" : "bg-rose-400"
                             }`}
                           />
                           <span className={result.isFree || result.available ? "text-emerald-600" : "text-rose-500"}>
@@ -440,12 +468,12 @@ const DomainSearch = () => {
                         </div>
                       </div>
 
-                      {/* Price & Action Button */}
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
+                      {/* 3D Price & Action Row */}
+                      <div className="flex items-center justify-between pt-3.5 border-t border-slate-100 mt-2">
                         <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">{t("domainSearch.priceLabel")}</span>
-                          <span className="text-sm font-black text-slate-900">
-                            ৳{price.toLocaleString()} <span className="text-[10px] font-semibold text-slate-400">{t("domainSearch.perYear")}</span>
+                          <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest block">{t("domainSearch.priceLabel")}</span>
+                          <span className="text-base sm:text-lg font-black text-slate-900">
+                            ৳{price.toLocaleString()} <span className="text-[10px] font-bold text-slate-400">{t("domainSearch.perYear")}</span>
                           </span>
                         </div>
 
@@ -453,17 +481,17 @@ const DomainSearch = () => {
                           <button
                             type="button"
                             onClick={() => handleSelectDomain(result)}
-                            className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-sm transition-all border-none cursor-pointer flex items-center gap-1.5 ${
+                            className={`rounded-xl px-4 py-2.5 text-xs font-black text-white transition-all border-none cursor-pointer flex items-center gap-1.5 ${
                               result.isFree
-                                ? "bg-emerald-600 hover:bg-emerald-700"
-                                : "bg-blue-600 hover:bg-blue-700"
+                                ? "bg-emerald-600 shadow-[0_4px_0_#047857] hover:shadow-[0_2px_0_#047857] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none"
+                                : "bg-blue-600 shadow-[0_4px_0_#1d4ed8] hover:shadow-[0_2px_0_#1d4ed8] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none"
                             }`}
                           >
                             <span>{t("domainSearch.selectBtn")}</span>
-                            <span className="opacity-90 font-mono text-[11px]">(৳{price.toLocaleString()})</span>
+                            <span className="opacity-90 font-mono text-[10px] bg-black/15 px-1.5 py-0.5 rounded">(৳{price.toLocaleString()})</span>
                           </button>
                         ) : (
-                          <span className="rounded-xl bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-400">
+                          <span className="rounded-xl bg-slate-200/70 px-4 py-2 text-xs font-extrabold text-slate-400 border-b-2 border-slate-300">
                             Unavailable
                           </span>
                         )}
@@ -474,15 +502,15 @@ const DomainSearch = () => {
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-              <p className="text-xs text-slate-500">
+            {/* 3D Modal Footer */}
+            <div className="px-6 py-4.5 border-t border-slate-100 bg-slate-50/90 flex items-center justify-between relative z-10">
+              <p className="text-xs text-slate-500 font-medium">
                 {t("domainSearch.modalSub")}
               </p>
               <button
                 type="button"
                 onClick={() => setResultsModalOpen(false)}
-                className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition border-none cursor-pointer"
+                className="px-6 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-black transition-all border-b-2 border-slate-400/60 active:translate-y-0.5 border-none cursor-pointer"
               >
                 {t("domainSearch.closeBtn")}
               </button>
@@ -493,24 +521,24 @@ const DomainSearch = () => {
 
       {/* Video "How to purchase" Modal Popup */}
       {videoModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative animate-[scaleIn_0.2s_ease-out]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/60">
+        <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4 select-none">
+          <div className="bg-slate-900 border-t border-l border-white/20 border-b-4 border-slate-800 rounded-3xl w-full max-w-4xl overflow-hidden shadow-[0_30px_90px_-20px_rgba(0,0,0,0.8)] relative animate-modal3d">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/70">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
-                  <FiVideo className="w-4 h-4" />
+                <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md">
+                  <FiVideo className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">{t("domainSearch.howToPurchaseVideo")}</h3>
-                  <p className="text-xs text-slate-400">{t("domainSearch.videoSub")}</p>
+                  <h3 className="text-base font-extrabold text-white">{t("domainSearch.howToPurchaseVideo")}</h3>
+                  <p className="text-xs text-slate-400 font-medium">{t("domainSearch.videoSub")}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setVideoModalOpen(false)}
-                className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer border-none"
+                className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-500 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer border-none shadow-sm"
               >
-                <FiX className="w-4 h-4" />
+                <FiX className="w-5 h-5" />
               </button>
             </div>
 
@@ -524,9 +552,9 @@ const DomainSearch = () => {
               />
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-slate-400 text-center sm:text-left">
-                Need extra support? Contact Helpline: <strong className="text-white">+880 1700-000000</strong>
+            <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/70 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs text-slate-400 text-center sm:text-left font-medium">
+                Need extra support? Contact Helpline: <strong className="text-white">+880 1754-958008</strong>
               </p>
               <button
                 type="button"
@@ -534,7 +562,7 @@ const DomainSearch = () => {
                   setVideoModalOpen(false);
                   router.push("/payment-purchase");
                 }}
-                className="px-6 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold shadow-md hover:shadow-lg transition border-none cursor-pointer flex items-center gap-2"
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-black uppercase tracking-wider shadow-[0_4px_0_#1d4ed8] hover:shadow-[0_2px_0_#1d4ed8] hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all border-none cursor-pointer flex items-center gap-2"
               >
                 <span>Proceed to Purchase</span>
                 <FiArrowRight className="w-4 h-4" />
