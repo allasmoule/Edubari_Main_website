@@ -79,7 +79,7 @@ const WhyShouldChoose = () => {
           <div className="max-w-2xl">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-dark leading-tight">
               {t("whyChoose.titleMain")}{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] animate-[pulse_3s_ease-in-out_infinite]">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500">
                 {t("whyChoose.titleGradient")}
               </span>
             </h2>

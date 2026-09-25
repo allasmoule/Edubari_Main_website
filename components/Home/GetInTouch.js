@@ -89,7 +89,7 @@ const GetInTouch = () => {
 
             <h2 className="text-3xl sm:text-4 sm:text-4.5xl lg:text-5xl font-black tracking-tight text-dark leading-tight">
               {t("getInTouch.titleMain")}{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary via-[#8B5CF6] to-[#7c3aed] drop-shadow-sm">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500 drop-shadow-sm">
                 {t("getInTouch.titleGradient")}
               </span>
             </h2>

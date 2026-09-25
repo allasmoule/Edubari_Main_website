@@ -266,7 +266,7 @@ const DomainSearch = () => {
         <button
           type="button"
           onClick={() => setVideoModalOpen(true)}
-          className="sm:absolute sm:top-8 sm:right-8 mx-auto mb-6 sm:mb-0 group inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-[0_6px_20px_-4px_rgba(79,70,229,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-xs font-black tracking-wider uppercase border-none cursor-pointer shrink-0"
+          className="sm:absolute sm:top-8 sm:right-8 mx-auto mb-6 sm:mb-0 group inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-xs font-black tracking-wider uppercase border-none cursor-pointer shrink-0"
         >
           <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
             <FaPlay className="w-2.5 h-2.5 ml-0.5" />
@@ -285,7 +285,7 @@ const DomainSearch = () => {
           {/* Main Title */}
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-tight">
             {t("domainSearch.titleMain")}{" "}
-            <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1">
+            <span className="block bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent mt-1">
               {t("domainSearch.titleGradient")}
             </span>
           </h2>
@@ -298,7 +298,7 @@ const DomainSearch = () => {
           {/* Search Bar Form */}
           <div className="mt-10 max-w-3xl mx-auto">
             <form onSubmit={handleSearch}>
-              <div className="relative rounded-full p-2 bg-gradient-to-r from-blue-300/80 via-indigo-300/80 to-purple-300/80 shadow-[0_12px_30px_-8px_rgba(59,130,246,0.25)] transition-all duration-300 hover:shadow-blue-500/20 border border-blue-200/60">
+              <div className="relative rounded-full p-2 bg-slate-200/80 shadow-md transition-all duration-300 border border-slate-200">
                 <div className="relative flex items-center bg-white rounded-full overflow-hidden">
                   <div className="pl-6 text-slate-400">
                     <FiGlobe className="h-6 w-6" />
@@ -315,7 +315,7 @@ const DomainSearch = () => {
                     id="domain-search-btn"
                     type="submit"
                     disabled={isSearching || !searchTerm.trim()}
-                    className="mr-1.5 sm:mr-2 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3.5 sm:py-4 text-white text-base font-black uppercase tracking-wider shadow-[0_4px_14px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.45)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
+                    className="mr-1.5 sm:mr-2 inline-flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-700 px-8 py-3.5 sm:py-4 text-white text-base font-black uppercase tracking-wider shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
                   >
                     {isSearching ? (
                       <>
