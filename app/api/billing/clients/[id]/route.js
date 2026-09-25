@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { query, queryOne, execute } from "@/lib/db";
 
 export async function PATCH(request, { params }) {
   try {
@@ -7,30 +7,50 @@ export async function PATCH(request, { params }) {
     const body = await request.json();
     const { client_name, domain, status, phone, logo_url } = body;
 
-    const updates = {};
-    if (client_name !== undefined) updates.client_name = client_name;
-    if (domain !== undefined) updates.domain = domain;
-    if (status !== undefined) updates.status = status;
-    if (phone !== undefined) updates.phone = phone;
-    if (logo_url !== undefined) updates.logo_url = logo_url;
-
-    const { data, error } = await supabaseAdmin
-      .from("clients")
-      .update(updates)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) {
-      if (error.code === "23505") {
-        return NextResponse.json({ error: "Domain already registered" }, { status: 400 });
-      }
-      throw error;
+    const existing = await queryOne("SELECT * FROM clients WHERE id = ?", [id]);
+    if (!existing) {
+      return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
 
-    return NextResponse.json(data);
+    const updates = [];
+    const values = [];
+
+    if (client_name !== undefined) {
+      updates.push("client_name = ?");
+      values.push(client_name);
+    }
+    if (domain !== undefined) {
+      updates.push("domain = ?");
+      values.push(domain);
+    }
+    if (status !== undefined) {
+      updates.push("status = ?");
+      values.push(status);
+    }
+    if (phone !== undefined) {
+      updates.push("phone = ?");
+      values.push(phone);
+    }
+    if (logo_url !== undefined) {
+      updates.push("logo_url = ?");
+      values.push(logo_url);
+    }
+
+    if (updates.length > 0) {
+      values.push(id);
+      await execute(
+        `UPDATE clients SET ${updates.join(", ")} WHERE id = ?`,
+        values
+      );
+    }
+
+    const updated = await queryOne("SELECT * FROM clients WHERE id = ?", [id]);
+    return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating client:", error);
+    console.error("Error updating client:", error.message);
+    if (error.message && error.message.includes("ER_DUP_ENTRY")) {
+      return NextResponse.json({ error: "Domain already registered" }, { status: 400 });
+    }
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -39,15 +59,14 @@ export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
 
-    const { error } = await supabaseAdmin
-      .from("clients")
-      .delete()
-      .eq("id", id);
+    // Delete associated subscriptions first to maintain integrity
+    await execute("DELETE FROM subscriptions WHERE client_id = ?", [id]);
+    await execute("DELETE FROM clients WHERE id = ?", [id]);
 
-    if (error) throw error;
     return NextResponse.json({ message: "Client deleted successfully" });
   } catch (error) {
-    console.error("Error deleting client:", error);
+    console.error("Error deleting client:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
