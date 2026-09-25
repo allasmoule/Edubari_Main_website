@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS `contact_messages`;
 DROP TABLE IF EXISTS `blog_posts`;
 DROP TABLE IF EXISTS `work_proofs`;
 DROP TABLE IF EXISTS `subscription_requests`;
+DROP TABLE IF EXISTS `erp_connections`;
 DROP TABLE IF EXISTS `subscriptions`;
 DROP TABLE IF EXISTS `plans`;
 DROP TABLE IF EXISTS `clients`;
@@ -53,9 +54,13 @@ CREATE TABLE `clients` (
     `phone` VARCHAR(50) DEFAULT NULL,
     `logo_url` TEXT DEFAULT NULL,
     `status` ENUM('active', 'suspended') NOT NULL DEFAULT 'active',
+    `client_type` ENUM('single_teacher', 'school_erp') NOT NULL DEFAULT 'single_teacher',
+    `erp_api_token` VARCHAR(64) DEFAULT NULL UNIQUE,
+    `erp_secret` VARCHAR(64) DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_clients_domain` (`domain`)
+    INDEX `idx_clients_domain` (`domain`),
+    INDEX `idx_clients_erp_token` (`erp_api_token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
@@ -64,6 +69,7 @@ CREATE TABLE `clients` (
 CREATE TABLE `plans` (
     `id` VARCHAR(36) NOT NULL PRIMARY KEY,
     `plan_name` VARCHAR(255) NOT NULL,
+    `plan_type` ENUM('single_teacher', 'school_erp') NOT NULL DEFAULT 'single_teacher',
     `duration_days` INT NOT NULL,
     `max_students` INT NOT NULL,
     `max_instructors` INT NOT NULL,
@@ -102,6 +108,25 @@ CREATE TABLE `subscriptions` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`client_id`) REFERENCES `clients`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`plan_id`) REFERENCES `plans`(`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------------------------------
+-- 4b. ERP CONNECTIONS TABLE (School ERP → EduBari link tracking)
+-- -----------------------------------------------------------------------------
+CREATE TABLE `erp_connections` (
+    `id` VARCHAR(36) NOT NULL PRIMARY KEY,
+    `client_id` VARCHAR(36) NOT NULL,
+    `domain` VARCHAR(255) NOT NULL,
+    `erp_api_token` VARCHAR(64) NOT NULL UNIQUE,
+    `laravel_version` VARCHAR(20) DEFAULT NULL,
+    `erp_version` VARCHAR(50) DEFAULT NULL,
+    `last_ping_at` DATETIME DEFAULT NULL,
+    `connection_status` ENUM('connected', 'disconnected', 'pending') DEFAULT 'pending',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`client_id`) REFERENCES `clients`(`id`) ON DELETE CASCADE,
+    INDEX `idx_erp_token` (`erp_api_token`),
+    INDEX `idx_erp_domain` (`domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
@@ -299,14 +324,22 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`)
 VALUES ('3dfd52ed-c3e8-4973-997f-906169626880', 'Edubari Admin', 'botbari@edubari.bd', 'b8c3390b674eb668e161d7279a6daa3ace8e4e2de0a9a0316f459ff675d6f268', 'admin')
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `email` = VALUES(`email`), `password` = VALUES(`password`);
 
--- Seed Standard SaaS Plans
-INSERT INTO `plans` (`id`, `plan_name`, `duration_days`, `max_students`, `max_instructors`, `price`, `features`, `plan_tier`, `max_batches`, `monthly_ai_credits`, `show_branding`, `is_active`, `sort_order`, `feature_gates`)
+-- Seed Standard SaaS Plans (single_teacher type)
+INSERT INTO `plans` (`id`, `plan_name`, `plan_type`, `duration_days`, `max_students`, `max_instructors`, `price`, `features`, `plan_tier`, `max_batches`, `monthly_ai_credits`, `show_branding`, `is_active`, `sort_order`, `feature_gates`)
 VALUES 
-('f0000000-0000-0000-0000-000000000001', 'EDUBARI Free', 365, 20, 1, 0.00, '["Limited Personal Website", "Personal Profile", "Limited Student Management", "1 Batch Management", "Basic Class & Exam System", "Basic Attendance", "Basic Payment Tracking", "Limited Online Class", "Limited AI Presentation Maker", "Powered by EDUBARI Branding", "2 AI Credits / Month"]', 'free', 1, 2, TRUE, TRUE, 1, '{"personal_website": true, "online_class": true, "recorded_class": false, "ai_presentation": true, "ai_presentation_limited": true, "guardian_portal": false, "advanced_analytics": false, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": false, "student_performance": false, "assignment_system": false, "payment_tracking": true}'),
-('f0000000-0000-0000-0000-000000000002', 'EDUBARI Starter', 30, 100, 1, 250.00, '["Personal Digital Academy", "Personal Website & Profile", "Student & Batch Management", "Monthly Payment & Due Tracking", "Online & Recorded Class", "Exam, Result & Assignment", "Auto Attendance", "AI Presentation Maker", "Student Performance Tracking", "Course Management", "10 AI Credits / Month"]', 'starter', 5, 10, FALSE, TRUE, 2, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": false, "advanced_analytics": false, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true}'),
-('f0000000-0000-0000-0000-000000000003', 'EDUBARI Professional', 30, 300, 1, 350.00, '["Starter Plan-এর সকল সুবিধা", "অধিক Student & Batch", "Advanced Student Analytics", "Guardian Portal", "Smart Payment Tracking", "Advanced AI Tools", "Personal Branded Platform", "Online + Offline Class", "Advanced Reports & Analytics", "Priority Support", "15 AI Credits / Month"]', 'professional', 15, 15, FALSE, TRUE, 3, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true}'),
-('f0000000-0000-0000-0000-000000000004', 'EDUBARI Business', 30, 500, 10, 550.00, '["Multiple Teacher Management", "Student & Batch Management", "Batch-wise Payment System", "Teacher Activity Tracking", "Student Performance Tracking", "Guardian Portal & Notification", "Teacher Salary Management", "Online + Offline Class", "Exam, Assignment & Result", "AI Presentation Maker", "Branded Website & Platform", "Advanced Analytics", "30 AI Credits / Month"]', 'business', 30, 30, FALSE, TRUE, 4, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": true, "salary_management": true, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true}'),
-('f0000000-0000-0000-0000-000000000005', 'EDUBARI Enterprise', 30, 2000, 50, 700.00, '["Complete Institution Management", "Multiple Teacher & Student Management", "Department & Campus Management", "Teacher Class Tracking", "Auto Attendance System", "Student Performance Analytics", "Guardian Monitoring", "Payment & Salary Management", "AI-Powered Education Tools", "Custom Website & App", "Central Digital Dashboard", "Upazila & District Level Monitoring", "Advanced Analytics & Reports", "Dedicated Support", "Custom Development & Integration", "50 AI Credits / Month"]', 'enterprise', 999, 50, FALSE, TRUE, 5, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": true, "salary_management": true, "custom_branding": true, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true, "custom_development": true}')
+('f0000000-0000-0000-0000-000000000001', 'EDUBARI Free', 'single_teacher', 365, 20, 1, 0.00, '["Limited Personal Website", "Personal Profile", "Limited Student Management", "1 Batch Management", "Basic Class & Exam System", "Basic Attendance", "Basic Payment Tracking", "Limited Online Class", "Limited AI Presentation Maker", "Powered by EDUBARI Branding", "2 AI Credits / Month"]', 'free', 1, 2, TRUE, TRUE, 1, '{"personal_website": true, "online_class": true, "recorded_class": false, "ai_presentation": true, "ai_presentation_limited": true, "guardian_portal": false, "advanced_analytics": false, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": false, "student_performance": false, "assignment_system": false, "payment_tracking": true}'),
+('f0000000-0000-0000-0000-000000000002', 'EDUBARI Starter', 'single_teacher', 30, 100, 1, 250.00, '["Personal Digital Academy", "Personal Website & Profile", "Student & Batch Management", "Monthly Payment & Due Tracking", "Online & Recorded Class", "Exam, Result & Assignment", "Auto Attendance", "AI Presentation Maker", "Student Performance Tracking", "Course Management", "10 AI Credits / Month"]', 'starter', 5, 10, FALSE, TRUE, 2, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": false, "advanced_analytics": false, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true}'),
+('f0000000-0000-0000-0000-000000000003', 'EDUBARI Professional', 'single_teacher', 30, 300, 1, 350.00, '["Starter Plan-এর সকল সুবিধা", "অধিক Student & Batch", "Advanced Student Analytics", "Guardian Portal", "Smart Payment Tracking", "Advanced AI Tools", "Personal Branded Platform", "Online + Offline Class", "Advanced Reports & Analytics", "Priority Support", "15 AI Credits / Month"]', 'professional', 15, 15, FALSE, TRUE, 3, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": false, "salary_management": false, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true}'),
+('f0000000-0000-0000-0000-000000000004', 'EDUBARI Business', 'single_teacher', 30, 500, 10, 550.00, '["Multiple Teacher Management", "Student & Batch Management", "Batch-wise Payment System", "Teacher Activity Tracking", "Student Performance Tracking", "Guardian Portal & Notification", "Teacher Salary Management", "Online + Offline Class", "Exam, Assignment & Result", "AI Presentation Maker", "Branded Website & Platform", "Advanced Analytics", "30 AI Credits / Month"]', 'business', 30, 30, FALSE, TRUE, 4, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": true, "salary_management": true, "custom_branding": false, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true}'),
+('f0000000-0000-0000-0000-000000000005', 'EDUBARI Enterprise', 'single_teacher', 30, 2000, 50, 700.00, '["Complete Institution Management", "Multiple Teacher & Student Management", "Department & Campus Management", "Teacher Class Tracking", "Auto Attendance System", "Student Performance Analytics", "Guardian Monitoring", "Payment & Salary Management", "AI-Powered Education Tools", "Custom Website & App", "Central Digital Dashboard", "Upazila & District Level Monitoring", "Advanced Analytics & Reports", "Dedicated Support", "Custom Development & Integration", "50 AI Credits / Month"]', 'enterprise', 999, 50, FALSE, TRUE, 5, '{"personal_website": true, "online_class": true, "recorded_class": true, "ai_presentation": true, "ai_presentation_limited": false, "guardian_portal": true, "advanced_analytics": true, "multi_teacher": true, "salary_management": true, "custom_branding": true, "course_management": true, "student_performance": true, "assignment_system": true, "payment_tracking": true, "payment_tracking_advanced": true, "custom_development": true}')
+ON DUPLICATE KEY UPDATE `plan_name` = VALUES(`plan_name`), `plan_type` = VALUES(`plan_type`);
+
+-- Seed School ERP Plans (school_erp type)
+INSERT INTO `plans` (`id`, `plan_name`, `plan_type`, `duration_days`, `max_students`, `max_instructors`, `price`, `features`, `plan_tier`, `max_batches`, `monthly_ai_credits`, `show_branding`, `is_active`, `sort_order`, `feature_gates`)
+VALUES
+('e0000000-0000-0000-0000-000000000001', 'ERP Basic School', 'school_erp', 365, 300, 10, 2000.00, '["School ERP API Connection", "Up to 300 Students", "10 Teachers", "Basic Attendance & Exam", "Student Payment Tracking", "Guardian SMS Alerts", "20 AI Credits / Month"]', 'starter', 20, 20, TRUE, TRUE, 10, '{"multi_teacher": true, "guardian_portal": true, "salary_management": false, "advanced_analytics": false, "ai_presentation": true, "custom_branding": false, "erp_api_access": true}'),
+('e0000000-0000-0000-0000-000000000002', 'ERP Standard School', 'school_erp', 365, 1000, 30, 4500.00, '["School ERP API Connection", "Up to 1000 Students", "30 Teachers", "Full Attendance & Exam System", "Advanced Payment Management", "Teacher Salary System", "Guardian Portal", "Advanced Analytics", "50 AI Credits / Month"]', 'professional', 50, 50, FALSE, TRUE, 11, '{"multi_teacher": true, "guardian_portal": true, "salary_management": true, "advanced_analytics": true, "ai_presentation": true, "custom_branding": false, "erp_api_access": true}'),
+('e0000000-0000-0000-0000-000000000003', 'ERP Enterprise School', 'school_erp', 365, 5000, 100, 8000.00, '["School ERP API Connection", "Up to 5000 Students", "100 Teachers", "Multi-Campus Management", "Department Management", "Full Salary & HR System", "District Level Monitoring", "Custom Branding & Domain", "Priority Support", "100 AI Credits / Month"]', 'enterprise', 999, 100, FALSE, TRUE, 12, '{"multi_teacher": true, "guardian_portal": true, "salary_management": true, "advanced_analytics": true, "ai_presentation": true, "custom_branding": true, "erp_api_access": true, "multi_campus": true, "custom_development": true}')
 ON DUPLICATE KEY UPDATE `plan_name` = VALUES(`plan_name`);
 
 -- Seed Standard Active Clients

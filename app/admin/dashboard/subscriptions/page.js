@@ -16,6 +16,10 @@ import {
   FiUser,
   FiX,
   FiSearch,
+  FiServer,
+  FiWifi,
+  FiWifiOff,
+  FiClock,
 } from "react-icons/fi";
 
 const formatDateTime = (value) => {
@@ -93,11 +97,14 @@ const getSubscriptionMeta = (item) => {
 };
 
 export default function AdminSubscriptionsPage() {
+  const [activeTab, setActiveTab] = useState("requests"); // "requests" | "erp"
   const [subscriptions, setSubscriptions] = useState([]);
+  const [erpConnections, setErpConnections] = useState([]);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [erpLoading, setErpLoading] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all"); // all, verified, pending
@@ -127,6 +134,20 @@ export default function AdminSubscriptionsPage() {
       setError(err.message || "Failed to load subscriptions");
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const fetchErpConnections = useCallback(async () => {
+    setErpLoading(true);
+    try {
+      const res = await fetch("/api/erp/ping");
+      if (!res.ok) throw new Error("Failed");
+      const data = await res.json();
+      setErpConnections(Array.isArray(data) ? data : []);
+    } catch (_) {
+      setErpConnections([]);
+    } finally {
+      setErpLoading(false);
     }
   }, []);
 
@@ -209,7 +230,8 @@ export default function AdminSubscriptionsPage() {
 
   useEffect(() => {
     fetchSubscriptions();
-  }, [fetchSubscriptions]);
+    fetchErpConnections();
+  }, [fetchSubscriptions, fetchErpConnections]);
 
   /* Derived Stats & Filters */
   const totalRevenue = useMemo(() => {
@@ -240,17 +262,18 @@ export default function AdminSubscriptionsPage() {
       <div className="rounded-2xl border border-white/40 bg-white/70 backdrop-blur-sm p-5 sm:p-6 shadow-lg shadow-dark/3">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h2 className="text-lg sm:text-xl font-extrabold text-dark tracking-tight">
-              Subscriptions
+            <h2 className="text-lg sm:text-xl font-extrabold text-dark tracking-tight flex items-center gap-2">
+              <FiServer className="w-5 h-5 text-tertiary" />
+              School ERP Subscriptions
             </h2>
             <p className="text-xs sm:text-sm text-dark/45 font-medium mt-1">
-              All submitted subscription requests from the purchase form
+              Manage School ERP connections and subscription purchase requests
             </p>
           </div>
 
           <button
             type="button"
-            onClick={fetchSubscriptions}
+            onClick={() => { fetchSubscriptions(); fetchErpConnections(); }}
             className="px-3 py-2 rounded-xl border border-dark/10 text-sm font-semibold text-dark/60 hover:bg-dark/5 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 border-none bg-transparent"
           >
             <FiRefreshCw className="w-4 h-4" />
@@ -258,6 +281,35 @@ export default function AdminSubscriptionsPage() {
           </button>
         </div>
 
+        {/* Tab Switcher */}
+        <div className="flex p-1 rounded-2xl bg-dark/[0.04] w-max border border-dark/5 mb-5">
+          <button
+            type="button"
+            onClick={() => setActiveTab("requests")}
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border-none flex items-center gap-1.5 ${
+              activeTab === "requests"
+                ? "bg-white text-tertiary shadow-sm font-extrabold"
+                : "bg-transparent text-dark/50 hover:text-dark/80"
+            }`}
+          >
+            <FiCreditCard className="w-4 h-4" /> Subscription Requests
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("erp")}
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border-none flex items-center gap-1.5 ${
+              activeTab === "erp"
+                ? "bg-white text-tertiary shadow-sm font-extrabold"
+                : "bg-transparent text-dark/50 hover:text-dark/80"
+            }`}
+          >
+            <FiServer className="w-4 h-4" /> ERP Connections ({erpConnections.length})
+          </button>
+        </div>
+
+        {/* ── TAB: Subscription Requests ── */}
+        {activeTab === "requests" && (
+          <>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           <div className="rounded-xl border border-white/40 bg-white/75 p-3">
             <p className="text-xs font-bold text-dark/40">Total Requests</p>
@@ -698,6 +750,104 @@ export default function AdminSubscriptionsPage() {
             )}
           </>
         )}
+        {/* ── END: requests tab ── */}
+
+        {/* ── TAB: ERP Connections ── */}
+        {activeTab === "erp" && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-xl border border-white/40 bg-white/75 p-3">
+                <p className="text-xs font-bold text-dark/40">Total ERP Instances</p>
+                <p className="text-xl font-extrabold text-dark mt-1">{erpConnections.length}</p>
+              </div>
+              <div className="rounded-xl border border-white/40 bg-white/75 p-3">
+                <p className="text-xs font-bold text-dark/40">Connected</p>
+                <p className="text-xl font-extrabold text-emerald-600 mt-1">
+                  {erpConnections.filter(e => e.connection_status === "connected").length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/40 bg-white/75 p-3">
+                <p className="text-xs font-bold text-dark/40">Pending / Disconnected</p>
+                <p className="text-xl font-extrabold text-amber-600 mt-1">
+                  {erpConnections.filter(e => e.connection_status !== "connected").length}
+                </p>
+              </div>
+            </div>
+
+            {erpLoading && (
+              <div className="py-12 flex items-center justify-center gap-2 text-sm text-dark/50 font-medium">
+                <FiLoader className="w-4 h-4 animate-spin" /> Loading ERP connections...
+              </div>
+            )}
+
+            {!erpLoading && erpConnections.length === 0 && (
+              <div className="rounded-xl border border-dark/10 bg-white/60 text-dark/55 text-sm font-semibold px-4 py-10 text-center space-y-2">
+                <FiServer className="w-10 h-10 mx-auto text-dark/20 mb-2" />
+                <p>No School ERP instances connected yet.</p>
+                <p className="text-xs font-medium text-dark/40">Add a School ERP client from <strong>Single Teacher Subscriptions</strong> to get started.</p>
+              </div>
+            )}
+
+            {!erpLoading && erpConnections.length > 0 && (
+              <div className="overflow-x-auto rounded-2xl border border-dark/8">
+                <table className="min-w-full bg-white/80">
+                  <thead className="bg-dark/3">
+                    <tr>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Institution</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Domain</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">API Token</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Status</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Last Ping</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Laravel Ver</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {erpConnections.map((conn) => (
+                      <tr key={conn.id} className="border-t border-dark/8 hover:bg-dark/[0.015] transition-colors">
+                        <td className="px-4 py-3">
+                          <p className="text-sm font-bold text-dark">{conn.client_name || "-"}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs font-semibold text-dark/70 flex items-center gap-1">
+                            <FiGlobe className="w-3 h-3 text-tertiary" /> {conn.domain}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <code className="text-[10px] bg-dark/5 px-2 py-1 rounded-lg font-mono text-dark/60 break-all">
+                            {conn.erp_api_token ? `${conn.erp_api_token.substring(0, 16)}...` : "-"}
+                          </code>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold ${
+                            conn.connection_status === "connected"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : conn.connection_status === "pending"
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-red-100 text-red-700"
+                          }`}>
+                            {conn.connection_status === "connected" ? <FiWifi className="w-3 h-3" /> : <FiWifiOff className="w-3 h-3" />}
+                            {conn.connection_status?.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs text-dark/55 flex items-center gap-1">
+                            <FiClock className="w-3 h-3" />
+                            {conn.last_ping_at ? new Date(conn.last_ping_at).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs text-dark/55 font-mono">{conn.laravel_version || "-"}</p>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+        {/* ── END: erp tab ── */}
+
       </div>
     </div>
   );

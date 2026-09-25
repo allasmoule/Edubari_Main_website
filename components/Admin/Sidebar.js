@@ -19,6 +19,7 @@ import {
   FiImage,
   FiUserPlus,
   FiLayers,
+  FiServer,
 } from "react-icons/fi";
 import { supabase } from "@/lib/supabase";
 
@@ -28,8 +29,8 @@ const navItems = [
   { path: "/admin/dashboard/plans", label: "Plans", icon: FiCreditCard },
   {
     path: "/admin/dashboard/subscriptions",
-    label: "Subscriptions",
-    icon: FiBriefcase,
+    label: "School ERP Subscriptions",
+    icon: FiServer,
   },
   {
     path: "/admin/dashboard/ai-purchases",
