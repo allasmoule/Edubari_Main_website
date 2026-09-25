@@ -55,6 +55,8 @@ function mapPlanFromDb(row) {
     badge: parsedRow.badge || null,
     planTier: parsedRow.plan_tier || 'free',
     plan_tier: parsedRow.plan_tier || 'free',
+    planType: parsedRow.plan_type || 'single_teacher',
+    plan_type: parsedRow.plan_type || 'single_teacher',
   };
 }
 
@@ -88,6 +90,7 @@ export async function POST(request) {
     const popular = Boolean(body.popular ?? false);
     const badge = body.badge || null;
     const planTier = body.planTier || body.plan_tier || 'free';
+    const planType = body.planType || body.plan_type || 'single_teacher';
     const maxBatches = body.maxBatches !== undefined ? Number(body.maxBatches) : (body.max_batches !== undefined ? Number(body.max_batches) : 1);
     const monthlyAiCredits = body.monthlyAiCredits !== undefined ? Number(body.monthlyAiCredits) : (body.monthly_ai_credits !== undefined ? Number(body.monthly_ai_credits) : 0);
     const showBranding = Boolean(body.showBranding ?? body.show_branding ?? true);
@@ -96,8 +99,8 @@ export async function POST(request) {
 
     await execute(
       `INSERT INTO plans 
-       (id, plan_name, duration_days, max_students, max_instructors, price, old_price, price_label, duration, description, features, is_active, popular, badge, plan_tier, max_batches, monthly_ai_credits, show_branding, sort_order, feature_gates) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (id, plan_name, duration_days, max_students, max_instructors, price, old_price, price_label, duration, description, features, is_active, popular, badge, plan_tier, plan_type, max_batches, monthly_ai_credits, show_branding, sort_order, feature_gates) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         planId,
         planName,
@@ -114,6 +117,7 @@ export async function POST(request) {
         popular,
         badge,
         planTier,
+        planType,
         maxBatches,
         monthlyAiCredits,
         showBranding,

@@ -750,6 +750,8 @@ export default function AdminSubscriptionsPage() {
             )}
           </>
         )}
+        </>
+        )}
         {/* ── END: requests tab ── */}
 
         {/* ── TAB: ERP Connections ── */}

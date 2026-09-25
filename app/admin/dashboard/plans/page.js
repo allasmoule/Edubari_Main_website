@@ -89,11 +89,12 @@ const FeatureInput = ({ features, setFeatures }) => {
 };
 
 /* ── Plan Form Modal ── */
-const PlanModal = ({ plan, onSave, onClose, saving }) => {
+const PlanModal = ({ plan, defaultPlanType, onSave, onClose, saving }) => {
   const isEdit = !!plan?.id || !!plan?._id;
   const [form, setForm] = useState({
     id: plan?.id || plan?._id || undefined,
     name: plan?.name || "",
+    planType: plan?.planType || plan?.plan_type || defaultPlanType || "single_teacher",
     durationDays: plan?.durationDays || plan?.duration_days || 30,
     price: plan?.price || "",
     oldPrice: plan?.oldPrice || plan?.old_price || "",
@@ -141,6 +142,7 @@ const PlanModal = ({ plan, onSave, onClose, saving }) => {
     onSave({
       ...plan,
       ...form,
+      planType: form.planType,
       price: Number(form.price),
       oldPrice: form.oldPrice ? Number(form.oldPrice) : null,
       durationDays: days,
@@ -294,8 +296,21 @@ const PlanModal = ({ plan, onSave, onClose, saving }) => {
             </div>
           </div>
 
-          {/* Plan Tier and Sort Order */}
+          {/* Plan Type & Plan Tier */}
           <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-dark/70 mb-2">
+                Plan Type *
+              </label>
+              <select
+                value={form.planType}
+                onChange={(e) => setForm({ ...form, planType: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
+              >
+                <option value="single_teacher">Single Teacher Plan</option>
+                <option value="school_erp">School ERP Plan</option>
+              </select>
+            </div>
             <div>
               <label className="block text-sm font-semibold text-dark/70 mb-2">
                 Plan Tier *
@@ -312,17 +327,19 @@ const PlanModal = ({ plan, onSave, onClose, saving }) => {
                 <option value="enterprise">Enterprise</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-dark/70 mb-2">
-                Sort Order
-              </label>
-              <input
-                type="number"
-                value={form.sortOrder}
-                onChange={(e) => setForm({ ...form, sortOrder: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
-              />
-            </div>
+          </div>
+
+          {/* Sort Order */}
+          <div>
+            <label className="block text-sm font-semibold text-dark/70 mb-2">
+              Sort Order
+            </label>
+            <input
+              type="number"
+              value={form.sortOrder}
+              onChange={(e) => setForm({ ...form, sortOrder: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl border border-dark/10 bg-white/60 text-sm font-medium text-dark outline-none focus:border-tertiary/40 focus:ring-2 focus:ring-tertiary/10 transition-all duration-200"
+            />
           </div>
 
           {/* Limits */}
@@ -796,16 +813,23 @@ export default function AdminPlansPage() {
   };
 
   /* Derived Stats */
-  const subsCount = plans.reduce((s, p) => s + (p.subscribers || 0), 0);
-  const revenueSum = plans.reduce((s, p) => s + (p.revenue || 0), 0);
-  const activeCount = plans.filter((p) => p.active).length;
+  const targetPlanType = activeView === "school_erp" ? "school_erp" : "single_teacher";
 
-  const popularPlan = plans.reduce(
+  const viewPlans = plans.filter((p) => {
+    const pType = p.plan_type || p.planType || "single_teacher";
+    return pType === targetPlanType;
+  });
+
+  const subsCount = viewPlans.reduce((s, p) => s + (p.subscribers || 0), 0);
+  const revenueSum = viewPlans.reduce((s, p) => s + (p.revenue || 0), 0);
+  const activeCount = viewPlans.filter((p) => p.active).length;
+
+  const popularPlan = viewPlans.reduce(
     (best, p) => ((p.subscribers || 0) > (best?.subscribers || 0) ? p : best),
     null
   );
 
-  const filtered = plans
+  const filtered = viewPlans
     .filter((p) => {
       if (filter === "active") return p.active;
       if (filter === "inactive") return !p.active;
@@ -831,17 +855,28 @@ export default function AdminPlansPage() {
       )}
 
       {/* ─── View Toggle Tabs ─── */}
-      <div className="flex p-1 rounded-2xl bg-dark/[0.04] w-max border border-dark/5">
+      <div className="flex p-1 rounded-2xl bg-dark/[0.04] w-max border border-dark/5 flex-wrap gap-1">
         <button
           type="button"
-          onClick={() => setActiveView("tenant")}
+          onClick={() => setActiveView("single_teacher")}
           className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border-none flex items-center gap-1.5 ${
-            activeView === "tenant"
+            activeView === "single_teacher" || activeView === "tenant"
               ? "bg-white text-tertiary shadow-sm font-extrabold"
               : "bg-transparent text-dark/50 hover:text-dark/80"
           }`}
         >
-          <FiPackage className="w-4 h-4" /> Single Teacher Plans
+          <FiPackage className="w-4 h-4" /> Single Teacher Plans ({plans.filter(p => (p.plan_type || p.planType || "single_teacher") === "single_teacher").length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveView("school_erp")}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border-none flex items-center gap-1.5 ${
+            activeView === "school_erp"
+              ? "bg-white text-tertiary shadow-sm font-extrabold"
+              : "bg-transparent text-dark/50 hover:text-dark/80"
+          }`}
+        >
+          <FiLayers className="w-4 h-4" /> School ERP Plans ({plans.filter(p => (p.plan_type || p.planType) === "school_erp").length})
         </button>
         <button
           type="button"
@@ -852,11 +887,11 @@ export default function AdminPlansPage() {
               : "bg-transparent text-dark/50 hover:text-dark/80"
           }`}
         >
-          <FiCpu className="w-4 h-4" /> AI Credit Add-ons
+          <FiCpu className="w-4 h-4" /> AI Credit Add-ons ({aiPackages.length})
         </button>
       </div>
 
-      {activeView === "tenant" ? (
+      {activeView !== "ai" ? (
         <>
           {/* ─── Summary Stats ─── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
@@ -1238,6 +1273,7 @@ export default function AdminPlansPage() {
       {showModal && (
         <PlanModal
           plan={editingPlan}
+          defaultPlanType={activeView === "school_erp" ? "school_erp" : "single_teacher"}
           saving={saving}
           onSave={handleSave}
           onClose={() => {

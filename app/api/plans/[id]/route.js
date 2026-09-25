@@ -54,6 +54,8 @@ function mapPlanFromDb(row) {
     badge: parsedRow.badge || null,
     planTier: parsedRow.plan_tier || 'free',
     plan_tier: parsedRow.plan_tier || 'free',
+    planType: parsedRow.plan_type || 'single_teacher',
+    plan_type: parsedRow.plan_type || 'single_teacher',
   };
 }
 
@@ -128,6 +130,10 @@ export async function PATCH(request, { params }) {
     if (body.planTier !== undefined || body.plan_tier !== undefined) {
       updates.push("plan_tier = ?");
       values.push(body.planTier || body.plan_tier);
+    }
+    if (body.planType !== undefined || body.plan_type !== undefined) {
+      updates.push("plan_type = ?");
+      values.push(body.planType || body.plan_type);
     }
     if (body.maxStudents !== undefined || body.max_students !== undefined) {
       updates.push("max_students = ?");

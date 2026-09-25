@@ -627,7 +627,8 @@ export default function AdminBillingPage() {
                                   status: client.status,
                                   phone: client.phone || "",
                                   plan_id: activeSub?.plan_id || "",
-                                  logo_url: client.logo_url || ""
+                                  logo_url: client.logo_url || "",
+                                  client_type: client.client_type || "single_teacher"
                                 });
                                 setClientModalOpen(true);
                               }}
@@ -930,6 +931,26 @@ export default function AdminBillingPage() {
                 />
               </div>
 
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-dark/60 uppercase">Client Architecture Type</label>
+                <select
+                  value={clientForm.client_type || "single_teacher"}
+                  onChange={(e) => {
+                    const type = e.target.value;
+                    const matchingPlans = plans.filter(p => (p.plan_type || p.planType || "single_teacher") === type);
+                    setClientForm({
+                      ...clientForm,
+                      client_type: type,
+                      plan_id: matchingPlans.length > 0 ? matchingPlans[0].id : ""
+                    });
+                  }}
+                  className="w-full rounded-xl border border-dark/10 bg-white px-4 py-3 text-xs font-semibold text-dark outline-none focus:border-tertiary transition-all"
+                >
+                  <option value="single_teacher">Single Teacher Instance</option>
+                  <option value="school_erp">School ERP Instance</option>
+                </select>
+              </div>
+
               {!selectedClient && (
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-dark/60 uppercase">Activate Pricing Plan</label>
@@ -939,11 +960,13 @@ export default function AdminBillingPage() {
                     onChange={(e) => setClientForm({ ...clientForm, plan_id: e.target.value })}
                     className="w-full rounded-xl border border-dark/10 bg-white px-4 py-3 text-xs font-semibold text-dark outline-none focus:border-tertiary transition-all"
                   >
-                    {plans.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.plan_name} - ৳{Number(p.price).toLocaleString()} ({p.duration_days} Days)
-                      </option>
-                    ))}
+                    {plans
+                      .filter((p) => (p.plan_type || p.planType || "single_teacher") === (clientForm.client_type || "single_teacher"))
+                      .map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.plan_name} - ৳{Number(p.price).toLocaleString()} ({p.duration_days} Days)
+                        </option>
+                      ))}
                   </select>
                 </div>
               )}
