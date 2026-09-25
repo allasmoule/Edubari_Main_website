@@ -294,10 +294,10 @@ CREATE TABLE `collected_leads` (
 -- SEED DATA
 -- =============================================================================
 
--- Seed Admin User: asifrabetul@gmail.com | Password: 123456
+-- Seed Admin User: botbari@edubari.bd | Password: Edu@@@@1234 (SHA-256: b8c3390b674eb668e161d7279a6daa3ace8e4e2de0a9a0316f459ff675d6f268)
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`)
-VALUES ('3dfd52ed-c3e8-4973-997f-906169626880', 'Asif Rabetul', 'asifrabetul@gmail.com', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'admin')
-ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
+VALUES ('3dfd52ed-c3e8-4973-997f-906169626880', 'Edubari Admin', 'botbari@edubari.bd', 'b8c3390b674eb668e161d7279a6daa3ace8e4e2de0a9a0316f459ff675d6f268', 'admin')
+ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `email` = VALUES(`email`), `password` = VALUES(`password`);
 
 -- Seed Standard SaaS Plans
 INSERT INTO `plans` (`id`, `plan_name`, `duration_days`, `max_students`, `max_instructors`, `price`, `features`, `plan_tier`, `max_batches`, `monthly_ai_credits`, `show_branding`, `is_active`, `sort_order`, `feature_gates`)
