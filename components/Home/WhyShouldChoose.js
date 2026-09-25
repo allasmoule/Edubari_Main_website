@@ -9,11 +9,48 @@ import {
   FiTrendingUp,
   FiArrowRight,
 } from "react-icons/fi";
+import { useLanguage } from "@/context/LanguageContext";
 
 const WhyShouldChoose = () => {
+  const { t } = useLanguage();
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
+
+  const features = [
+    {
+      id: "01",
+      icon: <FiGlobe className="h-6 w-6" />,
+      title: t("whyChoose.f1Title"),
+      description: t("whyChoose.f1Desc"),
+      accent: "text-tertiary bg-tertiary/10 border-tertiary/20",
+      hoverGlow: "group-hover:shadow-[0_0_20px_rgba(14,165,233,0.3)]",
+    },
+    {
+      id: "02",
+      icon: <FiSettings className="h-6 w-6" />,
+      title: t("whyChoose.f2Title"),
+      description: t("whyChoose.f2Desc"),
+      accent: "text-secondary bg-secondary/10 border-secondary/20",
+      hoverGlow: "group-hover:shadow-[0_0_20px_rgba(244,63,94,0.3)]",
+    },
+    {
+      id: "03",
+      icon: <FiUsers className="h-6 w-6" />,
+      title: t("whyChoose.f3Title"),
+      description: t("whyChoose.f3Desc"),
+      accent: "text-[#8B5CF6] bg-[#8B5CF6]/10 border-[#8B5CF6]/20",
+      hoverGlow: "group-hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]",
+    },
+    {
+      id: "04",
+      icon: <FiTrendingUp className="h-6 w-6" />,
+      title: t("whyChoose.f4Title"),
+      description: t("whyChoose.f4Desc"),
+      accent: "text-tertiary bg-tertiary/10 border-tertiary/20",
+      hoverGlow: "group-hover:shadow-[0_0_20px_rgba(14,165,233,0.3)]",
+    },
+  ];
   
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,64 +69,29 @@ const WhyShouldChoose = () => {
     
     return () => observer.disconnect();
   }, []);
-  
-  const features = [
-    {
-      id: "01",
-      icon: <FiGlobe className="h-6 w-6" />,
-      title: "Dedicated Domain",
-      description: "Get your own professional web identity to build trust.",
-      accent: "text-tertiary bg-tertiary/10 border-tertiary/20",
-      hoverGlow: "group-hover:shadow-[0_0_20px_rgba(14,165,233,0.3)]",
-    },
-    {
-      id: "02",
-      icon: <FiSettings className="h-6 w-6" />,
-      title: "We Handle Tech",
-      description: "Focus on teaching while we manage the platform.",
-      accent: "text-secondary bg-secondary/10 border-secondary/20",
-      hoverGlow: "group-hover:shadow-[0_0_20px_rgba(244,63,94,0.3)]",
-    },
-    {
-      id: "03",
-      icon: <FiUsers className="h-6 w-6" />,
-      title: "All in One Place",
-      description: "Manage students, materials, and updates easily.",
-      accent: "text-[#8B5CF6] bg-[#8B5CF6]/10 border-[#8B5CF6]/20",
-      hoverGlow: "group-hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]",
-    },
-    {
-      id: "04",
-      icon: <FiTrendingUp className="h-6 w-6" />,
-      title: "Attract Students",
-      description: "Grow your teaching business with a structured platform.",
-      accent: "text-tertiary bg-tertiary/10 border-tertiary/20",
-      hoverGlow: "group-hover:shadow-[0_0_20px_rgba(14,165,233,0.3)]",
-    },
-  ];
 
   return (
-    <section ref={sectionRef} className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-primary/10 overflow-hidden">
+    <section ref={sectionRef} className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-primary/10 overflow-hidden select-none">
       <div className={`max-w-7xl mx-auto transition-all duration-1000 transform ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
         
         {/* Header - Compact */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
           <div className="max-w-2xl">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-dark leading-tight">
-              Why Choose{" "}
+              {t("whyChoose.titleMain")}{" "}
               <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] animate-[pulse_3s_ease-in-out_infinite]">
-                EduBari?
+                {t("whyChoose.titleGradient")}
               </span>
             </h2>
             <p className="mt-3 text-sm sm:text-base text-dark/70 font-medium">
-              We help teachers build a strong online identity with a dedicated domain, professional website, and simple tools.
+              {t("whyChoose.subtitle")}
             </p>
           </div>
           <button
             onClick={() => router.push("/payment-purchase")}
-            className="shrink-0 inline-flex items-center gap-2 rounded-full bg-linear-to-r from-tertiary to-secondary px-7 py-3 text-sm font-bold text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+            className="shrink-0 inline-flex items-center gap-2 rounded-full bg-linear-to-r from-tertiary to-secondary px-7 py-3 text-sm font-bold text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
           >
-            Start Now <FiArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            {t("whyChoose.startNow")} <FiArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 

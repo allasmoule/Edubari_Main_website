@@ -19,6 +19,7 @@ import {
   FaChalkboardTeacher,
   FaPlay,
 } from "react-icons/fa";
+import { useLanguage } from "@/context/LanguageContext";
 
 const COMMON_TLDS = [
   ".com",
@@ -63,42 +64,8 @@ function splitDomainName(domain) {
   };
 }
 
-const CATEGORIES = [
-  {
-    id: "school",
-    label: "School",
-    icon: FaSchool,
-    bgColor: "bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100",
-    activeColor: "bg-blue-600 text-white border-blue-600 shadow-md",
-    placeholder: "myschool",
-  },
-  {
-    id: "college",
-    label: "College",
-    icon: FaUniversity,
-    bgColor: "bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100",
-    activeColor: "bg-purple-600 text-white border-purple-600 shadow-md",
-    placeholder: "mycollege",
-  },
-  {
-    id: "madrasha",
-    label: "Madrasha",
-    icon: FaMosque,
-    bgColor: "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100",
-    activeColor: "bg-emerald-600 text-white border-emerald-600 shadow-md",
-    placeholder: "mymadrasha",
-  },
-  {
-    id: "single_teacher",
-    label: "Single Teacher",
-    icon: FaChalkboardTeacher,
-    bgColor: "bg-orange-50 border-orange-200 text-orange-600 hover:bg-orange-100",
-    activeColor: "bg-orange-600 text-white border-orange-600 shadow-md",
-    placeholder: "teachername",
-  },
-];
-
 const DomainSearch = () => {
+  const { lang, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState([]);
@@ -110,6 +77,41 @@ const DomainSearch = () => {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
+
+  const categories = [
+    {
+      id: "school",
+      label: t("domainSearch.school"),
+      icon: FaSchool,
+      bgColor: "bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100",
+      activeColor: "bg-blue-600 text-white border-blue-600 shadow-md",
+      placeholder: "myschool",
+    },
+    {
+      id: "college",
+      label: t("domainSearch.college"),
+      icon: FaUniversity,
+      bgColor: "bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100",
+      activeColor: "bg-purple-600 text-white border-purple-600 shadow-md",
+      placeholder: "mycollege",
+    },
+    {
+      id: "madrasha",
+      label: t("domainSearch.madrasha"),
+      icon: FaMosque,
+      bgColor: "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100",
+      activeColor: "bg-emerald-600 text-white border-emerald-600 shadow-md",
+      placeholder: "mymadrasha",
+    },
+    {
+      id: "single_teacher",
+      label: t("domainSearch.singleTeacher"),
+      icon: FaChalkboardTeacher,
+      bgColor: "bg-orange-50 border-orange-200 text-orange-600 hover:bg-orange-100",
+      activeColor: "bg-orange-600 text-white border-orange-600 shadow-md",
+      placeholder: "teachername",
+    },
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -201,12 +203,14 @@ const DomainSearch = () => {
         ...checkResults,
       ];
       setResults(finalResults);
-      setResultsModalOpen(true); // Open full popup modal with search results!
+      setResultsModalOpen(true);
 
       const hasAvailable = finalResults.some((r) => r.available);
       if (!hasAvailable) {
         setError(
-          "Sorry, no related domains are currently available. Try a different name."
+          lang === "bn"
+            ? "দুঃখিত, কোনো ডোমেইন খালি নেই। অনুগ্রহ করে অন্য নাম লিখে চেষ্টা করুন।"
+            : "Sorry, no related domains are currently available. Try a different name."
         );
       }
     } catch (error) {
@@ -216,11 +220,9 @@ const DomainSearch = () => {
     }
   };
 
-  // When user selects an available domain in the popup modal
   const handleSelectDomain = (result) => {
     const price = getDomainPrice(result.domain);
 
-    // Save to localStorage & update URL params
     if (typeof window !== "undefined") {
       try {
         localStorage.setItem("selectedDomain", result.domain);
@@ -233,10 +235,8 @@ const DomainSearch = () => {
       } catch (_) {}
     }
 
-    // Close the search results popup modal
     setResultsModalOpen(false);
 
-    // Smooth scroll down to "Choose Your Plan" (#pricing section)
     setTimeout(() => {
       const pricingSection = document.getElementById("pricing");
       if (pricingSection) {
@@ -271,7 +271,7 @@ const DomainSearch = () => {
           <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
             <FaPlay className="w-2.5 h-2.5 ml-0.5" />
           </div>
-          <span>Video: How to purchase</span>
+          <span>{t("domainSearch.videoBtn")}</span>
         </button>
 
         {/* Centered Main Content */}
@@ -279,20 +279,20 @@ const DomainSearch = () => {
           {/* Centered Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200/60 shadow-xs text-blue-600 text-xs font-bold uppercase tracking-wider mb-6">
             <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
-            School Availability Checker
+            {t("domainSearch.badge")}
           </div>
 
           {/* Main Title */}
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-tight">
-            Find Your Perfect{" "}
+            {t("domainSearch.titleMain")}{" "}
             <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1">
-              School Name
+              {t("domainSearch.titleGradient")}
             </span>
           </h2>
 
           {/* Subtitle */}
           <p className="mt-4 text-base sm:text-lg text-slate-500 font-medium leading-relaxed max-w-xl mx-auto">
-            Enter your institution or brand name and we'll suggest available domains instantly.
+            {t("domainSearch.subtitle")}
           </p>
 
           {/* Search Bar Form */}
@@ -308,7 +308,7 @@ const DomainSearch = () => {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Enter a name (e.g., myschool or botbari)"
+                    placeholder={t("domainSearch.placeholder")}
                     className="flex-1 bg-transparent border-none outline-none px-4 sm:px-6 py-4 sm:py-5 text-slate-800 text-base sm:text-lg placeholder:text-slate-400 font-semibold w-full"
                   />
                   <button
@@ -320,12 +320,12 @@ const DomainSearch = () => {
                     {isSearching ? (
                       <>
                         <FiLoader className="h-5 w-5 animate-spin" />
-                        <span>Searching</span>
+                        <span>{t("domainSearch.searchingBtn")}</span>
                       </>
                     ) : (
                       <>
                         <FiSearch className="h-5 w-5" />
-                        <span>Search</span>
+                        <span>{t("domainSearch.searchBtn")}</span>
                       </>
                     )}
                   </button>
@@ -336,7 +336,7 @@ const DomainSearch = () => {
 
           {/* Centered Category Badges (School, College, Madrasha, Single Teacher) */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            {CATEGORIES.map((cat) => {
+            {categories.map((cat) => {
               const IconComponent = cat.icon;
               const isSelected = selectedCategory === cat.id;
 
@@ -377,14 +377,14 @@ const DomainSearch = () => {
               <div>
                 <div className="flex items-center gap-2.5">
                   <h3 className="text-xl font-black text-slate-900">
-                    Search Results for <span className="text-blue-600">"{searchTerm}"</span>
+                    {t("domainSearch.modalTitle")} <span className="text-blue-600">"{searchTerm}"</span>
                   </h3>
                   <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase">
                     {results.length} found
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 font-medium mt-1">
-                  Select your preferred domain name below to proceed to Choose Your Plan.
+                  {t("domainSearch.modalSub")}
                 </p>
               </div>
 
@@ -435,7 +435,7 @@ const DomainSearch = () => {
                             }`}
                           />
                           <span className={result.isFree || result.available ? "text-emerald-600" : "text-rose-500"}>
-                            {result.isFree ? "Free Domain" : result.available ? "Available" : "Taken"}
+                            {result.isFree ? t("domainSearch.freeDomain") : result.available ? t("domainSearch.available") : t("domainSearch.taken")}
                           </span>
                         </div>
                       </div>
@@ -443,9 +443,9 @@ const DomainSearch = () => {
                       {/* Price & Action Button */}
                       <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
                         <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Domain Price</span>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">{t("domainSearch.priceLabel")}</span>
                           <span className="text-sm font-black text-slate-900">
-                            ৳{price.toLocaleString()} <span className="text-[10px] font-semibold text-slate-400">/ yr</span>
+                            ৳{price.toLocaleString()} <span className="text-[10px] font-semibold text-slate-400">{t("domainSearch.perYear")}</span>
                           </span>
                         </div>
 
@@ -459,7 +459,7 @@ const DomainSearch = () => {
                                 : "bg-blue-600 hover:bg-blue-700"
                             }`}
                           >
-                            <span>Select</span>
+                            <span>{t("domainSearch.selectBtn")}</span>
                             <span className="opacity-90 font-mono text-[11px]">(৳{price.toLocaleString()})</span>
                           </button>
                         ) : (
@@ -477,14 +477,14 @@ const DomainSearch = () => {
             {/* Modal Footer */}
             <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
               <p className="text-xs text-slate-500">
-                Clicking <strong>Select</strong> will take you to <strong>Choose Your Plan</strong>.
+                {t("domainSearch.modalSub")}
               </p>
               <button
                 type="button"
                 onClick={() => setResultsModalOpen(false)}
                 className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition border-none cursor-pointer"
               >
-                Close
+                {t("domainSearch.closeBtn")}
               </button>
             </div>
           </div>
@@ -501,8 +501,8 @@ const DomainSearch = () => {
                   <FiVideo className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">How to purchase Software</h3>
-                  <p className="text-xs text-slate-400">Step-by-step video guide for ordering and setting up EduBari ERP</p>
+                  <h3 className="text-base font-bold text-white">{t("domainSearch.howToPurchaseVideo")}</h3>
+                  <p className="text-xs text-slate-400">{t("domainSearch.videoSub")}</p>
                 </div>
               </div>
               <button

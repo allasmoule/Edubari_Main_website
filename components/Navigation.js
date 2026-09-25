@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX, FiGlobe } from "react-icons/fi";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { lang, setLang, t } = useLanguage();
 
   // Prevent scrolling when mobile menu is open
   useEffect(() => {
@@ -22,13 +24,13 @@ const Navigation = () => {
   }, [isMobileMenuOpen]);
 
   const navItems = [
-    { path: "/", label: "Home" },
-    { path: "/about", label: "About" },
-    { path: "/blog", label: "Blog" },
-    { path: "/contact", label: "Contact" },
-    { path: "/work-proof", label: "Work Proof" },
-    { path: "/payment-purchase", label: "Payment & Purchase" },
-    { path: "/check-subscription", label: "Check Subscription", isButton: true },
+    { path: "/", label: t("nav.home") },
+    { path: "/about", label: t("nav.about") },
+    { path: "/blog", label: t("nav.blog") },
+    { path: "/contact", label: t("nav.contact") },
+    { path: "/work-proof", label: t("nav.workProof") },
+    { path: "/payment-purchase", label: t("nav.paymentPurchase") },
+    { path: "/check-subscription", label: t("nav.checkSubscription"), isButton: true },
   ];
 
   const closeMobileMenu = () => {
@@ -36,7 +38,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md py-4 px-4 sm:px-6 md:px-12 flex items-center justify-between border-b border-gray-100 shadow-sm transition-all duration-300">
+    <nav className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md py-4 px-4 sm:px-6 md:px-12 flex items-center justify-between border-b border-gray-100 shadow-xs transition-all duration-300">
       {/* Logo Section */}
       <Link
         href="/"
@@ -52,7 +54,7 @@ const Navigation = () => {
           <span className="text-dark sm:group-hover:text-tertiary transition-colors duration-300">
             Edu
           </span>
-          <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] sm:group-hover:from-secondary sm:group-hover:to-secondary-light transition-all duration-500 drop-shadow-sm sm:group-hover:drop-shadow-md">
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] sm:group-hover:from-secondary sm:group-hover:to-secondary-light transition-all duration-500 drop-shadow-xs sm:group-hover:drop-shadow-md">
             Bari
           </span>
         </h1>
@@ -62,7 +64,7 @@ const Navigation = () => {
       <div className="hidden lg:flex items-center px-6 py-2 rounded-full border border-gray-200 gap-6 bg-gray-50/50">
         {navItems.map((item) => {
           const isActive = pathname === item.path;
-          
+
           if (item.isButton) {
             return (
               <Link
@@ -98,8 +100,34 @@ const Navigation = () => {
         })}
       </div>
 
-      {/* Actions (Desktop) & Hamburger Menu (Mobile) */}
-      <div className="flex items-center gap-4 shrink-0 relative z-60">
+      {/* Actions (Desktop & Mobile): Language Switcher + Demo */}
+      <div className="flex items-center gap-3 shrink-0 relative z-60">
+        {/* Language Switcher Button (BN / EN) */}
+        <div className="flex items-center bg-gray-100 p-1 rounded-full border border-gray-200 shadow-inner">
+          <button
+            type="button"
+            onClick={() => setLang("bn")}
+            className={`px-3 py-1 text-xs font-bold rounded-full transition-all duration-200 cursor-pointer border-none ${
+              lang === "bn"
+                ? "bg-emerald-600 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 bg-transparent"
+            }`}
+          >
+            বাংলা
+          </button>
+          <button
+            type="button"
+            onClick={() => setLang("en")}
+            className={`px-3 py-1 text-xs font-bold rounded-full transition-all duration-200 cursor-pointer border-none ${
+              lang === "en"
+                ? "bg-indigo-600 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 bg-transparent"
+            }`}
+          >
+            EN
+          </button>
+        </div>
+
         {/* Desktop Software Demo */}
         <div className="hidden lg:flex items-center gap-3">
           <Link
@@ -114,7 +142,7 @@ const Navigation = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
               </span>
-              Software Demo
+              {t("nav.softwareDemo")}
               <svg
                 className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300"
                 fill="none"
@@ -214,7 +242,7 @@ const Navigation = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-tertiary"></span>
             </span>
-            Software Demo
+            {t("nav.softwareDemo")}
           </Link>
         </div>
       </div>

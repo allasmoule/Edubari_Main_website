@@ -2,44 +2,49 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { FiMessageCircle, FiPhone, FiMail, FiArrowRight } from "react-icons/fi";
+import { useLanguage } from "@/context/LanguageContext";
 import NewsletterPopup from "./NewsletterPopup";
 
-const contacts = [
-  {
-    icon: <FiMessageCircle className="h-5 w-5" />,
-    title: "WhatsApp",
-    info: "Chat on WhatsApp",
-    href: "https://wa.me/8801754958008",
-    external: true,
-    color: "text-[#25D366]",
-    bg: "bg-[#25D366]/10",
-    border: "group-hover:border-[#25D366]/25",
-  },
-  {
-    icon: <FiPhone className="h-5 w-5" />,
-    title: "Phone",
-    info: "Call Now",
-    href: "tel:+8801754958008",
-    external: false,
-    color: "text-tertiary",
-    bg: "bg-tertiary/10",
-    border: "group-hover:border-tertiary/25",
-  },
-  {
-    icon: <FiMail className="h-5 w-5" />,
-    title: "Email",
-    info: "support.edubari@gmail.com",
-    href: "mailto:support.edubari@gmail.com",
-    external: false,
-    color: "text-[#8B5CF6]",
-    bg: "bg-[#8B5CF6]/10",
-    border: "group-hover:border-[#8B5CF6]/25",
-  },
-];
-
 const GetInTouch = () => {
+  const { t } = useLanguage();
   const [showPopup, setShowPopup] = useState(false);
   const sectionRef = useRef(null);
+
+  const contacts = [
+    {
+      key: "whatsapp",
+      icon: <FiMessageCircle className="h-5 w-5" />,
+      title: t("getInTouch.whatsappTitle"),
+      info: t("getInTouch.whatsappInfo"),
+      href: "https://wa.me/8801754958008",
+      external: true,
+      color: "text-[#25D366]",
+      bg: "bg-[#25D366]/10",
+      border: "group-hover:border-[#25D366]/25",
+    },
+    {
+      key: "phone",
+      icon: <FiPhone className="h-5 w-5" />,
+      title: t("getInTouch.phoneTitle"),
+      info: t("getInTouch.phoneInfo"),
+      href: "tel:+8801754958008",
+      external: false,
+      color: "text-tertiary",
+      bg: "bg-tertiary/10",
+      border: "group-hover:border-tertiary/25",
+    },
+    {
+      key: "email",
+      icon: <FiMail className="h-5 w-5" />,
+      title: t("getInTouch.emailTitle"),
+      info: t("getInTouch.emailInfo"),
+      href: "mailto:support.edubari@gmail.com",
+      external: false,
+      color: "text-[#8B5CF6]",
+      bg: "bg-[#8B5CF6]/10",
+      border: "group-hover:border-[#8B5CF6]/25",
+    },
+  ];
 
   useEffect(() => {
     const hasSeen = localStorage.getItem("hasSeenNewsletterPopup");
@@ -53,7 +58,7 @@ const GetInTouch = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.3 } // Trigger when 30% of the section is visible
+      { threshold: 0.3 }
     );
 
     if (sectionRef.current) {
@@ -67,7 +72,7 @@ const GetInTouch = () => {
     <section
       id="contact"
       ref={sectionRef}
-      className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-primary/20"
+      className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-primary/20 select-none"
     >
       <NewsletterPopup isOpen={showPopup} onClose={() => setShowPopup(false)} />
       <div className="w-full rounded-[32px] border border-white bg-primary-light/80 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
@@ -79,18 +84,18 @@ const GetInTouch = () => {
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-              📞 Contact
+              📞 {t("getInTouch.badge")}
             </div>
 
             <h2 className="text-3xl sm:text-4 sm:text-4.5xl lg:text-5xl font-black tracking-tight text-dark leading-tight">
-              Get In{" "}
+              {t("getInTouch.titleMain")}{" "}
               <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary via-[#8B5CF6] to-[#7c3aed] drop-shadow-sm">
-                Touch
+                {t("getInTouch.titleGradient")}
               </span>
             </h2>
 
             <p className="mt-4 text-sm sm:text-base leading-relaxed text-dark/70 max-w-2xl mx-auto font-medium">
-              Have questions? We're here to help
+              {t("getInTouch.subtitle")}
             </p>
           </div>
 
@@ -98,7 +103,7 @@ const GetInTouch = () => {
           <div className="mt-8 lg:mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {contacts.map((c, idx) => (
               <a
-                key={c.title}
+                key={c.key}
                 href={c.href}
                 {...(c.external && {
                   target: "_blank",
