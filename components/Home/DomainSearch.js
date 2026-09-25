@@ -31,6 +31,28 @@ const COMMON_TLDS = [
   ".io",
 ];
 
+const TLD_PRICES = {
+  ".com": 1350,
+  ".net": 1300,
+  ".org": 1300,
+  ".edu.bd": 1000,
+  ".academy": 15000,
+  ".institute": 25000,
+  ".edubari.bd": 200,
+  ".me": 1200,
+  ".store": 800,
+  ".io": 3500,
+};
+
+export function getDomainPrice(domain) {
+  if (!domain) return 1200;
+  if (domain.endsWith(".edubari.bd")) return 200;
+  for (const [tld, price] of Object.entries(TLD_PRICES)) {
+    if (domain.endsWith(tld)) return price;
+  }
+  return 1200;
+}
+
 function splitDomainName(domain) {
   const firstDot = domain.indexOf(".");
   if (firstDot === -1) return { base: domain, tld: "" };
@@ -376,22 +398,30 @@ const DomainSearch = () => {
                       </div>
                     </div>
 
-                    <div className="flex justify-end">
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-200/60 mt-2">
+                      <div>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Domain Price</span>
+                        <span className="text-sm font-black text-slate-900">
+                          ৳{getDomainPrice(result.domain).toLocaleString()} <span className="text-[10px] font-semibold text-slate-400">/ yr</span>
+                        </span>
+                      </div>
+
                       {result.available ? (
                         <button
                           type="button"
                           onClick={() =>
                             router.push(
-                              `/payment-purchase?preferredDomain=${encodeURIComponent(result.domain)}`
+                              `/payment-purchase?preferredDomain=${encodeURIComponent(result.domain)}&domainPrice=${getDomainPrice(result.domain)}`
                             )
                           }
-                          className={`rounded-xl px-5 py-2 text-xs font-bold text-white shadow-sm transition-all border-none cursor-pointer ${
+                          className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-sm transition-all border-none cursor-pointer flex items-center gap-1.5 ${
                             result.isFree
                               ? "bg-emerald-600 hover:bg-emerald-700"
                               : "bg-blue-600 hover:bg-blue-700"
                           }`}
                         >
-                          Select
+                          <span>Select</span>
+                          <span className="opacity-90 font-mono text-[11px]">(৳{getDomainPrice(result.domain).toLocaleString()})</span>
                         </button>
                       ) : (
                         <span className="rounded-xl bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-400">
