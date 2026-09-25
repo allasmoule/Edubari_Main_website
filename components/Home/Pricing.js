@@ -148,7 +148,7 @@ const Pricing = () => {
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-[10px] font-black tracking-wider uppercase mb-3">
-              💰 {t("pricing.badge")}
+              {t("pricing.badge")}
             </div>
 
             <h2 className="text-2xl sm:text-3xl lg:text-4.5xl font-black tracking-tight text-dark leading-tight">

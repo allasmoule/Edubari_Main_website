@@ -134,7 +134,7 @@ const Feature = () => {
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-              🚀 {t("feature.badge")}
+              {t("feature.badge")}
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-4.5xl font-black tracking-tight text-dark leading-tight">

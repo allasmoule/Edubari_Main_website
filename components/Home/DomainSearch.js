@@ -83,7 +83,7 @@ const DomainSearch = () => {
       id: "school",
       label: t("domainSearch.school"),
       icon: FaSchool,
-      bgColor: "bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100",
+      bgColor: "bg-slate-100/90 border-slate-200 text-slate-700 hover:bg-slate-200/90",
       activeColor: "bg-blue-600 text-white border-blue-600 shadow-md",
       placeholder: "myschool",
     },
@@ -91,24 +91,24 @@ const DomainSearch = () => {
       id: "college",
       label: t("domainSearch.college"),
       icon: FaUniversity,
-      bgColor: "bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100",
-      activeColor: "bg-purple-600 text-white border-purple-600 shadow-md",
+      bgColor: "bg-slate-100/90 border-slate-200 text-slate-700 hover:bg-slate-200/90",
+      activeColor: "bg-blue-600 text-white border-blue-600 shadow-md",
       placeholder: "mycollege",
     },
     {
       id: "madrasha",
       label: t("domainSearch.madrasha"),
       icon: FaMosque,
-      bgColor: "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100",
-      activeColor: "bg-emerald-600 text-white border-emerald-600 shadow-md",
+      bgColor: "bg-slate-100/90 border-slate-200 text-slate-700 hover:bg-slate-200/90",
+      activeColor: "bg-blue-600 text-white border-blue-600 shadow-md",
       placeholder: "mymadrasha",
     },
     {
       id: "single_teacher",
       label: t("domainSearch.singleTeacher"),
       icon: FaChalkboardTeacher,
-      bgColor: "bg-orange-50 border-orange-200 text-orange-600 hover:bg-orange-100",
-      activeColor: "bg-orange-600 text-white border-orange-600 shadow-md",
+      bgColor: "bg-slate-100/90 border-slate-200 text-slate-700 hover:bg-slate-200/90",
+      activeColor: "bg-blue-600 text-white border-blue-600 shadow-md",
       placeholder: "teachername",
     },
   ];
@@ -428,7 +428,7 @@ const DomainSearch = () => {
                       {result.isFree && (
                         <div className="absolute -top-3.5 left-5 px-3 py-0.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[9px] font-black uppercase tracking-widest shadow-md shadow-emerald-600/30 flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                          ⭐ 100% FREE / ফ্রি ডোমেইন
+                          100% FREE / ফ্রি ডোমেইন
                         </div>
                       )}
 

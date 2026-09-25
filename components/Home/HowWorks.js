@@ -60,7 +60,7 @@ const HowWorks = () => {
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-tertiary/20 shadow-sm text-tertiary text-xs font-bold tracking-wide uppercase mb-4 transition-transform hover:scale-105">
-            📋 {t("howWorks.badge")}
+            {t("howWorks.badge")}
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-dark leading-tight">
