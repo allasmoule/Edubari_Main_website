@@ -136,7 +136,7 @@ const Pricing = () => {
   };
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-4 sm:py-6 lg:py-8 bg-white select-none">
+    <section id="pricing" className="w-full px-4 sm:px-6 md:px-12 py-4 sm:py-6 lg:py-8 bg-white select-none">
       <div className="w-full rounded-[32px] border border-white bg-primary-light/85 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
         {/* Ambient glows */}
         <div className="absolute -top-32 -right-32 w-64 h-64 bg-tertiary/5 rounded-full blur-3xl pointer-events-none" />

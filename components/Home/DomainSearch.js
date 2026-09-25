@@ -10,6 +10,7 @@ import {
   FiVideo,
   FiX,
   FiArrowRight,
+  FiCheckCircle,
 } from "react-icons/fi";
 import {
   FaSchool,
@@ -104,6 +105,7 @@ const DomainSearch = () => {
   const [error, setError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [resultsModalOpen, setResultsModalOpen] = useState(false);
 
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
@@ -199,6 +201,7 @@ const DomainSearch = () => {
         ...checkResults,
       ];
       setResults(finalResults);
+      setResultsModalOpen(true); // Open full popup modal with search results!
 
       const hasAvailable = finalResults.some((r) => r.available);
       if (!hasAvailable) {
@@ -213,18 +216,52 @@ const DomainSearch = () => {
     }
   };
 
+  // When user selects an available domain in the popup modal
+  const handleSelectDomain = (result) => {
+    const price = getDomainPrice(result.domain);
+
+    // Save to localStorage & update URL params
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("selectedDomain", result.domain);
+        localStorage.setItem("domainPrice", price);
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("preferredDomain", result.domain);
+        url.searchParams.set("domainPrice", price);
+        window.history.replaceState(null, "", url.toString());
+      } catch (_) {}
+    }
+
+    // Close the search results popup modal
+    setResultsModalOpen(false);
+
+    // Smooth scroll down to "Choose Your Plan" (#pricing section)
+    setTimeout(() => {
+      const pricingSection = document.getElementById("pricing");
+      if (pricingSection) {
+        pricingSection.scrollIntoView({ behavior: "smooth" });
+      } else {
+        router.push(
+          `/payment-purchase?preferredDomain=${encodeURIComponent(
+            result.domain
+          )}&domainPrice=${price}#pricing`
+        );
+      }
+    }, 100);
+  };
+
   return (
     <section
       ref={sectionRef}
       className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-14 bg-slate-50/50 relative overflow-hidden"
     >
-      {/* Container matching original centered card layout */}
+      {/* Main Centered Card Container */}
       <div
         className={`transition-all duration-1000 transform ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
         } w-full max-w-[1100px] mx-auto rounded-[36px] border border-blue-100/80 bg-gradient-to-b from-white via-slate-50/30 to-blue-50/20 shadow-[0_20px_60px_-15px_rgba(59,130,246,0.07)] backdrop-blur-xl overflow-hidden relative p-8 sm:p-14 md:p-16`}
       >
-        
         {/* Floating Top-Right Video "How to purchase" Button */}
         <button
           type="button"
@@ -239,7 +276,6 @@ const DomainSearch = () => {
 
         {/* Centered Main Content */}
         <div className="max-w-3xl mx-auto text-center">
-          
           {/* Centered Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200/60 shadow-xs text-blue-600 text-xs font-bold uppercase tracking-wider mb-6">
             <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
@@ -259,7 +295,7 @@ const DomainSearch = () => {
             Enter your institution or brand name and we'll suggest available domains instantly.
           </p>
 
-          {/* Search Bar Form - Clean Centered Pill Search matching screenshot */}
+          {/* Search Bar Form */}
           <div className="mt-10 max-w-3xl mx-auto">
             <form onSubmit={handleSearch}>
               <div className="relative rounded-full p-1.5 sm:p-2 bg-gradient-to-r from-blue-200/60 via-indigo-200/60 to-purple-200/60 shadow-lg transition-all duration-300 hover:shadow-blue-500/10 border border-blue-200/50">
@@ -298,7 +334,7 @@ const DomainSearch = () => {
             </form>
           </div>
 
-          {/* Centered Category Badges (School, College, Madrasha, Single Teacher - Compact) */}
+          {/* Centered Category Badges (School, College, Madrasha, Single Teacher) */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             {CATEGORIES.map((cat) => {
               const IconComponent = cat.icon;
@@ -329,119 +365,136 @@ const DomainSearch = () => {
               </p>
             </div>
           )}
-
         </div>
+      </div>
 
-        {/* Loading Skeletons */}
-        {isSearching && (
-          <div className="mt-12 animate-pulse max-w-4xl mx-auto">
-            <div className="h-6 w-36 bg-slate-200 rounded-lg mb-6 mx-auto" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-28 rounded-2xl bg-slate-100 border border-slate-200/60"
-                />
-              ))}
+      {/* ── SEARCH RESULTS FULL POPUP MODAL ── */}
+      {resultsModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl relative flex flex-col animate-[scaleIn_0.25s_ease-out]">
+            {/* Modal Header */}
+            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50/50 via-indigo-50/30 to-white">
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <h3 className="text-xl font-black text-slate-900">
+                    Search Results for <span className="text-blue-600">"{searchTerm}"</span>
+                  </h3>
+                  <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase">
+                    {results.length} found
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium mt-1">
+                  Select your preferred domain name below to proceed to Choose Your Plan.
+                </p>
+              </div>
+
+              {/* Cross (Close) Button */}
+              <button
+                type="button"
+                onClick={() => setResultsModalOpen(false)}
+                className="w-10 h-10 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 flex items-center justify-center transition cursor-pointer border-none"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
             </div>
-          </div>
-        )}
 
-        {/* Results Grid */}
-        {!isSearching && results.length > 0 && (
-          <div className="mt-12 max-w-4xl mx-auto border-t border-slate-200/60 pt-10">
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <p className="text-xl font-black text-slate-800">
-                Search <span className="text-blue-600">Results</span>
-              </p>
-              <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-600 text-xs font-bold uppercase">
-                {results.length} found
-              </span>
-            </div>
+            {/* Modal Body - Results Grid */}
+            <div className="p-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {results.map((result) => {
+                  const { base, tld } = splitDomainName(result.domain);
+                  const price = getDomainPrice(result.domain);
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {results.map((result) => {
-                const { base, tld } = splitDomainName(result.domain);
-
-                return (
-                  <div
-                    key={result.domain}
-                    className={`rounded-2xl p-5 border transition-all duration-300 flex flex-col justify-between gap-4 ${
-                      result.isFree
-                        ? "border-emerald-300 bg-emerald-50/40 shadow-sm hover:shadow-md"
-                        : result.available
-                        ? "border-slate-200 bg-white shadow-sm hover:shadow-md"
-                        : "border-slate-200/60 bg-slate-50/60 opacity-60"
-                    }`}
-                  >
-                    <div>
-                      <p
-                        className={`text-lg font-bold break-all ${
-                          result.available ? "text-slate-800" : "text-slate-400 line-through"
-                        }`}
-                      >
-                        {base}
-                        <span className={result.available ? "text-blue-600" : "text-slate-400"}>
-                          {tld}
-                        </span>
-                      </p>
-
-                      <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold">
-                        <span
-                          className={`h-2 w-2 rounded-full ${
-                            result.isFree || result.available ? "bg-emerald-500" : "bg-rose-400"
-                          }`}
-                        />
-                        <span className={result.isFree || result.available ? "text-emerald-600" : "text-rose-500"}>
-                          {result.isFree ? "Free Domain" : result.available ? "Available" : "Taken"}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-200/60 mt-2">
+                  return (
+                    <div
+                      key={result.domain}
+                      className={`rounded-2xl p-5 border transition-all duration-300 flex flex-col justify-between gap-4 ${
+                        result.isFree
+                          ? "border-emerald-300 bg-emerald-50/40 shadow-xs hover:shadow-md"
+                          : result.available
+                          ? "border-slate-200 bg-white shadow-xs hover:shadow-md hover:border-blue-300"
+                          : "border-slate-200/60 bg-slate-50/60 opacity-60"
+                      }`}
+                    >
                       <div>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Domain Price</span>
-                        <span className="text-sm font-black text-slate-900">
-                          ৳{getDomainPrice(result.domain).toLocaleString()} <span className="text-[10px] font-semibold text-slate-400">/ yr</span>
-                        </span>
-                      </div>
-
-                      {result.available ? (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            router.push(
-                              `/payment-purchase?preferredDomain=${encodeURIComponent(result.domain)}&domainPrice=${getDomainPrice(result.domain)}`
-                            )
-                          }
-                          className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-sm transition-all border-none cursor-pointer flex items-center gap-1.5 ${
-                            result.isFree
-                              ? "bg-emerald-600 hover:bg-emerald-700"
-                              : "bg-blue-600 hover:bg-blue-700"
+                        <p
+                          className={`text-lg font-bold break-all ${
+                            result.available ? "text-slate-800" : "text-slate-400 line-through"
                           }`}
                         >
-                          <span>Select</span>
-                          <span className="opacity-90 font-mono text-[11px]">(৳{getDomainPrice(result.domain).toLocaleString()})</span>
-                        </button>
-                      ) : (
-                        <span className="rounded-xl bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-400">
-                          Unavailable
-                        </span>
-                      )}
+                          {base}
+                          <span className={result.available ? "text-blue-600" : "text-slate-400"}>
+                            {tld}
+                          </span>
+                        </p>
+
+                        <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold">
+                          <span
+                            className={`h-2 w-2 rounded-full ${
+                              result.isFree || result.available ? "bg-emerald-500" : "bg-rose-400"
+                            }`}
+                          />
+                          <span className={result.isFree || result.available ? "text-emerald-600" : "text-rose-500"}>
+                            {result.isFree ? "Free Domain" : result.available ? "Available" : "Taken"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Price & Action Button */}
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Domain Price</span>
+                          <span className="text-sm font-black text-slate-900">
+                            ৳{price.toLocaleString()} <span className="text-[10px] font-semibold text-slate-400">/ yr</span>
+                          </span>
+                        </div>
+
+                        {result.available ? (
+                          <button
+                            type="button"
+                            onClick={() => handleSelectDomain(result)}
+                            className={`rounded-xl px-4 py-2 text-xs font-bold text-white shadow-sm transition-all border-none cursor-pointer flex items-center gap-1.5 ${
+                              result.isFree
+                                ? "bg-emerald-600 hover:bg-emerald-700"
+                                : "bg-blue-600 hover:bg-blue-700"
+                            }`}
+                          >
+                            <span>Select</span>
+                            <span className="opacity-90 font-mono text-[11px]">(৳{price.toLocaleString()})</span>
+                          </button>
+                        ) : (
+                          <span className="rounded-xl bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-400">
+                            Unavailable
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+              <p className="text-xs text-slate-500">
+                Clicking <strong>Select</strong> will take you to <strong>Choose Your Plan</strong>.
+              </p>
+              <button
+                type="button"
+                onClick={() => setResultsModalOpen(false)}
+                className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition border-none cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           </div>
-        )}
-
-      </div>
+        </div>
+      )}
 
       {/* Video "How to purchase" Modal Popup */}
       {videoModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl relative animate-[scaleIn_0.2s_ease-out]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/60">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
