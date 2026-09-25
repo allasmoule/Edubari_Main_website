@@ -24,7 +24,7 @@ import { supabase } from "@/lib/supabase";
 
 const navItems = [
   { path: "/admin/dashboard", label: "Dashboard", icon: FiGrid, end: true },
-  { path: "/admin/dashboard/billing", label: "Tenant Billing", icon: FiLayers },
+  { path: "/admin/dashboard/billing", label: "Single Teacher Subscriptions", icon: FiLayers },
   { path: "/admin/dashboard/plans", label: "Plans", icon: FiCreditCard },
   {
     path: "/admin/dashboard/subscriptions",

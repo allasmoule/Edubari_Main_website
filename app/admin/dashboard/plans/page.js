@@ -841,7 +841,7 @@ export default function AdminPlansPage() {
               : "bg-transparent text-dark/50 hover:text-dark/80"
           }`}
         >
-          <FiPackage className="w-4 h-4" /> LMS Tenant Plans
+          <FiPackage className="w-4 h-4" /> Single Teacher Plans
         </button>
         <button
           type="button"

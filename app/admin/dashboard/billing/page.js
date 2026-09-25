@@ -119,7 +119,7 @@ export default function AdminBillingPage() {
       setSubscriptions(Array.isArray(subsData) ? subsData : []);
     } catch (err) {
       console.error(err);
-      setError("Failed to load multi-tenant subscription configurations.");
+      setError("Failed to load Single Teacher subscription configurations.");
     } finally {
       setLoading(false);
     }
@@ -329,10 +329,10 @@ export default function AdminBillingPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h2 className="text-xl font-extrabold text-dark tracking-tight">
-              Tenant Subscriptions & Billing Module
+              Single Teacher Subscriptions & Billing Module
             </h2>
             <p className="text-xs sm:text-sm text-dark/45 font-medium mt-1">
-              Administer multi-tenant client instances of EduBari and configure domain checks.
+              Administer single teacher & institution client instances of EduBari and configure domain checks.
             </p>
           </div>
           
@@ -347,7 +347,7 @@ export default function AdminBillingPage() {
                 }}
                 className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-tertiary to-[#8B5CF6] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer inline-flex items-center gap-2 border-none"
               >
-                <FiPlus className="w-4 h-4" /> Add Tenant Client
+                <FiPlus className="w-4 h-4" /> Add Single Teacher / Client
               </button>
             )}
             
@@ -401,7 +401,7 @@ export default function AdminBillingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
           <div className="rounded-xl border border-white/40 bg-white/75 p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-bold text-dark/40 uppercase">Total School Tenants</p>
+              <p className="text-xs font-bold text-dark/40 uppercase">Total Single Teachers</p>
               <FiUser className="w-5 h-5 text-tertiary" />
             </div>
             <p className="text-2xl font-extrabold text-dark mt-2">{clients.length}</p>
@@ -419,7 +419,7 @@ export default function AdminBillingPage() {
 
           <div className="rounded-xl border border-white/40 bg-white/75 p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-bold text-dark/40 uppercase">Suspended Tenants</p>
+              <p className="text-xs font-bold text-dark/40 uppercase">Suspended Teachers</p>
               <FiXCircle className="w-5 h-5 text-red-500" />
             </div>
             <p className="text-2xl font-extrabold text-red-500 mt-2">
@@ -973,7 +973,7 @@ export default function AdminBillingPage() {
                   disabled={submitting}
                   className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-tertiary to-[#8B5CF6] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border-none cursor-pointer disabled:opacity-50"
                 >
-                  {submitting ? "Saving..." : "Save Tenant Client"}
+                  {submitting ? "Saving..." : "Save Single Teacher Client"}
                 </button>
               </div>
             </form>

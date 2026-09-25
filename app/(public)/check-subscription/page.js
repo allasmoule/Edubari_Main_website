@@ -233,7 +233,7 @@ export default function CheckSubscriptionPage() {
         {/* Header Section */}
         <div className="text-center space-y-3">
           <span className="px-3.5 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-extrabold uppercase tracking-widest border border-tertiary/20">
-            Tenant Lookup Portal
+            Single Teacher Lookup Portal
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-dark tracking-tight leading-none mt-2">
             Check Institution Subscription
