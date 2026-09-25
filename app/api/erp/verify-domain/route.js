@@ -113,6 +113,7 @@ export async function GET(request) {
         end_date: sub.end_date,
         grace_end_date: sub.grace_end_date,
         payment_status: sub.payment_status,
+        due_amount: Number(sub.price || 0),
         days_remaining: sub.end_date
           ? Math.max(0, Math.ceil((new Date(sub.end_date) - now) / (1000 * 60 * 60 * 24)))
           : 0,
