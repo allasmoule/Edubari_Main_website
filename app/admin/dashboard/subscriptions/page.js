@@ -20,6 +20,8 @@ import {
   FiWifi,
   FiWifiOff,
   FiClock,
+  FiPlus,
+  FiCopy,
 } from "react-icons/fi";
 
 const formatDateTime = (value) => {
@@ -109,6 +111,30 @@ export default function AdminSubscriptionsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all"); // all, verified, pending
 
+  // Add School Modal States
+  const [addSchoolModalOpen, setAddSchoolModalOpen] = useState(false);
+  const [plansList, setPlansList] = useState([]);
+  const [addSchoolLoading, setAddSchoolLoading] = useState(false);
+  const [createdCredentials, setCreatedCredentials] = useState(null);
+  const [newSchoolForm, setNewSchoolForm] = useState({
+    client_name: "",
+    domain: "",
+    phone: "",
+    client_type: "school_erp",
+    plan_id: "",
+    status: "active",
+  });
+
+  const fetchPlans = useCallback(async () => {
+    try {
+      const res = await fetch("/api/plans");
+      if (res.ok) {
+        const data = await res.json();
+        setPlansList(Array.isArray(data) ? data : []);
+      }
+    } catch (_) {}
+  }, []);
+
   const fetchSubscriptions = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -150,6 +176,53 @@ export default function AdminSubscriptionsPage() {
       setErpLoading(false);
     }
   }, []);
+
+  const handleCreateSchool = async (e) => {
+    e.preventDefault();
+    if (!newSchoolForm.client_name || !newSchoolForm.domain || !newSchoolForm.plan_id) {
+      alert("Please fill in School Name, Domain, and Plan.");
+      return;
+    }
+
+    setAddSchoolLoading(true);
+    try {
+      const res = await fetch("/api/billing/clients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSchoolForm),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to register school client");
+      }
+
+      const created = await res.json();
+      setAddSchoolModalOpen(false);
+      setCreatedCredentials(created);
+      
+      // Reset form
+      setNewSchoolForm({
+        client_name: "",
+        domain: "",
+        phone: "",
+        client_type: "school_erp",
+        plan_id: "",
+        status: "active",
+      });
+
+      fetchSubscriptions();
+      fetchErpConnections();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setAddSchoolLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlans();
+  }, [fetchPlans]);
 
   const handleViewDetails = async (id) => {
     setDetailsLoading(true);
@@ -271,14 +344,24 @@ export default function AdminSubscriptionsPage() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => { fetchSubscriptions(); fetchErpConnections(); }}
-            className="px-3 py-2 rounded-xl border border-dark/10 text-sm font-semibold text-dark/60 hover:bg-dark/5 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 border-none bg-transparent"
-          >
-            <FiRefreshCw className="w-4 h-4" />
-            Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setAddSchoolModalOpen(true)}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-tertiary to-[#8B5CF6] text-white text-xs font-bold shadow-md hover:shadow-tertiary/20 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 border-none"
+            >
+              <FiPlus className="w-4 h-4" />
+              Add School ERP Instance
+            </button>
+            <button
+              type="button"
+              onClick={() => { fetchSubscriptions(); fetchErpConnections(); }}
+              className="px-3 py-2 rounded-xl border border-dark/10 text-xs font-semibold text-dark/60 hover:bg-dark/5 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 border-none bg-transparent"
+            >
+              <FiRefreshCw className="w-4 h-4" />
+              Refresh
+            </button>
+          </div>
         </div>
 
         {/* Tab Switcher */}
@@ -848,7 +931,169 @@ export default function AdminSubscriptionsPage() {
             )}
           </div>
         )}
-        {/* ── END: erp tab ── */}
+        {/* ── MODAL: Register New School Client ── */}
+        {addSchoolModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white border border-dark/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-[scaleIn_0.2s_ease-out]">
+              <button
+                type="button"
+                onClick={() => setAddSchoolModalOpen(false)}
+                className="absolute top-4 right-4 text-dark/40 hover:text-dark transition cursor-pointer border-none bg-transparent"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+              
+              <div className="flex items-center gap-2 mb-4">
+                <FiServer className="w-5 h-5 text-tertiary" />
+                <h3 className="text-lg font-bold text-dark">Register New Client Instance</h3>
+              </div>
+
+              <form onSubmit={handleCreateSchool} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-dark/70 mb-1">Institution / Client Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. EduBari Academy"
+                    value={newSchoolForm.client_name}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, client_name: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-dark/70 mb-1">App Domain Binding *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. academy.edubari.bd"
+                    value={newSchoolForm.domain}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, domain: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-dark/70 mb-1">Client Type</label>
+                    <select
+                      value={newSchoolForm.client_type}
+                      onChange={(e) => setNewSchoolForm({ ...newSchoolForm, client_type: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary bg-white"
+                    >
+                      <option value="school_erp">School ERP (Laravel/Blade)</option>
+                      <option value="single_teacher">Single Teacher App</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-dark/70 mb-1">Phone Number</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. +88017xxxxxxxx"
+                      value={newSchoolForm.phone}
+                      onChange={(e) => setNewSchoolForm({ ...newSchoolForm, phone: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-dark/70 mb-1">Activate Pricing Plan *</label>
+                  <select
+                    required
+                    value={newSchoolForm.plan_id}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, plan_id: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary bg-white"
+                  >
+                    <option value="">Select Pricing Plan...</option>
+                    {plansList.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.plan_name || p.name} (৳{Number(p.price || 0).toLocaleString()} / {p.duration_days || 30} days)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="pt-3 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAddSchoolModalOpen(false)}
+                    className="px-4 py-2 rounded-xl border border-dark/15 text-xs font-semibold text-dark/60 hover:bg-dark/5 border-none bg-transparent cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={addSchoolLoading}
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-tertiary to-[#8B5CF6] text-white text-xs font-bold shadow-md hover:shadow-tertiary/20 cursor-pointer border-none"
+                  >
+                    {addSchoolLoading ? "Creating..." : "Save & Generate API Credentials"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── MODAL: Show Generated Credentials ── */}
+        {createdCredentials && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white border border-dark/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative">
+              <button
+                type="button"
+                onClick={() => setCreatedCredentials(null)}
+                className="absolute top-4 right-4 text-dark/40 hover:text-dark cursor-pointer border-none bg-transparent"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-2 text-emerald-600 mb-2">
+                <FiCheck className="w-6 h-6" />
+                <h3 className="text-lg font-extrabold">Client Instance Registered!</h3>
+              </div>
+              <p className="text-xs text-dark/60 mb-4">
+                Give the following <strong>API Credentials</strong> to the School ERP developer to place in their <code>.env</code> file:
+              </p>
+
+              <div className="space-y-3 bg-dark/5 p-4 rounded-xl font-mono text-xs text-dark border border-dark/10">
+                <div>
+                  <span className="text-dark/50 text-[10px] uppercase font-bold tracking-wider block">EDUBARI_API_URL</span>
+                  <p className="font-bold select-all text-tertiary mt-0.5">https://edubari.bd</p>
+                </div>
+                <div>
+                  <span className="text-dark/50 text-[10px] uppercase font-bold tracking-wider block">ERP_API_TOKEN</span>
+                  <p className="font-bold select-all text-dark break-all mt-0.5">{createdCredentials.erp_api_token || createdCredentials.erpToken || "Generated Token"}</p>
+                </div>
+                <div>
+                  <span className="text-dark/50 text-[10px] uppercase font-bold tracking-wider block">ERP_API_SECRET</span>
+                  <p className="font-bold select-all text-dark break-all mt-0.5">{createdCredentials.erp_secret || createdCredentials.erpSecret || "Generated Secret"}</p>
+                </div>
+              </div>
+
+              <div className="mt-5 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const text = `EDUBARI_API_URL=https://edubari.bd\nERP_API_TOKEN=${createdCredentials.erp_api_token || createdCredentials.erpToken}\nERP_API_SECRET=${createdCredentials.erp_secret || createdCredentials.erpSecret}`;
+                    navigator.clipboard.writeText(text);
+                    alert("Credentials copied to clipboard!");
+                  }}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold inline-flex items-center gap-2 cursor-pointer border-none"
+                >
+                  <FiCopy className="w-4 h-4" /> Copy Credentials (.env Format)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCreatedCredentials(null)}
+                  className="px-4 py-2 rounded-xl border border-dark/15 text-xs font-semibold text-dark/60 cursor-pointer border-none bg-transparent"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
