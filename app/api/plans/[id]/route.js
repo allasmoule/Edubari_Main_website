@@ -1,124 +1,187 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { query, queryOne, execute } from "@/lib/db";
 
-// Helper to map DB row (snake_case) to Frontend model (camelCase & MongoDB compatibility)
+function parseRowJsonFields(row) {
+  if (!row) return row;
+  const newRow = { ...row };
+  for (const key of Object.keys(newRow)) {
+    const val = newRow[key];
+    if (typeof val === "string") {
+      const trimmed = val.trim();
+      if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
+        try {
+          newRow[key] = JSON.parse(val);
+        } catch (_) {}
+      }
+    }
+  }
+  return newRow;
+}
+
 function mapPlanFromDb(row) {
   if (!row) return null;
+  const parsedRow = parseRowJsonFields(row);
   return {
-    ...row,
-    id: row.id,
-    _id: row.id,
-    name: row.plan_name || "Default Plan",
-    plan_name: row.plan_name,
-    durationDays: row.duration_days || 30,
-    duration_days: row.duration_days || 30,
-    maxStudents: row.max_students || 200,
-    max_students: row.max_students || 200,
-    maxInstructors: row.max_instructors || 10,
-    max_instructors: row.max_instructors || 10,
-    maxBatches: row.max_batches || 1,
-    max_batches: row.max_batches || 1,
-    monthlyAiCredits: row.monthly_ai_credits || 0,
-    monthly_ai_credits: row.monthly_ai_credits || 0,
-    showBranding: row.show_branding ?? true,
-    show_branding: row.show_branding ?? true,
-    active: row.is_active ?? true,
-    is_active: row.is_active ?? true,
-    sortOrder: row.sort_order || 0,
-    sort_order: row.sort_order || 0,
-    featureGates: row.feature_gates || {},
-    feature_gates: row.feature_gates || {},
-    price: Number(row.price),
-    oldPrice: row.old_price,
-    priceLabel: row.price_label || `৳${Number(row.price).toLocaleString()}/${row.duration_days === 365 ? 'year' : 'month'}`,
-    duration: row.duration || (row.duration_days === 365 ? 'Yearly' : row.duration_days === 30 ? 'Monthly' : `${row.duration_days} Days`),
-    features: row.features || [],
-    popular: row.popular || false,
-    badge: row.badge || null,
-    planTier: row.plan_tier || 'free',
-    plan_tier: row.plan_tier || 'free',
+    ...parsedRow,
+    id: parsedRow.id,
+    _id: parsedRow.id,
+    name: parsedRow.plan_name || "Default Plan",
+    plan_name: parsedRow.plan_name,
+    durationDays: parsedRow.duration_days || 30,
+    duration_days: parsedRow.duration_days || 30,
+    maxStudents: parsedRow.max_students || 200,
+    max_students: parsedRow.max_students || 200,
+    maxInstructors: parsedRow.max_instructors || 10,
+    max_instructors: parsedRow.max_instructors || 10,
+    maxBatches: parsedRow.max_batches || 1,
+    max_batches: parsedRow.max_batches || 1,
+    monthlyAiCredits: parsedRow.monthly_ai_credits || 0,
+    monthly_ai_credits: parsedRow.monthly_ai_credits || 0,
+    showBranding: Boolean(parsedRow.show_branding ?? true),
+    show_branding: Boolean(parsedRow.show_branding ?? true),
+    active: Boolean(parsedRow.is_active ?? true),
+    is_active: Boolean(parsedRow.is_active ?? true),
+    sortOrder: parsedRow.sort_order || 0,
+    sort_order: parsedRow.sort_order || 0,
+    featureGates: parsedRow.feature_gates || {},
+    feature_gates: parsedRow.feature_gates || {},
+    price: Number(parsedRow.price || 0),
+    oldPrice: parsedRow.old_price ? Number(parsedRow.old_price) : null,
+    priceLabel: parsedRow.price_label || `৳${Number(parsedRow.price || 0).toLocaleString()}/${parsedRow.duration_days === 365 ? 'year' : 'month'}`,
+    duration: parsedRow.duration || (parsedRow.duration_days === 365 ? 'Yearly' : parsedRow.duration_days === 30 ? 'Monthly' : `${parsedRow.duration_days} Days`),
+    features: Array.isArray(parsedRow.features) ? parsedRow.features : [],
+    popular: Boolean(parsedRow.popular ?? false),
+    badge: parsedRow.badge || null,
+    planTier: parsedRow.plan_tier || 'free',
+    plan_tier: parsedRow.plan_tier || 'free',
   };
 }
 
-// Helper to map Frontend payload (camelCase) to DB row (snake_case)
-function mapPlanToDb(payload) {
-  if (!payload) return null;
-  const mapped = {};
-  
-  if (payload.name !== undefined) mapped.plan_name = payload.name;
-  if (payload.plan_name !== undefined) mapped.plan_name = payload.plan_name;
-  if (payload.price !== undefined) mapped.price = Number(payload.price);
-  if (payload.oldPrice !== undefined) mapped.old_price = payload.oldPrice ? Number(payload.oldPrice) : null;
-  if (payload.old_price !== undefined) mapped.old_price = payload.old_price ? Number(payload.old_price) : null;
-  if (payload.priceLabel !== undefined) mapped.price_label = payload.priceLabel;
-  if (payload.price_label !== undefined) mapped.price_label = payload.price_label;
-  if (payload.duration !== undefined) mapped.duration = payload.duration;
-  if (payload.description !== undefined) mapped.description = payload.description;
-  if (payload.features !== undefined) mapped.features = payload.features;
-  if (payload.active !== undefined) mapped.is_active = payload.active;
-  if (payload.is_active !== undefined) mapped.is_active = payload.is_active;
-  if (payload.popular !== undefined) mapped.popular = payload.popular;
-  if (payload.badge !== undefined) mapped.badge = payload.badge;
-  if (payload.planTier !== undefined) mapped.plan_tier = payload.planTier;
-  if (payload.plan_tier !== undefined) mapped.plan_tier = payload.plan_tier;
-  if (payload.maxStudents !== undefined) mapped.max_students = Number(payload.maxStudents);
-  if (payload.max_students !== undefined) mapped.max_students = Number(payload.max_students);
-  if (payload.maxInstructors !== undefined) mapped.max_instructors = Number(payload.maxInstructors);
-  if (payload.max_instructors !== undefined) mapped.max_instructors = Number(payload.max_instructors);
-  if (payload.maxBatches !== undefined) mapped.max_batches = Number(payload.maxBatches);
-  if (payload.max_batches !== undefined) mapped.max_batches = Number(payload.max_batches);
-  if (payload.monthlyAiCredits !== undefined) mapped.monthly_ai_credits = Number(payload.monthlyAiCredits);
-  if (payload.monthly_ai_credits !== undefined) mapped.monthly_ai_credits = Number(payload.monthly_ai_credits);
-  if (payload.showBranding !== undefined) mapped.show_branding = payload.showBranding;
-  if (payload.show_branding !== undefined) mapped.show_branding = payload.show_branding;
-  if (payload.sortOrder !== undefined) mapped.sort_order = Number(payload.sortOrder);
-  if (payload.sort_order !== undefined) mapped.sort_order = Number(payload.sort_order);
-  if (payload.featureGates !== undefined) mapped.feature_gates = payload.featureGates;
-  if (payload.feature_gates !== undefined) mapped.feature_gates = payload.feature_gates;
-  if (payload.durationDays !== undefined) mapped.duration_days = Number(payload.durationDays);
-  if (payload.duration_days !== undefined) mapped.duration_days = Number(payload.duration_days);
-  
-  return mapped;
+export async function GET(request, { params }) {
+  try {
+    const { id } = await params;
+    const row = await queryOne("SELECT * FROM plans WHERE id = ?", [id]);
+    if (!row) {
+      return NextResponse.json({ error: "Plan not found" }, { status: 404 });
+    }
+    return NextResponse.json(mapPlanFromDb(row));
+  } catch (error) {
+    console.error("Error fetching plan:", error.message);
+    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function PATCH(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const dbUpdates = mapPlanToDb(body);
 
-    const { data, error } = await supabaseAdmin
-      .from("plans")
-      .update(dbUpdates)
-      .eq("id", id)
-      .select();
-
-    if (error) throw error;
-    if (data.length === 0) {
+    const existing = await queryOne("SELECT * FROM plans WHERE id = ?", [id]);
+    if (!existing) {
       return NextResponse.json({ error: "Plan not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Plan updated", plan: mapPlanFromDb(data[0]) });
+    const updates = [];
+    const values = [];
+
+    if (body.name !== undefined || body.plan_name !== undefined) {
+      updates.push("plan_name = ?");
+      values.push(body.name || body.plan_name);
+    }
+    if (body.price !== undefined) {
+      updates.push("price = ?");
+      values.push(Number(body.price));
+    }
+    if (body.oldPrice !== undefined || body.old_price !== undefined) {
+      updates.push("old_price = ?");
+      const val = body.oldPrice !== undefined ? body.oldPrice : body.old_price;
+      values.push(val ? Number(val) : null);
+    }
+    if (body.priceLabel !== undefined || body.price_label !== undefined) {
+      updates.push("price_label = ?");
+      values.push(body.priceLabel || body.price_label || null);
+    }
+    if (body.duration !== undefined) {
+      updates.push("duration = ?");
+      values.push(body.duration);
+    }
+    if (body.description !== undefined) {
+      updates.push("description = ?");
+      values.push(body.description);
+    }
+    if (body.features !== undefined) {
+      updates.push("features = ?");
+      values.push(JSON.stringify(Array.isArray(body.features) ? body.features : []));
+    }
+    if (body.active !== undefined || body.is_active !== undefined) {
+      updates.push("is_active = ?");
+      values.push(Boolean(body.active ?? body.is_active));
+    }
+    if (body.popular !== undefined) {
+      updates.push("popular = ?");
+      values.push(Boolean(body.popular));
+    }
+    if (body.badge !== undefined) {
+      updates.push("badge = ?");
+      values.push(body.badge || null);
+    }
+    if (body.planTier !== undefined || body.plan_tier !== undefined) {
+      updates.push("plan_tier = ?");
+      values.push(body.planTier || body.plan_tier);
+    }
+    if (body.maxStudents !== undefined || body.max_students !== undefined) {
+      updates.push("max_students = ?");
+      values.push(Number(body.maxStudents !== undefined ? body.maxStudents : body.max_students));
+    }
+    if (body.maxInstructors !== undefined || body.max_instructors !== undefined) {
+      updates.push("max_instructors = ?");
+      values.push(Number(body.maxInstructors !== undefined ? body.maxInstructors : body.max_instructors));
+    }
+    if (body.maxBatches !== undefined || body.max_batches !== undefined) {
+      updates.push("max_batches = ?");
+      values.push(Number(body.maxBatches !== undefined ? body.maxBatches : body.max_batches));
+    }
+    if (body.monthlyAiCredits !== undefined || body.monthly_ai_credits !== undefined) {
+      updates.push("monthly_ai_credits = ?");
+      values.push(Number(body.monthlyAiCredits !== undefined ? body.monthlyAiCredits : body.monthly_ai_credits));
+    }
+    if (body.showBranding !== undefined || body.show_branding !== undefined) {
+      updates.push("show_branding = ?");
+      values.push(Boolean(body.showBranding ?? body.show_branding));
+    }
+    if (body.sortOrder !== undefined || body.sort_order !== undefined) {
+      updates.push("sort_order = ?");
+      values.push(Number(body.sortOrder !== undefined ? body.sortOrder : body.sort_order));
+    }
+    if (body.featureGates !== undefined || body.feature_gates !== undefined) {
+      updates.push("feature_gates = ?");
+      values.push(JSON.stringify(body.featureGates || body.feature_gates || {}));
+    }
+    if (body.durationDays !== undefined || body.duration_days !== undefined) {
+      updates.push("duration_days = ?");
+      values.push(Number(body.durationDays !== undefined ? body.durationDays : body.duration_days));
+    }
+
+    if (updates.length > 0) {
+      values.push(id);
+      await execute(`UPDATE plans SET ${updates.join(", ")} WHERE id = ?`, values);
+    }
+
+    const updatedRow = await queryOne("SELECT * FROM plans WHERE id = ?", [id]);
+    return NextResponse.json({ message: "Plan updated", plan: mapPlanFromDb(updatedRow) });
   } catch (error) {
-    console.error("Error updating plan:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("Error updating plan:", error.message);
+    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }
 
 export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
-
-    const { error } = await supabaseAdmin
-      .from("plans")
-      .delete()
-      .eq("id", id);
-
-    if (error) throw error;
-
+    await execute("DELETE FROM plans WHERE id = ?", [id]);
     return NextResponse.json({ message: "Plan deleted" });
   } catch (error) {
-    console.error("Error deleting plan:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("Error deleting plan:", error.message);
+    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }
