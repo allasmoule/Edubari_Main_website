@@ -1,51 +1,56 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { query, execute } from "@/lib/db";
+import crypto from "crypto";
 
+/**
+ * GET /api/subscriptions
+ * List all subscription requests, newest first.
+ */
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin
-      .from("subscription_requests")
-      .select("*")
-      .order("submitted_at", { ascending: false });
-
-    if (error) throw error;
-    return NextResponse.json(data);
+    const rows = await query("SELECT * FROM subscription_requests ORDER BY submitted_at DESC");
+    return NextResponse.json(rows || []);
   } catch (error) {
-    console.error("Error fetching subscriptions:", error);
+    console.error("Error fetching subscriptions:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
+/**
+ * POST /api/subscriptions
+ * Create a new subscription request (from the public pricing page).
+ */
 export async function POST(request) {
   try {
     const body = await request.json();
-    
-    // Map payload from original frontend to PostgreSQL fields
-    const mappedSubscription = {
-      institution_name: body.institutionName,
-      full_name: body.fullName,
-      email: body.email,
-      phone: body.phone,
-      preferred_domain: body.preferredDomain,
-      address: body.address,
-      payment_method: body.paymentMethod,
-      transaction_id: body.transactionId,
-      selected_plan_id: body.selectedPlanId || null,
-      selected_plan_name: body.selectedPlanName || null,
-      selected_plan_duration: body.selectedPlanDuration || null,
-      selected_plan_price: body.selectedPlanPrice || null,
-      verified: false
-    };
 
-    const { data, error } = await supabaseAdmin
-      .from("subscription_requests")
-      .insert([mappedSubscription])
-      .select();
+    const id = crypto.randomUUID();
+    await execute(
+      `INSERT INTO subscription_requests
+        (id, institution_name, full_name, email, phone, preferred_domain,
+         address, payment_method, transaction_id, selected_plan_id,
+         selected_plan_name, selected_plan_duration, selected_plan_price, verified)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+      [
+        id,
+        body.institutionName || null,
+        body.fullName || null,
+        body.email || null,
+        body.phone || null,
+        body.preferredDomain || null,
+        body.address || null,
+        body.paymentMethod || null,
+        body.transactionId || null,
+        body.selectedPlanId || null,
+        body.selectedPlanName || null,
+        body.selectedPlanDuration ? Number(body.selectedPlanDuration) : null,
+        body.selectedPlanPrice ? Number(body.selectedPlanPrice) : null,
+      ]
+    );
 
-    if (error) throw error;
-    return NextResponse.json({ message: "Subscription created", subscriptionId: data[0].id }, { status: 201 });
+    return NextResponse.json({ message: "Subscription created", subscriptionId: id }, { status: 201 });
   } catch (error) {
-    console.error("Error creating subscription:", error);
+    console.error("Error creating subscription:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
