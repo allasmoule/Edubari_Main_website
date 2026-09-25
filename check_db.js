@@ -1,8 +1,8 @@
-const { createClient } = require("@supabase/supabase-js");
+const mysql = require("mysql2/promise");
 const fs = require("fs");
 
-if (fs.existsSync("./.env.local")) {
-  const content = fs.readFileSync("./.env.local", "utf8");
+if (fs.existsSync("./.env")) {
+  const content = fs.readFileSync("./.env", "utf8");
   content.split("\n").forEach((line) => {
     const parts = line.split("=");
     if (parts.length >= 2) {
@@ -11,27 +11,33 @@ if (fs.existsSync("./.env.local")) {
   });
 }
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error("Missing Supabase credentials in .env.local");
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
 async function checkSchema() {
-  try {
-    // Try to query institution_name from subscriptions
-    const { data: selectInst, error: errInst } = await supabase.from("subscriptions").select("institution_name").limit(1);
-    console.log("Select institution_name:", selectInst, errInst);
+  const host = process.env.DB_HOST || "localhost";
+  const port = Number(process.env.DB_PORT) || 3306;
+  const user = process.env.DB_USER || "root";
+  const password = process.env.DB_PASSWORD || "";
+  const database = process.env.DB_NAME || "edubari";
 
-    // Let's query information_schema or all tables if possible
-    const { data: tables, error: errTables } = await supabase.rpc("get_tables");
-    console.log("RPC tables:", tables, errTables);
+  console.log(`Testing MySQL connection to ${user}@${host}:${port}/${database}...`);
+
+  try {
+    const connection = await mysql.createConnection({
+      host,
+      port,
+      user,
+      password,
+      database,
+    });
+
+    console.log("✅ Successfully connected to MySQL Database!");
+    const [tables] = await connection.query("SHOW TABLES");
+    console.log("Found tables count:", tables.length);
+    console.log("Tables list:", tables.map((t) => Object.values(t)[0]));
+    await connection.end();
   } catch (err) {
-    console.error("Error checking schema:", err);
+    console.error("❌ Could not connect to MySQL Server:");
+    console.error(`   Error Message: ${err.message}`);
+    console.error("👉 NOTE: Please start your MySQL Server (XAMPP / Laragon / MySQL Service) on port " + port + " and import schema.sql.");
   }
 }
 
