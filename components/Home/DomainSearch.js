@@ -254,19 +254,23 @@ const DomainSearch = () => {
   return (
     <section
       ref={sectionRef}
-      className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-14 bg-slate-50/50 relative overflow-hidden select-none"
+      className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-16 bg-gradient-to-br from-[#F8FAFC] via-[#F1F5F9] to-[#EEF2FF] relative overflow-hidden select-none"
     >
       {/* Main Centered Card Container */}
       <div
         className={`transition-all duration-1000 transform ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-        } w-full max-w-[1100px] mx-auto rounded-[36px] border border-blue-100/80 bg-gradient-to-b from-white via-slate-50/40 to-blue-50/30 shadow-[0_25px_70px_-15px_rgba(59,130,246,0.12)] backdrop-blur-xl overflow-hidden relative p-8 sm:p-14 md:p-16`}
+        } w-full max-w-[1100px] mx-auto rounded-[40px] border border-white/90 bg-white/90 shadow-[0_30px_90px_-20px_rgba(129,140,248,0.15)] backdrop-blur-2xl overflow-hidden relative p-8 sm:p-14 md:p-16`}
       >
+        {/* Ambient Top & Bottom Soft Pastel Flows */}
+        <div className="absolute -top-32 -left-32 w-80 h-80 bg-[#818CF8]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-[#38BDF8]/10 rounded-full blur-3xl pointer-events-none" />
+
         {/* Floating Top-Right Video "How to purchase" Button */}
         <button
           type="button"
           onClick={() => setVideoModalOpen(true)}
-          className="sm:absolute sm:top-8 sm:right-8 mx-auto mb-6 sm:mb-0 group inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-gradient-to-r from-[#818CF8] to-[#a78bfa] hover:from-[#6366F1] hover:to-[#8B5CF6] text-white shadow-[0_6px_20px_-4px_rgba(129,140,248,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(129,140,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-xs font-black tracking-wider uppercase border-none cursor-pointer shrink-0"
+          className="sm:absolute sm:top-8 sm:right-8 mx-auto mb-6 sm:mb-0 group inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-gradient-to-r from-[#818CF8] to-[#A78BFA] hover:from-[#6366F1] hover:to-[#8B5CF6] text-white shadow-[0_6px_20px_-4px_rgba(129,140,248,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(129,140,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-xs font-black tracking-wider uppercase border-none cursor-pointer shrink-0"
         >
           <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
             <FaPlay className="w-2.5 h-2.5 ml-0.5" />
@@ -277,28 +281,30 @@ const DomainSearch = () => {
         {/* Centered Main Content */}
         <div className="max-w-3xl mx-auto text-center">
           {/* Centered Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4.5 py-1.5 rounded-full bg-indigo-50/70 border border-indigo-200/80 shadow-xs text-[#4F46E5] text-xs font-black uppercase tracking-wider mb-6">
-            <span className="h-2 w-2 rounded-full bg-[#6366F1] animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-white border border-[#818CF8]/30 shadow-[0_2px_8px_rgba(129,140,248,0.12)] text-[#4F46E5] text-[11px] sm:text-xs font-black uppercase tracking-wider mb-6">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#4F46E5] shrink-0" />
             {t("domainSearch.badge")}
           </div>
 
           {/* Main Title */}
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-tight">
-            {t("domainSearch.titleMain")}{" "}
-            <span className="block bg-gradient-to-r from-[#818CF8] via-[#a78bfa] to-[#38BDF8] bg-clip-text text-transparent drop-shadow-[0_4px_12px_rgba(129,140,248,0.25)] mt-1 py-1">
-              {t("domainSearch.titleGradient")}
-            </span>
+          <h2 className="text-[36px] sm:text-[54px] md:text-[62px] font-black tracking-tight text-[#0F172A] leading-tight mb-2">
+            {t("domainSearch.titleMain")}
           </h2>
+          
+          {/* 1:1 Gradient Text with Soft Purple Aura Glow */}
+          <span className="text-[40px] sm:text-[60px] md:text-[70px] font-black tracking-tight leading-none block bg-gradient-to-r from-[#6070FF] via-[#818CF8] to-[#38BDF8] bg-clip-text text-transparent filter drop-shadow-[0_10px_20px_rgba(129,140,248,0.35)] py-1 mb-2">
+            {t("domainSearch.titleGradient")}
+          </span>
 
           {/* Subtitle */}
-          <p className="mt-4 text-base sm:text-lg text-slate-500 font-medium leading-relaxed max-w-xl mx-auto">
+          <p className="mt-4 text-sm sm:text-base md:text-lg text-slate-500 font-semibold leading-relaxed max-w-xl mx-auto">
             {t("domainSearch.subtitle")}
           </p>
 
           {/* Search Bar Form */}
           <div className="mt-10 max-w-3xl mx-auto">
             <form onSubmit={handleSearch}>
-              <div className="relative rounded-full p-2 bg-gradient-to-r from-[#818CF8]/30 via-[#a78bfa]/30 to-[#38BDF8]/30 border border-[#818CF8]/40 shadow-[0_10px_25px_-5px_rgba(129,140,248,0.2)] transition-all duration-300">
+              <div className="relative rounded-full p-2.5 bg-gradient-to-r from-[#C7D2FE]/60 via-[#E0E7FF]/80 to-[#BAE6FD]/60 border-2 border-[#818CF8]/40 shadow-[0_15px_35px_-5px_rgba(129,140,248,0.25)] transition-all duration-300">
                 <div className="relative flex items-center bg-white rounded-full overflow-hidden">
                   <div className="pl-6 text-slate-400">
                     <FiGlobe className="h-6 w-6" />
@@ -315,7 +321,7 @@ const DomainSearch = () => {
                     id="domain-search-btn"
                     type="submit"
                     disabled={isSearching || !searchTerm.trim()}
-                    className="mr-1.5 sm:mr-2 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#818CF8] to-[#a78bfa] hover:from-[#6366F1] hover:to-[#8B5CF6] px-8 py-3.5 sm:py-4 text-white text-base font-black uppercase tracking-wider shadow-[0_6px_20px_-4px_rgba(129,140,248,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(129,140,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
+                    className="mr-1.5 sm:mr-2 inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#818CF8] to-[#A78BFA] hover:from-[#6366F1] hover:to-[#8B5CF6] px-8 py-3.5 sm:py-4 text-white text-base font-black uppercase tracking-wider shadow-[0_6px_20px_-4px_rgba(129,140,248,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(129,140,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
                   >
                     {isSearching ? (
                       <>
