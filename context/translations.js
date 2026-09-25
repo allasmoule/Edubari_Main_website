@@ -135,6 +135,15 @@ export const translations = {
       f4Title: "শিক্ষার্থী বৃদ্ধি করুন",
       f4Desc: "একটি সুসংগঠিত প্ল্যাটফর্মের মাধ্যমে আপনার টিচিং ক্যারিয়ারকে ছড়িয়ে দিন।",
     },
+    // Trusted Clients Section
+    trustedClients: {
+      badge: "আমাদের বিশ্বস্ত ক্লায়েন্ট",
+      titleMain: "আমাদের সাথে যুক্ত আছে",
+      titleGradient: "স্বনামধন্য প্রতিষ্ঠানসমূহ",
+      subtitle: "দেশের ১০০+ এরও বেশি স্কুল, কলেজ এবং মাদ্রাসা EduBari ERP ব্যবহার করে ডিজিটাল কার্যক্রম পরিচালনা করছে।",
+      clientLabel: "ইনস্টিটিউশন ক্লায়েন্ট",
+      verifiedBadge: "যাচাইকৃত পার্টনার",
+    },
     // Get In Touch Section
     getInTouch: {
       badge: "যোগাযোগ",
@@ -305,6 +314,15 @@ export const translations = {
       f3Desc: "Manage students, materials, and updates easily.",
       f4Title: "Attract Students",
       f4Desc: "Grow your teaching business with a structured platform.",
+    },
+    // Trusted Clients Section
+    trustedClients: {
+      badge: "Our Trusted Clients",
+      titleMain: "Trusted By",
+      titleGradient: "Leading Institutions",
+      subtitle: "Over 100+ schools, colleges, and madrashas across the country manage their digital operations with EduBari ERP.",
+      clientLabel: "Institution Client",
+      verifiedBadge: "Verified Partner",
     },
     // Get In Touch Section
     getInTouch: {
