@@ -47,20 +47,16 @@ export async function POST(request) {
       return NextResponse.json({ error: "Selected pricing plan not found" }, { status: 404 });
     }
 
-    const resolvedType = client_type || "single_teacher";
+    const resolvedType = client_type || "school_erp";
 
-    // Auto-generate ERP credentials for School ERP clients
-    let erpToken = null;
-    let erpSecret = null;
-    if (resolvedType === "school_erp") {
-      erpToken = crypto.randomBytes(32).toString("hex");
-      erpSecret = crypto.randomBytes(32).toString("hex");
-    }
+    // Auto-generate 64-character hex ERP credentials for all clients
+    const erpToken = crypto.randomBytes(32).toString("hex");
+    const erpSecret = crypto.randomBytes(32).toString("hex");
 
     const clientId = crypto.randomUUID();
     await execute(
       "INSERT INTO clients (id, client_name, domain, phone, logo_url, status, client_type, erp_api_token, erp_secret) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [clientId, client_name, domain, phone || null, logo_url || null, status, resolvedType, erpToken, erpSecret]
+      [clientId, client_name, domain, phone || null, logo_url || null, status || "active", resolvedType, erpToken, erpSecret]
     );
 
     const start = new Date();
@@ -74,18 +70,22 @@ export async function POST(request) {
       [subId, clientId, plan.id, start, end, grace]
     );
 
-    // For school_erp clients, also create an erp_connections tracking row
-    if (resolvedType === "school_erp") {
-      const erpConnId = crypto.randomUUID();
-      await execute(
-        `INSERT INTO erp_connections (id, client_id, domain, erp_api_token, connection_status)
-         VALUES (?, ?, ?, ?, 'pending')`,
-        [erpConnId, clientId, domain, erpToken]
-      );
-    }
+    // Create tracking row in erp_connections table
+    const erpConnId = crypto.randomUUID();
+    await execute(
+      `INSERT INTO erp_connections (id, client_id, domain, erp_api_token, connection_status)
+       VALUES (?, ?, ?, ?, 'pending')`,
+      [erpConnId, clientId, domain, erpToken]
+    ).catch(() => {}); // non-blocking if duplicate key
 
     const createdClient = await queryOne("SELECT * FROM clients WHERE id = ?", [clientId]);
-    return NextResponse.json(createdClient, { status: 201 });
+    return NextResponse.json({
+      ...createdClient,
+      erp_api_token: createdClient?.erp_api_token || erpToken,
+      erp_secret: createdClient?.erp_secret || erpSecret,
+      erpToken: createdClient?.erp_api_token || erpToken,
+      erpSecret: createdClient?.erp_secret || erpSecret,
+    }, { status: 201 });
   } catch (error) {
     console.error("Error creating client:", error.message);
     return NextResponse.json({ error: error.message || "Failed to create client" }, { status: 500 });
