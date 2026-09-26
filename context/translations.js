@@ -14,6 +14,8 @@ export const translations = {
     // Domain / School Search
     domainSearch: {
       badge: "স্কুল নাম অ্যাভেইলেবিলিটি চেকার",
+      titlePrefix: "আপনার পারফেক্ট",
+      titleSuffix: "নাম খুঁজুন",
       titleMain: "আপনার পারফেক্ট",
       titleGradient: "স্কুলের নাম খুঁজুন",
       subtitle: "আপনার শিক্ষা প্রতিষ্ঠান বা ব্র্যান্ডের নাম টাইপ করুন এবং সাথে সাথেই অ্যাভেইলেবল ডোমেইন দেখুন।",
@@ -24,7 +26,7 @@ export const translations = {
       school: "স্কুল",
       college: "কলেজ",
       madrasha: "মাদ্রাসা",
-      singleTeacher: "সিঙ্গেল টিচার",
+      singleTeacher: "টিচার",
       modalTitle: "অ্যাভেইলেবল সার্চ রেজাল্ট",
       modalSub: "নিচে থেকে আপনার পছন্দের ডোমেইনটি বেছে নিন এবং পরবর্তী প্যাকেজে এগিয়ে যান।",
       priceLabel: "ডোমেইন প্রাইস",
@@ -202,6 +204,8 @@ export const translations = {
     // Domain / School Search
     domainSearch: {
       badge: "School Availability Checker",
+      titlePrefix: "Find Your Perfect",
+      titleSuffix: "Name",
       titleMain: "Find Your Perfect",
       titleGradient: "School Name",
       subtitle: "Enter your institution or brand name and we'll suggest available domains instantly.",
@@ -211,8 +215,8 @@ export const translations = {
       videoBtn: "Video: How to purchase",
       school: "School",
       college: "College",
-      madrasha: "Madrasha",
-      singleTeacher: "Single Teacher",
+      madrasha: "Madrasah",
+      singleTeacher: "Teacher",
       modalTitle: "Search Results",
       modalSub: "Select your preferred domain name below to proceed to Choose Your Plan.",
       priceLabel: "Domain Price",

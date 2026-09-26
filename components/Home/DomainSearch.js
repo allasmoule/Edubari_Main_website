@@ -78,6 +78,22 @@ const DomainSearch = () => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
+  const animatedWords = [
+    { id: "school", word: t("domainSearch.school") },
+    { id: "college", word: t("domainSearch.college") },
+    { id: "madrasha", word: t("domainSearch.madrasha") },
+    { id: "single_teacher", word: t("domainSearch.singleTeacher") },
+  ];
+
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % animatedWords.length);
+    }, 2200);
+    return () => clearInterval(timer);
+  }, [animatedWords.length]);
+
   const categories = [
     {
       id: "school",
@@ -133,6 +149,10 @@ const DomainSearch = () => {
 
   const handleCategoryClick = (cat) => {
     setSelectedCategory(cat.id);
+    const matchedIdx = animatedWords.findIndex((item) => item.id === cat.id);
+    if (matchedIdx !== -1) {
+      setWordIndex(matchedIdx);
+    }
     if (!searchTerm) {
       setSearchTerm(cat.placeholder);
     }
@@ -286,15 +306,19 @@ const DomainSearch = () => {
             {t("domainSearch.badge")}
           </div>
 
-          {/* Main Title */}
-          <h2 className="text-[36px] sm:text-[54px] md:text-[62px] font-black tracking-tight text-[#0F172A] leading-tight mb-2">
-            {t("domainSearch.titleMain")}
+          {/* Main Title with Animated Institution Type */}
+          <h2 className="text-[32px] sm:text-[48px] md:text-[56px] font-black tracking-tight text-[#0F172A] leading-tight mb-3 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
+            <span>{t("domainSearch.titlePrefix")}</span>
+            <span className="inline-block relative min-w-[130px] sm:min-w-[190px] text-center">
+              <span
+                key={`${wordIndex}-${lang}`}
+                className="bg-gradient-to-r from-[#6070FF] via-[#818CF8] to-[#38BDF8] bg-clip-text text-transparent filter drop-shadow-[0_10px_20px_rgba(129,140,248,0.35)] py-1 inline-block animate-fadeInUp"
+              >
+                {animatedWords[wordIndex]?.word}
+              </span>
+            </span>
+            <span>{t("domainSearch.titleSuffix")}</span>
           </h2>
-          
-          {/* 1:1 Gradient Text with Soft Purple Aura Glow */}
-          <span className="text-[40px] sm:text-[60px] md:text-[70px] font-black tracking-tight leading-none block bg-gradient-to-r from-[#6070FF] via-[#818CF8] to-[#38BDF8] bg-clip-text text-transparent filter drop-shadow-[0_10px_20px_rgba(129,140,248,0.35)] py-1 mb-2">
-            {t("domainSearch.titleGradient")}
-          </span>
 
           {/* Subtitle */}
           <p className="mt-4 text-sm sm:text-base md:text-lg text-slate-500 font-semibold leading-relaxed max-w-xl mx-auto">
