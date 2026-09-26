@@ -369,31 +369,8 @@ function CheckoutContent() {
                     <span className="text-2xs font-extrabold">Nagad Manual</span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod("sandbox_wallet")}
-                    className={`flex flex-col items-center justify-center p-3.5 rounded-xl border text-center transition-all cursor-pointer ${
-                      paymentMethod === "sandbox_wallet"
-                        ? "bg-tertiary/10 border-tertiary/40 text-tertiary ring-2 ring-tertiary/10"
-                        : "bg-white border-dark/10 text-dark hover:-translate-y-0.5"
-                    }`}
-                  >
-                    <span className="text-lg mb-1">⚡</span>
-                    <span className="text-2xs font-extrabold">Auto Gateway Wallet</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod("sandbox_card")}
-                    className={`flex flex-col items-center justify-center p-3.5 rounded-xl border text-center transition-all cursor-pointer ${
-                      paymentMethod === "sandbox_card"
-                        ? "bg-tertiary/10 border-tertiary/40 text-tertiary ring-2 ring-tertiary/10"
-                        : "bg-white border-dark/10 text-dark hover:-translate-y-0.5"
-                    }`}
-                  >
-                    <span className="text-lg mb-1">💳</span>
-                    <span className="text-2xs font-extrabold">Auto Credit Card</span>
-                  </button>
+                  {/* The simulated "auto" gateways were removed: they added credits without any real
+                      payment. Manual bKash/Nagad requests are verified by an admin. */}
                 </div>
               </div>
 

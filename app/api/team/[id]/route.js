@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/auth";
 
 export async function PATCH(request, context) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const params = await context.params;
     const { id } = params;
@@ -35,6 +39,9 @@ export async function PATCH(request, context) {
 }
 
 export async function DELETE(request, context) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const params = await context.params;
     const { id } = params;

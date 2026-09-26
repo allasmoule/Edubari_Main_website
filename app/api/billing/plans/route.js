@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, execute } from "@/lib/db";
 import crypto from "crypto";
+import { requireAdmin } from "@/lib/auth";
 
 function parseRowJsonFields(row) {
   if (!row) return row;
@@ -19,7 +20,10 @@ function parseRowJsonFields(row) {
   return newRow;
 }
 
-export async function GET() {
+export async function GET(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const rows = await query("SELECT * FROM plans ORDER BY sort_order ASC, price ASC");
     const parsed = (rows || []).map((r) => parseRowJsonFields(r));
@@ -31,6 +35,9 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const body = await request.json();
     const {

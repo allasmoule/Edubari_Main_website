@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, execute } from "@/lib/db";
 import crypto from "crypto";
+import { requireAdmin } from "@/lib/auth";
+import { createPaymentRow } from "@/lib/subscription-billing";
 
 /**
  * GET /api/subscriptions/:id
  * Fetch a single subscription request by ID.
  */
 export async function GET(request, { params }) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = await params;
 
@@ -32,6 +37,9 @@ export async function GET(request, { params }) {
  * On approval, auto-creates or renews the client + active subscription.
  */
 export async function PATCH(request, { params }) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -74,6 +82,11 @@ export async function PATCH(request, { params }) {
         });
       }
 
+      // Only School ERP schools are added from here (single-teacher sign-ups are no longer created)
+      if (plan.plan_type !== "school_erp") {
+        return NextResponse.json({ error: "Only School ERP plans can be approved here" }, { status: 400 });
+      }
+
       const domain = reqData.preferred_domain?.trim().toLowerCase();
 
       // 3. Check if client with this domain already exists
@@ -111,11 +124,20 @@ export async function PATCH(request, { params }) {
         await execute("UPDATE clients SET status = 'active' WHERE id = ?", [clientId]);
       } else {
         // --- NEW CLIENT REGISTRATION FLOW ---
+        // --- NEW SCHOOL ERP: same credentials as a school added from the admin panel ---
         clientId = crypto.randomUUID();
+        const erpToken = crypto.randomBytes(32).toString("hex");
+        const erpSecret = crypto.randomBytes(32).toString("hex");
         await execute(
-          "INSERT INTO clients (id, client_name, domain, phone, status, client_type) VALUES (?, ?, ?, ?, 'active', 'single_teacher')",
-          [clientId, reqData.institution_name, domain, reqData.phone || null]
+          `INSERT INTO clients (id, client_name, domain, phone, status, client_type, erp_api_token, erp_secret)
+           VALUES (?, ?, ?, ?, 'active', 'school_erp', ?, ?)`,
+          [clientId, reqData.institution_name, domain, reqData.phone || null, erpToken, erpSecret]
         );
+        await execute(
+          `INSERT INTO erp_connections (id, client_id, domain, erp_api_token, connection_status)
+           VALUES (?, ?, ?, ?, 'pending')`,
+          [crypto.randomUUID(), clientId, domain, erpToken]
+        ).catch(() => {}); // non-blocking if duplicate key
       }
 
       // 4. Calculate dates
@@ -139,6 +161,27 @@ export async function PATCH(request, { params }) {
         }
         throw subErr;
       }
+
+      // Keep the approval in the school's payment history (the admin checked the payment)
+      await createPaymentRow({
+        client_id: clientId,
+        plan_id: plan.id,
+        subscription_id: subId,
+        method: "manual",
+        source: "admin",
+        channel: "request_approval",
+        amount: Number(plan.price) || 0,
+        recorded_by: auth.user.id,
+        note: `Subscription request ${id} approved`,
+      })
+        .then((row) =>
+          execute(
+            `UPDATE subscription_payments SET status = 'completed', period_start = ?, period_end = ?, completed_at = NOW()
+              WHERE id = ?`,
+            [start, end, row.id]
+          )
+        )
+        .catch((e) => console.error("Approval payment record failed:", e.message));
     }
 
     // 6. Update the subscription_requests record
@@ -163,6 +206,9 @@ export async function PATCH(request, { params }) {
  * DELETE /api/subscriptions/:id
  */
 export async function DELETE(request, { params }) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = await params;
     const existing = await queryOne("SELECT id FROM subscription_requests WHERE id = ?", [id]);

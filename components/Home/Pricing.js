@@ -41,7 +41,7 @@ const Pricing = () => {
 
   const fetchClients = async () => {
     try {
-      const res = await fetch("/api/billing/clients");
+      const res = await fetch("/api/public/clients");
       if (res.ok) {
         const data = await res.json();
         setClients(Array.isArray(data) ? data : []);

@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
-import { 
-  getAiPurchaseRequests, 
-  updatePurchaseRequestStatus, 
-  getDomainBalances, 
+import {
+  getAiPackages,
+  getAiPurchaseRequests,
+  updatePurchaseRequestStatus,
+  getDomainBalances,
   getDomainTransactions,
   getDomainCredits,
   createAiPurchaseRequest
 } from "@/lib/ai-database";
+import { requireAdmin } from "@/lib/auth";
+import { cleanDomain } from "@/lib/safe-redirect";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -14,41 +17,36 @@ export async function GET(request) {
   const domain = searchParams.get("domain");
 
   try {
+    // One domain's own balance is public (shown to the institution); everything else is admin-only
     if (dataType === "balance" && domain) {
-      let cleanDomain = domain.trim().toLowerCase();
-      if (cleanDomain.includes("://")) {
-        cleanDomain = cleanDomain.split("://")[1];
-      }
-      cleanDomain = cleanDomain.split("/")[0].split(":")[0];
-
-      const data = await getDomainCredits(cleanDomain);
-      return NextResponse.json(data);
-    } else if (dataType === "balances") {
-      const data = await getDomainBalances();
-      return NextResponse.json(data);
-    } else if (dataType === "transactions") {
-      const data = await getDomainTransactions();
+      const data = await getDomainCredits(cleanDomain(domain));
       return NextResponse.json(data);
     }
 
-    // Default to purchase requests
-    const data = await getAiPurchaseRequests();
-    return NextResponse.json(data);
+    const auth = await requireAdmin(request);
+    if (auth.response) return auth.response;
+
+    if (dataType === "balances") {
+      return NextResponse.json(await getDomainBalances());
+    } else if (dataType === "transactions") {
+      return NextResponse.json(await getDomainTransactions());
+    }
+    return NextResponse.json(await getAiPurchaseRequests());
   } catch (error) {
-    console.error("Error in GET /api/ai-purchases:", error);
+    console.error("Error in GET /api/ai-purchases:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
 export async function POST(request) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const { requestId, status, reason } = body;
 
     if (requestId) {
-      if (!status) {
-        return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-      }
+      // Approving / rejecting (which adds credits) is for a signed-in admin only
+      const auth = await requireAdmin(request);
+      if (auth.response) return auth.response;
 
       if (status !== "approved" && status !== "rejected") {
         return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
@@ -59,18 +57,40 @@ export async function POST(request) {
         message: `Purchase request ${status} successfully.`,
         request: updatedRequest,
       });
-    } else {
-      // Creation path (e.g. from checkout manual payment submission)
-      const { domain, packageId } = body;
-      if (!domain || !packageId) {
-        return NextResponse.json({ error: "Missing required fields: domain and packageId are required" }, { status: 400 });
-      }
-
-      const newRequest = await createAiPurchaseRequest(body);
-      return NextResponse.json(newRequest, { status: 201 });
     }
+
+    // Public creation path (manual bKash/Nagad payment from the checkout page): always pending,
+    // and the credits/price come from the package on the server — never from the browser
+    const domain = cleanDomain(body.domain);
+    const transactionId = String(body.transactionId || "").trim();
+    if (!domain || !body.packageId || !transactionId) {
+      return NextResponse.json({ error: "Missing required fields: domain, packageId and transactionId are required" }, { status: 400 });
+    }
+    const pkg = (await getAiPackages()).find((p) => p.id === body.packageId && p.isActive !== false);
+    if (!pkg) {
+      return NextResponse.json({ error: "Package not found" }, { status: 404 });
+    }
+
+    const newRequest = await createAiPurchaseRequest({
+      domain,
+      userName: String(body.userName || "").slice(0, 255) || undefined,
+      userPhone: String(body.userPhone || "").slice(0, 50) || undefined,
+      packageId: pkg.id,
+      packageName: pkg.name,
+      credits: pkg.credits,
+      price: pkg.price,
+      currency: pkg.currency || "BDT",
+      paymentMethod: ["bkash", "nagad"].includes(body.paymentMethod) ? body.paymentMethod : "manual",
+      transactionId: transactionId.slice(0, 100),
+      status: "pending",
+    });
+    return NextResponse.json(newRequest, { status: 201 });
   } catch (error) {
-    console.error("Error in POST /api/ai-purchases:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    if (error.code === "ER_DUP_ENTRY") {
+      return NextResponse.json({ error: "This transaction ID has already been submitted" }, { status: 409 });
+    }
+    console.error("Error in POST /api/ai-purchases:", error.message);
+    const known = /already processed|not found/i.test(error.message);
+    return NextResponse.json({ error: known ? error.message : "Internal Server Error" }, { status: known ? 409 : 500 });
   }
 }

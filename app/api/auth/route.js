@@ -1,84 +1,80 @@
 import { NextResponse } from "next/server";
 import { queryOne, execute } from "@/lib/db";
-import crypto from "crypto";
+import {
+  SESSION_COOKIE,
+  clearLoginFailures,
+  clientIp,
+  createSessionToken,
+  getAdmin,
+  hashPassword,
+  loginLimited,
+  recordLoginFailure,
+  sessionCookieOptions,
+  verifyPassword,
+} from "@/lib/auth";
 
-function hashPassword(pwd) {
-  return crypto.createHash("sha256").update(pwd).digest("hex");
+// Constant work for unknown emails so the response time doesn't reveal which emails exist
+const DUMMY_HASH = hashPassword("dummy-password-for-timing");
+
+function publicUser(user) {
+  return { id: user.id, email: user.email, user_metadata: { name: user.name, role: "admin" } };
 }
 
+/**
+ * POST /api/auth  { action: "login", email, password }  → sets the admin session cookie
+ * POST /api/auth  { action: "logout" }                   → clears it
+ * Only admin users can sign in. Creating users is done by a signed-in admin via /api/users.
+ */
 export async function POST(request) {
   try {
-    const body = await request.json();
-    const { action, email, password } = body;
+    const body = await request.json().catch(() => ({}));
+    const { action } = body;
 
-    if (action === "login") {
-      const trimmedEmail = (email || "").trim().toLowerCase();
-      const trimmedPassword = (password || "").trim();
-      const hashed = hashPassword(trimmedPassword);
-
-      let user = null;
-
-      // 1. Try MySQL Database Query
-      try {
-        user = await queryOne(
-          "SELECT * FROM users WHERE LOWER(email) = ? AND (password = ? OR password = ?)",
-          [trimmedEmail, hashed, trimmedPassword]
-        );
-      } catch (dbErr) {
-        console.warn("[Auth API] MySQL Database connection failed, checking fallback static admin credentials...", dbErr.message);
-      }
-
-      // 2. Fallback check if DB not seeded or offline
-      if (!user) {
-        if (
-          trimmedEmail === "botbari@edubari.bd" &&
-          (trimmedPassword === "Edu@@@@1234" || hashed === "b8c3390b674eb668e161d7279a6daa3ace8e4e2de0a9a0316f459ff675d6f268")
-        ) {
-          user = {
-            id: "3dfd52ed-c3e8-4973-997f-906169626880",
-            name: "Edubari Admin",
-            email: "botbari@edubari.bd",
-            role: "admin",
-          };
-        }
-      }
-
-      if (!user) {
-        return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
-      }
-
-      const session = {
-        access_token: `token_${user.id}_${Date.now()}`,
-        user: {
-          id: user.id,
-          email: user.email,
-          user_metadata: { name: user.name, role: user.role || "admin" },
-        },
-      };
-
-      return NextResponse.json({ data: { user: session.user, session }, error: null });
+    if (action === "logout") {
+      const res = NextResponse.json({ data: null, error: null });
+      res.cookies.set(SESSION_COOKIE, "", sessionCookieOptions(0));
+      return res;
     }
 
-    if (action === "create_user") {
-      const { email, password, name = "Admin User" } = body;
-      const userId = crypto.randomUUID();
-      const hashed = hashPassword(password);
-
-      try {
-        await execute(
-          "INSERT INTO users (id, name, email, password, role) VALUES (?, ?, ?, ?, ?)",
-          [userId, name, email, hashed, "admin"]
-        );
-      } catch (dbErr) {
-        console.warn("[Auth API] MySQL insert user error:", dbErr.message);
+    if (action === "login") {
+      const ip = clientIp(request);
+      if (await loginLimited(ip)) {
+        return NextResponse.json({ error: "অনেকবার ভুল চেষ্টা — ১৫ মিনিট পরে আবার চেষ্টা করুন" }, { status: 429 });
       }
 
-      return NextResponse.json({ data: { user: { id: userId, email, user_metadata: { name } } }, error: null });
+      const email = String(body.email || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const user = email ? await queryOne("SELECT * FROM users WHERE LOWER(email) = ?", [email]) : null;
+      const { ok, needsUpgrade } = verifyPassword(password, user?.password || DUMMY_HASH);
+
+      if (!user || !ok || user.role !== "admin") {
+        await recordLoginFailure(ip);
+        return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+      }
+      await clearLoginFailures(ip);
+
+      if (needsUpgrade) {
+        await execute("UPDATE users SET password = ? WHERE id = ?", [hashPassword(password), user.id]).catch(() => {});
+      }
+
+      const token = createSessionToken(user);
+      // The browser keeps only a display copy; the real session is the httpOnly cookie
+      const session = { user: publicUser(user), expires_in: 12 * 60 * 60 };
+      const res = NextResponse.json({ data: { user: session.user, session }, error: null });
+      res.cookies.set(SESSION_COOKIE, token, sessionCookieOptions());
+      return res;
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
-    console.error("Auth API Error:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    console.error("Auth API Error:", error.message);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
+}
+
+/** GET /api/auth — the signed-in admin (used by the admin layout), or 401 */
+export async function GET(request) {
+  const user = await getAdmin(request);
+  if (!user) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+  return NextResponse.json({ data: { user: publicUser(user) }, error: null });
 }

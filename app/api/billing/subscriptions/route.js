@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, execute } from "@/lib/db";
 import crypto from "crypto";
+import { requireAdmin } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const subscriptions = await query("SELECT * FROM subscriptions ORDER BY created_at DESC");
     const clients = await query("SELECT * FROM clients");
@@ -32,6 +36,9 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const body = await request.json();
     const { client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status } = body;
