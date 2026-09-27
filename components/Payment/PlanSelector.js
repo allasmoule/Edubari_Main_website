@@ -20,7 +20,7 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false,
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-3">
-              💰 Choose Your Plan
+              Choose Your Plan
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-dark leading-tight">
               Simple, Transparent{" "}
@@ -44,7 +44,7 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false,
                     : "text-slate-600 hover:text-slate-900 bg-transparent"
                 }`}
               >
-                🏫 School ERP Packages
+                School ERP Packages
               </button>
               <button
                 type="button"
@@ -55,7 +55,7 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false,
                     : "text-slate-600 hover:text-slate-900 bg-transparent"
                 }`}
               >
-                👨‍🏫 Single Teacher Plans
+                Single Teacher Plans
               </button>
             </div>
           </div>

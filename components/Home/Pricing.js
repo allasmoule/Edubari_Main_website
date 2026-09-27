@@ -182,7 +182,7 @@ const Pricing = () => {
                     : "text-slate-600 hover:text-slate-900 bg-transparent"
                 }`}
               >
-                🏫 School ERP Packages
+                School ERP Packages
               </button>
               <button
                 type="button"
@@ -193,7 +193,7 @@ const Pricing = () => {
                     : "text-slate-600 hover:text-slate-900 bg-transparent"
                 }`}
               >
-                👨‍🏫 Single Teacher Plans
+                Single Teacher Plans
               </button>
             </div>
           </div>
@@ -338,7 +338,7 @@ const Pricing = () => {
                     {/* Free School Website Banner */}
                     <div className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/50 p-6 sm:p-8 shadow-lg relative overflow-hidden">
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-black tracking-wider uppercase mb-3 shadow-sm">
-                        🎉 FULL FREE WEBSITE
+                        FULL FREE WEBSITE
                       </div>
                       <h3 className="text-xl font-black text-slate-900 tracking-tight">
                         School Website <span className="text-emerald-600">Full Free</span>
@@ -369,7 +369,7 @@ const Pricing = () => {
                     {/* Cost & Support Summary Panel */}
                     <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-purple-50/50 p-6 sm:p-8 shadow-lg relative overflow-hidden">
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-black tracking-wider uppercase mb-3 shadow-sm">
-                        ⚙️ COST & SUPPORT
+                        COST & SUPPORT
                       </div>
                       <h3 className="text-xl font-black text-slate-900 tracking-tight">
                         Everything You Need for a <span className="text-indigo-600">Smarter School</span>
