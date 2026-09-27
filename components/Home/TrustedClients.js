@@ -8,65 +8,65 @@ import { useLanguage } from "@/context/LanguageContext";
 const DEFAULT_CLIENTS = [
   {
     id: "c1",
-    name: "Dhaka Model High School & College",
-    domain: "dhakamodel.edu.bd",
-    type: "School & College",
+    name: "Sample School & College",
+    domain: "sampleschool.edubari.bd",
+    type: "Sample Institution",
     icon: FaUniversity,
     color: "text-blue-600 bg-blue-50 border-blue-200",
   },
   {
     id: "c2",
-    name: "Al-Azhar Comprehensive Madrasha",
-    domain: "alazhar.edubari.bd",
-    type: "Madrasha",
-    icon: FaMosque,
-    color: "text-emerald-600 bg-emerald-50 border-emerald-200",
-  },
-  {
-    id: "c3",
-    name: "Chittagong Cantonment Public School",
-    domain: "ccps.edu.bd",
-    type: "Public School",
+    name: "Sample Model High School",
+    domain: "modelhighschool.edubari.bd",
+    type: "Sample High School",
     icon: FaSchool,
     color: "text-indigo-600 bg-indigo-50 border-indigo-200",
   },
   {
+    id: "c3",
+    name: "Sample Ideal Madrasha",
+    domain: "idealmadrasha.edubari.bd",
+    type: "Sample Madrasha",
+    icon: FaMosque,
+    color: "text-emerald-600 bg-emerald-50 border-emerald-200",
+  },
+  {
     id: "c4",
-    name: "Sylhet Ideal Cadet Academy",
-    domain: "sylhetcadet.edubari.bd",
-    type: "Cadet Academy",
+    name: "Sample Cadet Academy",
+    domain: "cadetacademy.edubari.bd",
+    type: "Sample Academy",
     icon: FaGraduationCap,
     color: "text-purple-600 bg-purple-50 border-purple-200",
   },
   {
     id: "c5",
-    name: "Rajshahi Central City College",
-    domain: "rcc.edu.bd",
-    type: "Higher Secondary",
+    name: "Sample Central College",
+    domain: "centralcollege.edubari.bd",
+    type: "Sample College",
     icon: FaUniversity,
     color: "text-blue-600 bg-blue-50 border-blue-200",
   },
   {
     id: "c6",
-    name: "Khulna Public Model Institute",
-    domain: "khulnamodel.edu.bd",
-    type: "Institute",
+    name: "Sample Public Institute",
+    domain: "publicinstitute.edubari.bd",
+    type: "Sample Institute",
     icon: FaSchool,
     color: "text-cyan-600 bg-cyan-50 border-cyan-200",
   },
   {
     id: "c7",
-    name: "Comilla Scholars Academic Care",
-    domain: "scholars.edubari.bd",
-    type: "Single Teacher Care",
+    name: "Sample Academic Care",
+    domain: "academiccare.edubari.bd",
+    type: "Sample Coaching",
     icon: FaGraduationCap,
     color: "text-amber-600 bg-amber-50 border-amber-200",
   },
   {
     id: "c8",
-    name: "Barisal Govt. Girls High School",
-    domain: "barisalggs.edu.bd",
-    type: "High School",
+    name: "Sample Digital School",
+    domain: "digitalschool.edubari.bd",
+    type: "Sample School",
     icon: FaSchool,
     color: "text-blue-600 bg-blue-50 border-blue-200",
   },
@@ -74,35 +74,7 @@ const DEFAULT_CLIENTS = [
 
 const TrustedClients = () => {
   const { t } = useLanguage();
-  const [clients, setClients] = useState(DEFAULT_CLIENTS);
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const res = await fetch("/api/public/clients");
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            const formatted = data.map((item, idx) => ({
-              id: item.id || `fetched-${idx}`,
-              name: item.client_name || item.domain,
-              domain: item.domain || "client.edubari.bd",
-              logo_url: item.logo_url,
-              type: item.client_type === "school_erp" ? "School ERP" : "Educational Institution",
-              icon: idx % 3 === 0 ? FaUniversity : idx % 3 === 1 ? FaSchool : FaMosque,
-              color: "text-blue-600 bg-blue-50 border-blue-200",
-            }));
-            // Merge with default list for rich slider
-            setClients([...formatted, ...DEFAULT_CLIENTS]);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to load clients:", err);
-      }
-    };
-
-    fetchClients();
-  }, []);
+  const [clients] = useState(DEFAULT_CLIENTS);
 
   // Double the list for seamless infinite looping marquee
   const marqueeList = [...clients, ...clients];
