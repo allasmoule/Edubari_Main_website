@@ -79,7 +79,7 @@ const TrustedClients = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const res = await fetch("/api/billing/clients");
+        const res = await fetch("/api/public/clients");
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {

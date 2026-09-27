@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { query, execute } from "@/lib/db";
 import crypto from "crypto";
+import { requireAdmin } from "@/lib/auth";
 
 /**
  * GET /api/subscriptions
  * List all subscription requests, newest first.
  */
-export async function GET() {
+export async function GET(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const rows = await query("SELECT * FROM subscription_requests ORDER BY submitted_at DESC");
     return NextResponse.json(rows || []);

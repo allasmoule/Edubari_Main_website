@@ -41,7 +41,7 @@ const Pricing = () => {
 
   const fetchClients = async () => {
     try {
-      const res = await fetch("/api/billing/clients");
+      const res = await fetch("/api/public/clients");
       if (res.ok) {
         const data = await res.json();
         setClients(Array.isArray(data) ? data : []);
@@ -58,8 +58,8 @@ const Pricing = () => {
       const response = await fetch("/api/plans");
       if (!response.ok) throw new Error("Failed to fetch plans");
       const data = await response.json();
-      const activePlans = data.filter((plan) => plan.active);
-      setPlans(activePlans || []);
+      const activePlans = (data || []).filter((plan) => plan.active !== false && plan.is_active !== false);
+      setPlans(activePlans.length > 0 ? activePlans : data || []);
     } catch (err) {
       console.error("Error fetching plans:", err);
       setError(err.message);
@@ -137,9 +137,18 @@ const Pricing = () => {
     router.push(`/checkout?domain=${selectedDomain}&package_id=${selectedAiPkg.id}&redirect_url=${encodeURIComponent(redirectUrl)}`);
   };
 
+  const [activeTab, setActiveTab] = useState("school_erp"); // "school_erp" or "single_teacher"
+
+  const erpPlans = plans.filter((p) => p.plan_type === "school_erp" || p.planType === "school_erp");
+  const singleTeacherPlans = plans.filter((p) => p.plan_type === "single_teacher" || p.planType === "single_teacher" || (!p.plan_type && !p.planType));
+
+  const displayPlans = activeTab === "school_erp" 
+    ? (erpPlans.length > 0 ? erpPlans : plans) 
+    : (singleTeacherPlans.length > 0 ? singleTeacherPlans : plans);
+
   return (
-    <section id="pricing" className="w-full px-4 sm:px-6 md:px-12 py-4 sm:py-6 lg:py-8 bg-white select-none">
-      <div className="w-full rounded-[32px] border border-white bg-primary-light/85 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
+    <section id="pricing" className="w-full px-3 sm:px-6 md:px-12 py-4 sm:py-6 lg:py-8 bg-white select-none">
+      <div className="w-full rounded-3xl sm:rounded-[32px] border border-white bg-primary-light/85 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
         {/* Ambient glows */}
         <div className="absolute -top-32 -right-32 w-64 h-64 bg-tertiary/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[#8B5CF6]/5 rounded-full blur-3xl pointer-events-none" />
@@ -161,10 +170,36 @@ const Pricing = () => {
             <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-dark/65 max-w-2xl mx-auto font-medium">
               {t("pricing.subtitle")}
             </p>
+
+            {/* Plan Category Tabs (School ERP vs Single Teacher) */}
+            <div className="mt-6 inline-flex p-1.5 rounded-2xl bg-slate-200/70 border border-slate-300/60 shadow-inner max-w-md w-full">
+              <button
+                type="button"
+                onClick={() => setActiveTab("school_erp")}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer border-none ${
+                  activeTab === "school_erp"
+                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/20"
+                    : "text-slate-600 hover:text-slate-900 bg-transparent"
+                }`}
+              >
+                School ERP Packages
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("single_teacher")}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer border-none ${
+                  activeTab === "single_teacher"
+                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/20"
+                    : "text-slate-600 hover:text-slate-900 bg-transparent"
+                }`}
+              >
+                Single Teacher Plans
+              </button>
+            </div>
           </div>
 
           {/* Pricing Cards */}
-          <div className="mt-8 max-w-5xl mx-auto">
+          <div className="mt-8 max-w-6xl mx-auto">
             {loading ? (
               <div className="text-center py-16">
                 <FiLoader className="w-10 h-10 mx-auto text-tertiary animate-spin mb-4" />
@@ -181,29 +216,29 @@ const Pricing = () => {
                   {t("pricing.retry")}
                 </button>
               </div>
-            ) : plans.length === 0 ? (
+            ) : displayPlans.length === 0 ? (
               <div className="text-center py-16 bg-white/40 border border-white rounded-2xl">
                 <p className="text-dark/45 font-bold">
                   {t("pricing.noPlans")}
                 </p>
               </div>
             ) : (
-              <div className="space-y-12">
-                {/* 5-Tier Plans Grid */}
+              <div className="space-y-10">
                 <div>
-                  <h3 className="text-center text-sm font-black text-dark/50 mb-6 uppercase tracking-widest">
-                    {t("pricing.lmsTitle")}
+                  <h3 className="text-center text-xs sm:text-sm font-black text-dark/50 mb-6 uppercase tracking-widest">
+                    {activeTab === "school_erp" ? "School, College & Madrasha Flexible ERP Packages" : t("pricing.lmsTitle")}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-stretch">
-                    {plans.map((plan) => {
+
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 ${activeTab === "school_erp" ? "lg:grid-cols-3 xl:grid-cols-6" : "lg:grid-cols-3 xl:grid-cols-5"} gap-4 items-stretch`}>
+                    {displayPlans.map((plan) => {
                       const planId = plan.id || plan._id;
-                      const isPopular = plan.plan_tier === 'professional';
+                      const isPopular = plan.popular || plan.plan_tier === 'professional';
                       return (
                         <div
                           key={planId}
-                          className={`group relative rounded-2xl border p-5 text-left transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between ${
+                          className={`group relative rounded-2xl border p-4 sm:p-5 text-left transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between ${
                             isPopular
-                              ? "border-transparent bg-white shadow-[0_20px_40px_-15px_rgba(37,99,235,0.12)] ring-2 ring-tertiary/40"
+                              ? "border-transparent bg-white shadow-[0_20px_40px_-15px_rgba(37,99,235,0.15)] ring-2 ring-tertiary/40"
                               : "border-white bg-white/70 backdrop-blur-xs hover:shadow-xl hover:shadow-dark/5 hover:border-tertiary/20"
                           }`}
                         >
@@ -211,10 +246,10 @@ const Pricing = () => {
                             {/* Badge */}
                             {(plan.badge || isPopular) && (
                               <div
-                                className={`absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[8px] font-black tracking-widest uppercase shadow-md ${
+                                className={`absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[8px] sm:text-[9px] font-black tracking-widest uppercase whitespace-nowrap shadow-md ${
                                   isPopular
                                     ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-tertiary/25"
-                                    : "bg-[#F59E0B]/10 text-[#D97706] border border-[#F59E0B]/20"
+                                    : "bg-[#F59E0B]/15 text-[#D97706] border border-[#F59E0B]/30"
                                 }`}
                               >
                                 {plan.badge || t("pricing.recommended")}
@@ -223,25 +258,25 @@ const Pricing = () => {
 
                             {/* Popular label */}
                             {isPopular && (
-                              <div className="text-[9px] font-black text-tertiary uppercase tracking-widest mb-1">
+                              <div className="text-[8px] font-black text-tertiary uppercase tracking-widest mb-1 mt-1">
                                 {t("pricing.mostPopular")}
                               </div>
                             )}
 
                             {/* Plan Name */}
-                            <h3 className="mt-1 text-lg font-extrabold text-dark tracking-tight leading-snug">
+                            <h3 className="mt-1 text-base sm:text-lg font-extrabold text-dark tracking-tight leading-snug">
                               {plan.name}
                             </h3>
 
                             {/* Duration */}
-                            <p className="mt-0.5 text-[10px] font-bold text-dark/40 uppercase tracking-wide">
-                              {plan.duration} {plan.duration_days ? `(${plan.duration_days} Days)` : ""}
+                            <p className="mt-0.5 text-[9px] font-bold text-dark/40 uppercase tracking-wide">
+                              {plan.badge ? plan.badge : `${plan.duration} ${plan.duration_days ? `(${plan.duration_days} Days)` : ""}`}
                             </p>
 
                             {/* Price */}
                             <div className="mt-3 flex items-baseline gap-1">
                               <span
-                                className={`text-2xl sm:text-3xl font-black tracking-tight ${
+                                className={`text-xl sm:text-2xl font-black tracking-tight ${
                                   isPopular
                                     ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] drop-shadow-sm"
                                     : "text-dark"
@@ -249,8 +284,9 @@ const Pricing = () => {
                               >
                                 ৳{(plan.price || 0).toLocaleString()}
                               </span>
+                              <span className="text-[10px] font-bold text-dark/50">/ mo</span>
                               {plan.oldPrice && (
-                                <span className="text-xs font-bold text-dark/30 line-through decoration-1 decoration-dark/20">
+                                <span className="text-[11px] font-bold text-dark/30 line-through ml-1">
                                   ৳{(plan.oldPrice || 0).toLocaleString()}
                                 </span>
                               )}
@@ -264,12 +300,12 @@ const Pricing = () => {
                                   {plan.features.map((feat, idx) => (
                                     <li
                                       key={idx}
-                                      className="flex items-start gap-2 text-[11px] text-dark/70"
+                                      className="flex items-start gap-1.5 text-[11px] text-dark/75"
                                     >
-                                      <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-tertiary/8 text-tertiary ring-1 ring-tertiary/10">
-                                        <FiCheck className="h-2 w-2 stroke-[3.5]" />
+                                      <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 font-bold">
+                                        ✓
                                       </span>
-                                      <span className="leading-3.5 font-bold text-dark/75">
+                                      <span className="leading-3.5 font-bold text-dark/80">
                                         {feat}
                                       </span>
                                     </li>
@@ -282,7 +318,7 @@ const Pricing = () => {
                           <button
                             type="button"
                             onClick={() => handleGetStarted(planId)}
-                            className={`mt-4 w-full block rounded-xl px-4 py-2.5 text-[10px] font-black text-center uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer shadow-md ${
+                            className={`mt-4 w-full block rounded-xl px-3 py-2.5 text-[10px] font-black text-center uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer shadow-md ${
                               isPopular
                                 ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white hover:shadow-lg hover:shadow-tertiary/30 border-none"
                                 : "bg-white hover:bg-tertiary/5 text-tertiary border border-tertiary/30 hover:border-tertiary/50 hover:shadow-sm"
@@ -295,6 +331,78 @@ const Pricing = () => {
                     })}
                   </div>
                 </div>
+
+                {/* ERP Poster Details Section (Website Features & Cost/Support Summary) */}
+                {activeTab === "school_erp" && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+                    {/* Free School Website Banner */}
+                    <div className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/50 p-6 sm:p-8 shadow-lg relative overflow-hidden">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-black tracking-wider uppercase mb-3 shadow-sm">
+                        FULL FREE WEBSITE
+                      </div>
+                      <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                        School Website <span className="text-emerald-600">Full Free</span>
+                      </h3>
+                      <p className="text-xs text-slate-600 font-bold mt-1">
+                        Get a Professional Website for Your School Completely Free with EduBari
+                      </p>
+
+                      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {[
+                          "Modern & Responsive Design",
+                          "School Info & History",
+                          "Notice, Events & Announcements",
+                          "Online Admission Info",
+                          "Teacher & Staff Details",
+                          "Gallery (Photos & Videos)",
+                          "Contact Form & Location Map",
+                          "Mobile Friendly & SEO Google Ranking (Free)",
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center gap-2 text-xs font-extrabold text-slate-800">
+                            <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shrink-0 font-black">✓</span>
+                            <span>{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Cost & Support Summary Panel */}
+                    <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-purple-50/50 p-6 sm:p-8 shadow-lg relative overflow-hidden">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-black tracking-wider uppercase mb-3 shadow-sm">
+                        COST & SUPPORT
+                      </div>
+                      <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                        Everything You Need for a <span className="text-indigo-600">Smarter School</span>
+                      </h3>
+
+                      <div className="mt-4 space-y-3">
+                        <div className="p-3.5 rounded-2xl bg-white border border-indigo-100 shadow-xs flex items-center justify-between">
+                          <div>
+                            <p className="text-xs font-black text-slate-900">First Install Cost (One Time Only)</p>
+                            <p className="text-[11px] font-bold text-slate-500">Complete setup, configuration & training support</p>
+                          </div>
+                          <span className="text-lg font-black text-indigo-600 shrink-0">৳ 5,000</span>
+                        </div>
+
+                        <div className="p-3.5 rounded-2xl bg-white border border-indigo-100 shadow-xs flex items-center justify-between">
+                          <div>
+                            <p className="text-xs font-black text-slate-900">Annual Management Cost (Yearly)</p>
+                            <p className="text-[11px] font-bold text-slate-500">Domain, High Perf Server, Website, Free SEO & Tech Support</p>
+                          </div>
+                          <span className="text-lg font-black text-indigo-600 shrink-0">৳ 5,000 / yr</span>
+                        </div>
+
+                        <div className="p-3.5 rounded-2xl bg-white border border-indigo-100 shadow-xs flex items-center justify-between">
+                          <div>
+                            <p className="text-xs font-black text-slate-900">SMS Cost (Notifications)</p>
+                            <p className="text-[11px] font-bold text-slate-500">Admission, Notice, Results, Fee Alerts & Attendance</p>
+                          </div>
+                          <span className="text-lg font-black text-indigo-600 shrink-0">৳ 0.30 / SMS</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* AI Credits Banner Section */}
                 {selectedAiPkg && (

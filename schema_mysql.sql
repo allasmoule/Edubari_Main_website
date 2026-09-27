@@ -130,6 +130,56 @@ CREATE TABLE `erp_connections` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
+-- 4c. SUBSCRIPTION PAYMENTS TABLE (School ERP: bKash / Nagad / manual by admin)
+-- -----------------------------------------------------------------------------
+CREATE TABLE `subscription_payments` (
+    `id` VARCHAR(36) NOT NULL PRIMARY KEY,
+    `client_id` VARCHAR(36) NOT NULL,
+    `plan_id` VARCHAR(36) DEFAULT NULL,
+    `subscription_id` VARCHAR(36) DEFAULT NULL,
+    `method` ENUM('bkash', 'nagad', 'manual') NOT NULL,
+    `source` ENUM('gateway', 'admin') NOT NULL DEFAULT 'gateway',
+    `channel` VARCHAR(30) DEFAULT NULL,
+    `periods` INT NOT NULL DEFAULT 1,
+    `amount` DECIMAL(10, 2) NOT NULL,
+    `currency` CHAR(3) NOT NULL DEFAULT 'BDT',
+    `status` ENUM('initiated', 'completed', 'failed', 'cancelled') NOT NULL DEFAULT 'initiated',
+    `merchant_invoice` VARCHAR(40) NOT NULL UNIQUE,
+    `gateway_payment_id` VARCHAR(100) DEFAULT NULL UNIQUE,
+    `trx_id` VARCHAR(100) DEFAULT NULL UNIQUE,
+    `payer_reference` VARCHAR(100) DEFAULT NULL,
+    `return_url` VARCHAR(500) DEFAULT NULL,
+    `period_start` DATETIME DEFAULT NULL,
+    `period_end` DATETIME DEFAULT NULL,
+    `recorded_by` VARCHAR(36) DEFAULT NULL,
+    `note` VARCHAR(500) DEFAULT NULL,
+    `failure_reason` VARCHAR(255) DEFAULT NULL,
+    `gateway_response` LONGTEXT DEFAULT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `completed_at` DATETIME DEFAULT NULL,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`client_id`) REFERENCES `clients`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`plan_id`) REFERENCES `plans`(`id`) ON DELETE SET NULL,
+    INDEX `idx_sp_client` (`client_id`, `created_at`),
+    INDEX `idx_sp_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------------------------------
+-- 4d. SECURITY THROTTLE TABLES (admin login attempts, used ERP request nonces)
+-- -----------------------------------------------------------------------------
+CREATE TABLE `admin_login_attempts` (
+    `ip` VARCHAR(64) NOT NULL PRIMARY KEY,
+    `attempts` INT NOT NULL DEFAULT 0,
+    `reset_at` DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `erp_request_nonces` (
+    `nonce_key` VARCHAR(160) NOT NULL PRIMARY KEY,
+    `expires_at` DATETIME NOT NULL,
+    INDEX `idx_nonce_expiry` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------------------------------
 -- 5. SUBSCRIPTION REQUESTS TABLE
 -- -----------------------------------------------------------------------------
 CREATE TABLE `subscription_requests` (

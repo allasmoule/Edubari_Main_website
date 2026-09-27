@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, execute } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
 function parseRowJsonFields(row) {
   if (!row) return row;
@@ -74,6 +75,9 @@ export async function GET(request, { params }) {
 }
 
 export async function PATCH(request, { params }) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -182,6 +186,9 @@ export async function PATCH(request, { params }) {
 }
 
 export async function DELETE(request, { params }) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = await params;
     await execute("DELETE FROM plans WHERE id = ?", [id]);

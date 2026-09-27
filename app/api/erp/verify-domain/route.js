@@ -1,35 +1,42 @@
 import { NextResponse } from "next/server";
-import { queryOne, execute } from "@/lib/db";
+import crypto from "crypto";
+import { query, queryOne, execute } from "@/lib/db";
+import { authenticateErp } from "@/lib/erp-auth";
 
 /**
- * GET /api/erp/verify-domain?token=xxx&secret=yyy
+ * GET /api/erp/verify-domain
  *
- * Called by Laravel School ERP on boot and periodically.
- * Returns subscription status + plan limits for the domain.
+ * Subscription status + plan limits for one School ERP. The caller must prove it is that school:
+ *   - signed headers (X-Edubari-Token/Timestamp/Nonce/Signature, see lib/erp-auth.js) — preferred, or
+ *   - ?token=&secret= (both required; the secret used to be optional, which let anyone holding
+ *     a token read the school's billing data).
  */
+function sameSecret(a, b) {
+  const x = Buffer.from(String(a || ""));
+  const y = Buffer.from(String(b || ""));
+  return x.length > 0 && x.length === y.length && crypto.timingSafeEqual(x, y);
+}
+
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const token = searchParams.get("token");
-    const secret = searchParams.get("secret");
-
-    if (!token) {
-      return NextResponse.json({ error: "Missing API token" }, { status: 401 });
-    }
-
-    // Find client by ERP token
-    const client = await queryOne(
-      "SELECT * FROM clients WHERE erp_api_token = ?",
-      [token]
-    );
-
-    if (!client) {
-      return NextResponse.json({ error: "Invalid API token. No matching ERP instance found." }, { status: 403 });
-    }
-
-    // Optional secret validation
-    if (secret && client.erp_secret !== secret) {
-      return NextResponse.json({ error: "Invalid API secret." }, { status: 403 });
+    let client;
+    let token;
+    if (request.headers.get("x-edubari-signature")) {
+      const auth = await authenticateErp(request);
+      if (auth.response) return auth.response;
+      client = auth.client;
+      token = client.erp_api_token;
+    } else {
+      const { searchParams } = new URL(request.url);
+      token = searchParams.get("token");
+      const secret = searchParams.get("secret");
+      if (!token || !secret) {
+        return NextResponse.json({ error: "Missing API token or secret" }, { status: 401 });
+      }
+      client = await queryOne("SELECT * FROM clients WHERE erp_api_token = ?", [token]);
+      if (!client || !sameSecret(secret, client.erp_secret)) {
+        return NextResponse.json({ error: "Invalid API credentials." }, { status: 403 });
+      }
     }
 
     if (client.status === "suspended") {
@@ -88,8 +95,20 @@ export async function GET(request) {
         : (sub?.feature_gates || {});
     } catch (_) {}
 
+    // Completed payments (gateway or recorded by an admin), for the ERP's billing page
+    const payments = await query(
+      `SELECT sp.merchant_invoice AS invoice, sp.method, sp.channel, sp.amount, sp.trx_id, sp.periods,
+              sp.period_start, sp.period_end, sp.completed_at, p.plan_name
+         FROM subscription_payments sp LEFT JOIN plans p ON p.id = sp.plan_id
+        WHERE sp.client_id = ? AND sp.status = 'completed'
+        ORDER BY sp.completed_at DESC LIMIT 24`,
+      [client.id]
+    ).catch(() => []);
+
     return NextResponse.json({
       active: isActive,
+      payment_required: subscriptionStatus !== "active",
+      payment_endpoint: "/api/erp/v1/payments",
       status: subscriptionStatus,
       domain: client.domain,
       client_name: client.client_name,
@@ -118,6 +137,7 @@ export async function GET(request) {
           ? Math.max(0, Math.ceil((new Date(sub.end_date) - now) / (1000 * 60 * 60 * 24)))
           : 0,
       } : null,
+      payments: payments.map((p) => ({ ...p, amount: Number(p.amount) })),
       verified_at: now.toISOString(),
     });
   } catch (error) {

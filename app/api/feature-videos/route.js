@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -19,6 +20,9 @@ export async function GET() {
 }
 
 export async function POST(req) {
+  const auth = await requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const body = await req.json();
     const { feature_title, video_url } = body;
