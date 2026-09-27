@@ -274,42 +274,44 @@ const DomainSearch = () => {
   return (
     <section
       ref={sectionRef}
-      className="w-full px-4 sm:px-6 md:px-12 py-10 sm:py-16 bg-gradient-to-br from-[#F8FAFC] via-[#F1F5F9] to-[#EEF2FF] relative overflow-hidden select-none"
+      className="w-full px-3 sm:px-6 md:px-12 py-6 sm:py-16 bg-gradient-to-br from-[#F8FAFC] via-[#F1F5F9] to-[#EEF2FF] relative overflow-hidden select-none"
     >
       {/* Main Centered Card Container */}
       <div
         className={`transition-all duration-1000 transform ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-        } w-full max-w-[1100px] mx-auto rounded-[40px] border border-white/90 bg-white/90 shadow-[0_30px_90px_-20px_rgba(129,140,248,0.15)] backdrop-blur-2xl overflow-hidden relative p-8 sm:p-14 md:p-16`}
+        } w-full max-w-[1100px] mx-auto rounded-3xl sm:rounded-[40px] border border-white/90 bg-white/90 shadow-[0_30px_90px_-20px_rgba(129,140,248,0.15)] backdrop-blur-2xl overflow-hidden relative p-4 sm:p-14 md:p-16`}
       >
         {/* Ambient Top & Bottom Soft Pastel Flows */}
         <div className="absolute -top-32 -left-32 w-80 h-80 bg-[#818CF8]/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-[#38BDF8]/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Floating Top-Right Video "How to purchase" Button */}
-        <button
-          type="button"
-          onClick={() => setVideoModalOpen(true)}
-          className="sm:absolute sm:top-8 sm:right-8 mx-auto mb-6 sm:mb-0 group inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-gradient-to-r from-[#818CF8] to-[#A78BFA] hover:from-[#6366F1] hover:to-[#8B5CF6] text-white shadow-[0_6px_20px_-4px_rgba(129,140,248,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(129,140,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-xs font-black tracking-wider uppercase border-none cursor-pointer shrink-0"
-        >
-          <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-            <FaPlay className="w-2.5 h-2.5 ml-0.5" />
-          </div>
-          <span>{t("domainSearch.videoBtn")}</span>
-        </button>
+        <div className="flex justify-center sm:block sm:absolute sm:top-8 sm:right-8 mb-5 sm:mb-0">
+          <button
+            type="button"
+            onClick={() => setVideoModalOpen(true)}
+            className="group inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-3 rounded-full bg-gradient-to-r from-[#818CF8] to-[#A78BFA] hover:from-[#6366F1] hover:to-[#8B5CF6] text-white shadow-[0_6px_20px_-4px_rgba(129,140,248,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(129,140,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-[11px] sm:text-xs font-black tracking-wider uppercase border-none cursor-pointer shrink-0"
+          >
+            <div className="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+              <FaPlay className="w-2 sm:w-2.5 h-2 sm:h-2.5 ml-0.5" />
+            </div>
+            <span>{t("domainSearch.videoBtn")}</span>
+          </button>
+        </div>
 
         {/* Centered Main Content */}
         <div className="max-w-3xl mx-auto text-center">
           {/* Centered Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-white border border-[#818CF8]/30 shadow-[0_2px_8px_rgba(129,140,248,0.12)] text-[#4F46E5] text-[11px] sm:text-xs font-black uppercase tracking-wider mb-6">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#4F46E5] shrink-0" />
+          <div className="inline-flex items-center gap-2 px-3.5 sm:px-5 py-1.5 rounded-full bg-white border border-[#818CF8]/30 shadow-[0_2px_8px_rgba(129,140,248,0.12)] text-[#4F46E5] text-[10px] sm:text-xs font-black uppercase tracking-wider mb-4 sm:mb-6">
+            <span className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#4F46E5] shrink-0" />
             {t("domainSearch.badge")}
           </div>
 
           {/* Main Title with Animated Institution Type */}
-          <h2 className="text-[32px] sm:text-[48px] md:text-[56px] font-black tracking-tight text-[#0F172A] leading-tight mb-3 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
+          <h2 className="text-[22px] sm:text-[44px] md:text-[54px] font-black tracking-tight text-[#0F172A] leading-tight mb-2 sm:mb-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <span>{t("domainSearch.titlePrefix")}</span>
-            <span className="inline-block relative min-w-[130px] sm:min-w-[190px] text-center">
+            <span className="inline-block relative min-w-[95px] sm:min-w-[190px] text-center">
               <span
                 key={`${wordIndex}-${lang}`}
                 className="bg-gradient-to-r from-[#6070FF] via-[#818CF8] to-[#38BDF8] bg-clip-text text-transparent filter drop-shadow-[0_10px_20px_rgba(129,140,248,0.35)] py-1 inline-block animate-fadeInUp"
@@ -321,17 +323,17 @@ const DomainSearch = () => {
           </h2>
 
           {/* Subtitle */}
-          <p className="mt-4 text-sm sm:text-base md:text-lg text-slate-500 font-semibold leading-relaxed max-w-xl mx-auto">
+          <p className="mt-2 sm:mt-4 text-xs sm:text-base md:text-lg text-slate-500 font-semibold leading-relaxed max-w-xl mx-auto px-1">
             {t("domainSearch.subtitle")}
           </p>
 
           {/* Search Bar Form */}
-          <div className="mt-10 max-w-3xl mx-auto">
+          <div className="mt-5 sm:mt-10 max-w-3xl mx-auto">
             <form onSubmit={handleSearch}>
-              <div className="relative rounded-full p-2.5 bg-gradient-to-r from-[#C7D2FE]/60 via-[#E0E7FF]/80 to-[#BAE6FD]/60 border-2 border-[#818CF8]/40 shadow-[0_15px_35px_-5px_rgba(129,140,248,0.25)] transition-all duration-300">
-                <div className="relative flex items-center bg-white rounded-full overflow-hidden">
-                  <div className="pl-6 text-slate-400">
-                    <FiGlobe className="h-6 w-6" />
+              <div className="relative rounded-2xl sm:rounded-full p-1.5 sm:p-2.5 bg-gradient-to-r from-[#C7D2FE]/60 via-[#E0E7FF]/80 to-[#BAE6FD]/60 border-2 border-[#818CF8]/40 shadow-[0_15px_35px_-5px_rgba(129,140,248,0.25)] transition-all duration-300">
+                <div className="relative flex items-center bg-white rounded-xl sm:rounded-full overflow-hidden p-1 sm:p-0">
+                  <div className="pl-3 sm:pl-6 text-slate-400 shrink-0">
+                    <FiGlobe className="h-4 w-4 sm:h-6 sm:w-6" />
                   </div>
                   <input
                     id="domain-search-input"
@@ -339,22 +341,22 @@ const DomainSearch = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder={t("domainSearch.placeholder")}
-                    className="flex-1 bg-transparent border-none outline-none px-4 sm:px-6 py-4 sm:py-5 text-slate-800 text-base sm:text-lg placeholder:text-slate-400 font-extrabold w-full"
+                    className="flex-1 min-w-0 bg-transparent border-none outline-none px-2 sm:px-6 py-2.5 sm:py-5 text-slate-800 text-xs sm:text-lg placeholder:text-slate-400 font-extrabold w-full"
                   />
                   <button
                     id="domain-search-btn"
                     type="submit"
                     disabled={isSearching || !searchTerm.trim()}
-                    className="mr-1.5 sm:mr-2 inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#818CF8] to-[#A78BFA] hover:from-[#6366F1] hover:to-[#8B5CF6] px-8 py-3.5 sm:py-4 text-white text-base font-black uppercase tracking-wider shadow-[0_6px_20px_-4px_rgba(129,140,248,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(129,140,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
+                    className="shrink-0 mr-1 sm:mr-2 inline-flex items-center gap-1.5 sm:gap-2.5 rounded-lg sm:rounded-full bg-gradient-to-r from-[#818CF8] to-[#A78BFA] hover:from-[#6366F1] hover:to-[#8B5CF6] px-3.5 sm:px-8 py-2.5 sm:py-4 text-white text-xs sm:text-base font-black uppercase tracking-wider shadow-[0_6px_20px_-4px_rgba(129,140,248,0.4)] hover:shadow-[0_10px_25px_-4px_rgba(129,140,248,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-none"
                   >
                     {isSearching ? (
                       <>
-                        <FiLoader className="h-5 w-5 animate-spin" />
+                        <FiLoader className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                         <span>{t("domainSearch.searchingBtn")}</span>
                       </>
                     ) : (
                       <>
-                        <FiSearch className="h-5 w-5" />
+                        <FiSearch className="h-4 w-4 sm:h-5 sm:w-5" />
                         <span>{t("domainSearch.searchBtn")}</span>
                       </>
                     )}
@@ -365,7 +367,7 @@ const DomainSearch = () => {
           </div>
 
           {/* 3D Smart Category Badges (School, College, Madrasha, Single Teacher) */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
+          <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3.5">
             {categories.map((cat) => {
               const IconComponent = cat.icon;
               const isSelected = selectedCategory === cat.id;
@@ -375,11 +377,11 @@ const DomainSearch = () => {
                   key={cat.id}
                   type="button"
                   onClick={() => handleCategoryClick(cat)}
-                  className={`inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl border text-xs sm:text-sm font-extrabold transition-all duration-300 cursor-pointer shadow-[0_4px_0_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)] active:translate-y-0.5 active:shadow-none ${
+                  className={`inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl border text-[11px] sm:text-sm font-extrabold transition-all duration-300 cursor-pointer shadow-[0_4px_0_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)] active:translate-y-0.5 active:shadow-none ${
                     isSelected ? cat.activeColor : cat.bgColor
                   }`}
                 >
-                  <IconComponent className="w-4.5 h-4.5 shrink-0" />
+                  <IconComponent className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 shrink-0" />
                   <span>{cat.label}</span>
                 </button>
               );
@@ -388,9 +390,9 @@ const DomainSearch = () => {
 
           {/* Error Message */}
           {error && (
-            <div className="mt-8 max-w-2xl mx-auto text-center">
-              <p className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-sm font-bold shadow-sm">
-                <FiXCircle className="h-5 w-5 shrink-0" />
+            <div className="mt-6 sm:mt-8 max-w-2xl mx-auto text-center">
+              <p className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 text-xs sm:text-sm font-bold shadow-sm">
+                <FiXCircle className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                 {error}
               </p>
             </div>

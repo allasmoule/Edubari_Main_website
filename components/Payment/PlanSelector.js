@@ -1,16 +1,25 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { FiCheck, FiLoader } from "react-icons/fi";
 
 const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false, error = null, onRetry }) => {
+  const [activeTab, setActiveTab] = useState("school_erp");
+
+  const erpPlans = plans.filter((p) => p.plan_type === "school_erp" || p.planType === "school_erp");
+  const singleTeacherPlans = plans.filter((p) => p.plan_type === "single_teacher" || p.planType === "single_teacher" || (!p.plan_type && !p.planType));
+
+  const displayPlans = activeTab === "school_erp" 
+    ? (erpPlans.length > 0 ? erpPlans : plans) 
+    : (singleTeacherPlans.length > 0 ? singleTeacherPlans : plans);
+
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 pb-12">
-      <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
-        <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-12 sm:py-14">
+    <section className="w-full px-3 sm:px-6 md:px-12 pb-12 select-none">
+      <div className="w-full rounded-3xl sm:rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
+        <div className="px-4 sm:px-8 md:px-10 lg:px-12 py-8 sm:py-14">
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-3">
               💰 Choose Your Plan
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter text-dark leading-tight">
@@ -19,14 +28,40 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false,
                 Pricing
               </span>
             </h2>
-            <p className="mt-4 text-sm sm:text-[15px] leading-7 text-dark/70 max-w-2xl mx-auto">
+            <p className="mt-2 text-xs sm:text-sm leading-6 text-dark/70 max-w-2xl mx-auto">
               Pick the plan that fits your institution best. All plans include a
               professional website and dedicated domain.
             </p>
+
+            {/* Category Tabs */}
+            <div className="mt-6 inline-flex p-1.5 rounded-2xl bg-white/70 border border-white shadow-inner max-w-md w-full">
+              <button
+                type="button"
+                onClick={() => setActiveTab("school_erp")}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer border-none ${
+                  activeTab === "school_erp"
+                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/20"
+                    : "text-slate-600 hover:text-slate-900 bg-transparent"
+                }`}
+              >
+                🏫 School ERP Packages
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("single_teacher")}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer border-none ${
+                  activeTab === "single_teacher"
+                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/20"
+                    : "text-slate-600 hover:text-slate-900 bg-transparent"
+                }`}
+              >
+                👨‍🏫 Single Teacher Plans
+              </button>
+            </div>
           </div>
 
           {/* Plan Cards */}
-          <div className="mt-12 lg:mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 max-w-7xl mx-auto items-stretch">
+          <div className={`mt-8 lg:mt-12 grid grid-cols-1 sm:grid-cols-2 ${activeTab === "school_erp" ? "lg:grid-cols-3 xl:grid-cols-6" : "lg:grid-cols-3 xl:grid-cols-5"} gap-4 max-w-7xl mx-auto items-stretch`}>
             {loading ? (
               <div className="col-span-full text-center py-12">
                 <FiLoader className="w-8 h-8 mx-auto text-tertiary animate-spin mb-3" />
@@ -46,14 +81,14 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false,
                   Retry
                 </button>
               </div>
-            ) : plans.length === 0 ? (
+            ) : displayPlans.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <p className="text-dark/50 font-medium">
                   No active plans available
                 </p>
               </div>
             ) : (
-              plans.map((plan) => {
+              displayPlans.map((plan) => {
                 const planId = plan.id || plan._id;
                 const isSelected = (selectedPlan?.id || selectedPlan?._id) === planId;
                 const price = plan.price || 0;
@@ -63,92 +98,95 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false,
                     key={planId}
                     type="button"
                     onClick={() => onSelectPlan(plan)}
-                    className={`group relative rounded-2xl border p-7 text-left transition-all duration-300 hover:-translate-y-1 cursor-pointer ${
+                    className={`group relative rounded-2xl border p-5 text-left transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between ${
                       isSelected
-                        ? "border-tertiary/50 bg-white/90 shadow-xl shadow-tertiary/15 ring-2 ring-tertiary/40"
+                        ? "border-tertiary/50 bg-white shadow-xl shadow-tertiary/15 ring-2 ring-tertiary/40"
                         : plan.popular
-                          ? "border-tertiary/30 bg-white/80 shadow-lg shadow-tertiary/10 ring-1 ring-tertiary/20 hover:shadow-xl hover:shadow-dark/5"
-                          : "border-white/40 bg-white/50 hover:bg-white/80 hover:shadow-xl hover:shadow-dark/5"
+                          ? "border-tertiary/30 bg-white/90 shadow-lg shadow-tertiary/10 ring-1 ring-tertiary/20 hover:shadow-xl hover:shadow-dark/5"
+                          : "border-white/60 bg-white/70 hover:bg-white hover:shadow-xl hover:shadow-dark/5"
                     }`}
                   >
-                    {/* Selected indicator */}
-                    {isSelected && (
-                      <div className="absolute top-4 right-4 h-7 w-7 rounded-full bg-linear-to-r from-tertiary to-[#8B5CF6] flex items-center justify-center shadow-md shadow-tertiary/30">
-                        <FiCheck className="h-4 w-4 text-white stroke-3" />
-                      </div>
-                    )}
+                    <div>
+                      {/* Selected indicator */}
+                      {isSelected && (
+                        <div className="absolute top-4 right-4 h-6 w-6 rounded-full bg-linear-to-r from-tertiary to-[#8B5CF6] flex items-center justify-center shadow-md shadow-tertiary/30">
+                          <FiCheck className="h-3.5 w-3.5 text-white stroke-3" />
+                        </div>
+                      )}
 
-                    {/* Badge */}
-                    {plan.badge && (
-                      <div
-                        className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold tracking-wide ${
-                          plan.popular
-                            ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/30"
-                            : "bg-[#F59E0B]/15 text-[#D97706]"
-                        }`}
-                      >
-                        {plan.badge}
-                      </div>
-                    )}
+                      {/* Badge */}
+                      {plan.badge && (
+                        <div
+                          className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[9px] font-black tracking-wide whitespace-nowrap uppercase ${
+                            plan.popular
+                              ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/30"
+                              : "bg-[#F59E0B]/15 text-[#D97706] border border-[#F59E0B]/30"
+                          }`}
+                        >
+                          {plan.badge}
+                        </div>
+                      )}
 
-                    {/* Popular label */}
-                    {plan.popular && !isSelected && (
-                      <div className="text-[11px] font-bold text-tertiary uppercase tracking-wider mb-2">
-                        Most Popular
-                      </div>
-                    )}
+                      {/* Popular label */}
+                      {plan.popular && !isSelected && (
+                        <div className="text-[9px] font-black text-tertiary uppercase tracking-wider mb-1 mt-1">
+                          Most Popular
+                        </div>
+                      )}
 
-                    {/* Plan Name */}
-                    <h3 className="mt-1 text-lg font-bold text-dark">
-                      {plan.name}
-                    </h3>
-                    <p className="mt-1 text-xs font-medium text-dark/45">
-                      {plan.duration} {plan.duration_days ? `(${plan.duration_days} Days)` : ""}
-                    </p>
+                      {/* Plan Name */}
+                      <h3 className="mt-1 text-base font-extrabold text-dark">
+                        {plan.name}
+                      </h3>
+                      <p className="mt-0.5 text-[10px] font-bold text-dark/45 uppercase">
+                        {plan.badge ? plan.badge : `${plan.duration} ${plan.duration_days ? `(${plan.duration_days} Days)` : ""}`}
+                      </p>
 
-                    {/* Price */}
-                    <div className="mt-5 flex items-baseline gap-2">
-                      <span
-                        className={`text-4xl sm:text-5xl font-black tracking-tight ${
-                          isSelected || plan.popular
-                            ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]"
-                            : "text-dark"
-                        }`}
-                      >
-                        ৳{price.toLocaleString()}
-                      </span>
-                      {oldPrice && (
-                        <span className="text-base font-semibold text-dark/30 line-through decoration-1">
-                          ৳{typeof oldPrice === "string" ? oldPrice.replace(/[৳,]/g, "") : oldPrice.toLocaleString()}
+                      {/* Price */}
+                      <div className="mt-4 flex items-baseline gap-1">
+                        <span
+                          className={`text-2xl sm:text-3xl font-black tracking-tight ${
+                            isSelected || plan.popular
+                              ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]"
+                              : "text-dark"
+                          }`}
+                        >
+                          ৳{price.toLocaleString()}
                         </span>
+                        <span className="text-[10px] font-bold text-dark/50">/ mo</span>
+                        {oldPrice && (
+                          <span className="text-xs font-semibold text-dark/30 line-through">
+                            ৳{typeof oldPrice === "string" ? oldPrice.replace(/[৳,]/g, "") : oldPrice.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Feature list */}
+                      {plan.features && Array.isArray(plan.features) && (
+                        <ul className="mt-4 space-y-1.5 border-t border-dark/5 pt-3">
+                          {plan.features.map((feat, idx) => (
+                            <li
+                              key={idx}
+                              className="flex items-start gap-1.5 text-xs text-dark/75"
+                            >
+                              <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 font-bold">
+                                ✓
+                              </span>
+                              <span className="leading-4 font-bold text-dark/80">{feat}</span>
+                            </li>
+                          ))}
+                        </ul>
                       )}
                     </div>
 
-                    {/* Feature list */}
-                    {plan.features && Array.isArray(plan.features) && (
-                      <ul className="mt-6 space-y-2.5">
-                        {plan.features.map((feat, idx) => (
-                          <li
-                            key={idx}
-                            className="flex items-start gap-2.5 text-sm text-dark/70"
-                          >
-                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/10 text-tertiary">
-                              <FiCheck className="h-3 w-3 stroke-3" />
-                            </span>
-                            <span className="leading-5 font-medium">{feat}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
                     {/* Select indicator */}
                     <div
-                      className={`mt-7 w-full rounded-xl px-6 py-3 text-sm font-bold text-center transition-all duration-300 ${
+                      className={`mt-5 w-full rounded-xl px-4 py-2.5 text-xs font-extrabold text-center transition-all duration-300 ${
                         isSelected
                           ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/30"
                           : plan.popular
                             ? "bg-tertiary/10 text-tertiary group-hover:bg-tertiary group-hover:text-white group-hover:shadow-md group-hover:shadow-tertiary/30"
-                            : "bg-white/60 text-dark border border-dark/10 group-hover:bg-white/90 shadow-sm group-hover:shadow-md"
+                            : "bg-white/80 text-dark border border-dark/10 group-hover:bg-white shadow-sm group-hover:shadow-md"
                       }`}
                     >
                       {isSelected ? "✓ Selected" : "Select Plan"}
@@ -165,3 +203,4 @@ const PlanSelector = ({ selectedPlan, onSelectPlan, plans = [], loading = false,
 };
 
 export default PlanSelector;
+
