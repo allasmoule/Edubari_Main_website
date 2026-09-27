@@ -400,8 +400,10 @@ export async function GET() {
   try {
     const rows = await query("SELECT * FROM plans ORDER BY sort_order ASC, price ASC");
     if (rows && rows.length > 0) {
-      const mappedPlans = rows.map(mapPlanFromDb);
-      return NextResponse.json(mappedPlans);
+      const dbPlans = rows.map(mapPlanFromDb);
+      const dbIds = new Set(dbPlans.map((p) => p.id || p._id));
+      const missingDefaults = DEFAULT_PLANS.filter((p) => !dbIds.has(p.id));
+      return NextResponse.json([...dbPlans, ...missingDefaults]);
     }
   } catch (error) {
     console.error("Error fetching plans from DB, falling back to defaults:", error.message);

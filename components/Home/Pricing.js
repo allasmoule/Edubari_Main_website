@@ -58,8 +58,8 @@ const Pricing = () => {
       const response = await fetch("/api/plans");
       if (!response.ok) throw new Error("Failed to fetch plans");
       const data = await response.json();
-      const activePlans = data.filter((plan) => plan.active);
-      setPlans(activePlans || []);
+      const activePlans = (data || []).filter((plan) => plan.active !== false && plan.is_active !== false);
+      setPlans(activePlans.length > 0 ? activePlans : data || []);
     } catch (err) {
       console.error("Error fetching plans:", err);
       setError(err.message);
