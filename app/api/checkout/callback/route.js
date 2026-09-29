@@ -1,103 +1,129 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
+import { queryOne } from "@/lib/db";
 import { createAiPurchaseRequest, updatePurchaseRequestStatus, getAiPackages } from "@/lib/ai-database";
+import { getAdmin } from "@/lib/auth";
+import { cleanDomain, safeRedirectUrl, withParams } from "@/lib/safe-redirect";
 
-// Handle POST callbacks (Simulated Sandbox Webhook or standard Gateway IPN)
+/**
+ * AI credit payment callbacks.
+ *
+ * POST — server-to-server notification from a payment gateway. It is accepted only when it is
+ *        signed with AI_GATEWAY_WEBHOOK_SECRET (header X-Edubari-Signature = hex HMAC-SHA256 of
+ *        the raw body) or sent by a signed-in admin. Credits and price always come from the
+ *        package on the server, and one transaction ID can credit only once.
+ * GET  — Stripe success redirect. The paid session itself says which domain/package it was for.
+ */
+
+function validWebhookSignature(rawBody, signature) {
+  const secret = process.env.AI_GATEWAY_WEBHOOK_SECRET;
+  if (!secret || secret.length < 32 || !signature) return false;
+  const expected = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
+  const a = Buffer.from(String(signature).toLowerCase());
+  const b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+/** Credit a domain once per transaction ID (repeat calls return the earlier result) */
+async function creditOnce({ domain, pkg, transactionId, paymentMethod, userName, userPhone }) {
+  const existing = await queryOne("SELECT id, status FROM ai_purchase_requests WHERE transaction_id = ?", [transactionId]);
+  if (existing) return { duplicate: true, request: existing };
+  const req = await createAiPurchaseRequest({
+    domain,
+    userName: userName || "Automated Gateway",
+    userPhone: userPhone || "N/A",
+    packageId: pkg.id,
+    packageName: pkg.name,
+    credits: pkg.credits,
+    price: pkg.price,
+    currency: pkg.currency || "BDT",
+    paymentMethod,
+    transactionId,
+    status: "pending",
+  });
+  await updatePurchaseRequestStatus(req.id, "approved");
+  return { duplicate: false, request: { ...req, status: "approved" } };
+}
+
 export async function POST(request) {
   try {
-    const payload = await request.json();
-    const { domain, packageId, packageName, credits, price, currency, paymentMethod, transactionId } = payload;
-
-    if (!domain || !packageId || !transactionId) {
-      return NextResponse.json({ error: "Missing required parameters (domain, packageId, transactionId)" }, { status: 400 });
+    const rawBody = await request.text();
+    const signed = validWebhookSignature(rawBody, request.headers.get("x-edubari-signature"));
+    if (!signed && !(await getAdmin(request))) {
+      return NextResponse.json({ error: "Unauthorized payment notification" }, { status: 401 });
     }
 
-    console.log(`[IPN Webhook] Received successful automated payment callback for domain: ${domain}, Txn: ${transactionId}`);
+    let payload;
+    try {
+      payload = JSON.parse(rawBody || "{}");
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+    const domain = cleanDomain(payload.domain);
+    const transactionId = String(payload.transactionId || "").trim().slice(0, 100);
+    if (!domain || !payload.packageId || !transactionId) {
+      return NextResponse.json({ error: "Missing required parameters (domain, packageId, transactionId)" }, { status: 400 });
+    }
+    const pkg = (await getAiPackages()).find((p) => p.id === payload.packageId);
+    if (!pkg) return NextResponse.json({ error: "Package not found" }, { status: 404 });
 
-    // 1. Create a request with "approved" status instantly
-    const req = await createAiPurchaseRequest({
+    const result = await creditOnce({
       domain,
-      userName: payload.userName || "Automated Gateway",
-      userPhone: payload.userPhone || "N/A",
-      packageId,
-      packageName: packageName || "AI Pack",
-      credits: Number(credits || 0),
-      price: Number(price || 0),
-      currency: currency || "BDT",
-      paymentMethod: paymentMethod || "gateway",
+      pkg,
       transactionId,
-      status: "approved", // instantly approved
+      paymentMethod: String(payload.paymentMethod || "gateway").slice(0, 50),
+      userName: payload.userName,
+      userPhone: payload.userPhone,
     });
-
-    // 2. Trigger the ledger credit update via the DB manager (credits user's domain active wallet)
-    await updatePurchaseRequestStatus(req.id, "approved");
 
     return NextResponse.json({
       success: true,
-      message: "Callback processed successfully. Domain wallet credited.",
+      duplicate: result.duplicate,
+      message: result.duplicate ? "Transaction already processed." : "Callback processed successfully. Domain wallet credited.",
       transactionId,
     });
   } catch (error) {
-    console.error("Error processing IPN callback:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    console.error("Error processing payment callback:", error.message);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
-// Handle GET callbacks (Stripe Session Success Redirect)
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const sessionId = searchParams.get("session_id");
-  const domain = searchParams.get("domain");
-  const packageId = searchParams.get("package_id");
-  const redirectUrl = searchParams.get("redirect_url");
+  // Only ever send the customer to a trusted site (their own domain or this website)
+  const fallback = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+  const redirectBase = safeRedirectUrl(searchParams.get("redirect_url"), { domain: searchParams.get("domain") }) || fallback;
 
-  if (!sessionId || !domain || !packageId || !redirectUrl) {
-    return NextResponse.json({ error: "Invalid callback redirect parameters" }, { status: 400 });
+  if (!sessionId || !process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.redirect(withParams(redirectBase, { payment: "failed" }));
   }
 
   try {
-    // 1. Verify Stripe session if configured
-    if (process.env.STRIPE_SECRET_KEY) {
-      const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const domain = cleanDomain(session.metadata?.domain);
+    const packageId = session.metadata?.package_id;
 
-      if (session.payment_status === "paid") {
-        const packages = await getAiPackages();
-        const matchedPkg = packages.find((p) => p.id === packageId) || {
-          name: "Stripe Package",
-          credits: 10,
-          price: 179,
-        };
-
-        // Create approved request keyed by domain
-        const req = await createAiPurchaseRequest({
-          domain,
-          userName: session.customer_details?.name || "Stripe Customer",
-          userPhone: session.customer_details?.phone || "N/A",
-          packageId,
-          packageName: matchedPkg.name,
-          credits: matchedPkg.credits,
-          price: matchedPkg.price,
-          currency: matchedPkg.currency || "BDT",
-          paymentMethod: "stripe",
-          transactionId: sessionId,
-          status: "approved",
-        });
-
-        // Add credits to domain wallet
-        await updatePurchaseRequestStatus(req.id, "approved");
-
-        // Redirect back to LMS with success
-        const lmsRedirect = `${redirectUrl}${redirectUrl.includes("?") ? "&" : "?"}payment=success&txn_id=${sessionId}&credits_added=${matchedPkg.credits}`;
-        return NextResponse.redirect(lmsRedirect);
-      }
+    if (session.payment_status !== "paid" || !domain || !packageId) {
+      return NextResponse.redirect(withParams(redirectBase, { payment: "failed" }));
     }
+    const pkg = (await getAiPackages()).find((p) => p.id === packageId);
+    if (!pkg) return NextResponse.redirect(withParams(redirectBase, { payment: "failed" }));
 
-    // Fallback if Stripe redirect was hit but unpaid or not setup
-    const failureRedirect = `${redirectUrl}${redirectUrl.includes("?") ? "&" : "?"}payment=failed`;
-    return NextResponse.redirect(failureRedirect);
+    await creditOnce({
+      domain,
+      pkg,
+      transactionId: sessionId,
+      paymentMethod: "stripe",
+      userName: session.customer_details?.name || "Stripe Customer",
+      userPhone: session.customer_details?.phone || "N/A",
+    });
+
+    const successBase = safeRedirectUrl(searchParams.get("redirect_url"), { domain }) || fallback;
+    return NextResponse.redirect(withParams(successBase, { payment: "success", txn_id: sessionId, credits_added: pkg.credits }));
   } catch (error) {
-    console.error("Error processing Stripe success callback:", error);
-    const failureRedirect = `${redirectUrl}${redirectUrl.includes("?") ? "&" : "?"}payment=error`;
-    return NextResponse.redirect(failureRedirect);
+    console.error("Error processing Stripe success callback:", error.message);
+    return NextResponse.redirect(withParams(redirectBase, { payment: "error" }));
   }
 }

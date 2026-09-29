@@ -9,6 +9,7 @@ import {
   FiLoader,
   FiGlobe,
 } from "react-icons/fi";
+import { useLanguage } from "@/context/LanguageContext";
 
 const toPreviewUrl = (url) => {
   const value = (url || "").trim();
@@ -18,6 +19,7 @@ const toPreviewUrl = (url) => {
 };
 
 const WorkProof = () => {
+  const { t } = useLanguage();
   const [liveSites, setLiveSites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -58,7 +60,7 @@ const WorkProof = () => {
   }, []);
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-white">
+    <section className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-white select-none">
       <div className="w-full rounded-[32px] border border-white bg-primary-light/80 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
         {/* Glow Effects */}
         <div className="absolute top-0 left-0 w-80 h-80 bg-tertiary/5 rounded-full blur-3xl pointer-events-none -ml-32 -mt-32" />
@@ -69,18 +71,18 @@ const WorkProof = () => {
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
               <FiLayout className="h-3.5 w-3.5" />
-              Live Examples
+              {t("workProof.badge")}
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-4.5xl font-black tracking-tight text-dark leading-tight">
-              Our Successful{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary via-[#8B5CF6] to-[#7c3aed] drop-shadow-sm">
-                Implementations
+              {t("workProof.titleMain")}{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500 drop-shadow-sm">
+                {t("workProof.titleGradient")}
               </span>
             </h2>
 
             <p className="mt-4 text-sm sm:text-base leading-relaxed text-dark/70 max-w-2xl mx-auto font-medium">
-              Explore websites and portals we've built for educational institutions that are currently live and thriving.
+              {t("workProof.subtitle")}
             </p>
           </div>
 
@@ -89,17 +91,17 @@ const WorkProof = () => {
             {loading ? (
               <div className="col-span-full flex flex-col items-center justify-center py-16 text-dark/50 font-bold">
                 <FiLoader className="w-10 h-10 animate-spin text-tertiary mb-4" />
-                <span>Loading live projects...</span>
+                <span>{t("workProof.loading")}</span>
               </div>
             ) : error ? (
               <div className="col-span-full text-center py-12 px-6 rounded-2xl bg-red-50 border border-red-200 max-w-md mx-auto shadow-sm">
-                <p className="text-red-600 font-extrabold">Failed to load work proofs</p>
+                <p className="text-red-600 font-extrabold">{t("workProof.failed")}</p>
                 <p className="text-sm text-red-500/80 mt-1">{error}</p>
               </div>
             ) : liveSites.length === 0 ? (
               <div className="col-span-full text-center py-16 rounded-2xl border border-dark/5 bg-white/40">
                 <p className="text-dark/45 font-bold">
-                  No live projects available at the moment.
+                  {t("workProof.noProjects")}
                 </p>
               </div>
             ) : (
@@ -164,7 +166,7 @@ const WorkProof = () => {
                           <div className="flex flex-col items-center gap-2">
                             <FiGlobe className="w-8 h-8 opacity-40 animate-pulse" />
                             <p className="text-2xs font-bold uppercase tracking-wider">
-                              Preview unavailable
+                              {t("workProof.previewUnavailable")}
                             </p>
                           </div>
                         </div>
@@ -178,7 +180,7 @@ const WorkProof = () => {
                           rel="noreferrer"
                           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-dark text-xs font-black shadow-lg scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300"
                         >
-                          Visit Site
+                          {t("workProof.visitSite")}
                           <FiExternalLink className="h-3.5 w-3.5" />
                         </a>
                       </div>
@@ -188,7 +190,7 @@ const WorkProof = () => {
                     <div className="p-5 sm:p-5.5 flex flex-col grow justify-between">
                       <div>
                         <p className="text-[10px] font-black text-tertiary tracking-widest uppercase mb-1.5">
-                          {site.client_name || "Institution Portal"}
+                          {site.client_name || t("workProof.portalDefault")}
                         </p>
                         <h3 className="text-lg font-extrabold text-dark leading-snug tracking-tight mb-3">
                           {site.title}
@@ -219,7 +221,7 @@ const WorkProof = () => {
                         rel="noreferrer"
                         className="w-full text-center block rounded-xl px-5 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 bg-dark/5 text-dark hover:bg-dark/10 shadow-xs border border-dark/5"
                       >
-                        Visit Live Site
+                        {t("workProof.visitSite")}
                       </a>
                     </div>
                   </div>
@@ -234,7 +236,7 @@ const WorkProof = () => {
               onClick={() => router.push("/work-proof")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-dark/15 text-sm font-bold text-dark hover:bg-dark/5 hover:border-dark/25 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
             >
-              View All Projects
+              {t("workProof.viewAll")}
               <FiExternalLink className="h-4 w-4" />
             </button>
           </div>

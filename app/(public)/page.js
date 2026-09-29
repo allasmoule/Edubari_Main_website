@@ -2,6 +2,7 @@ import React from "react";
 import DomainSearch from "@/components/Home/DomainSearch";
 import Pricing from "@/components/Home/Pricing";
 import HowWorks from "@/components/Home/HowWorks";
+import TrustedClients from "@/components/Home/TrustedClients";
 import Feature from "@/components/Home/Feature";
 import WorkProof from "@/components/Home/WorkProof";
 import WhyShouldChoose from "@/components/Home/WhyShouldChoose";
@@ -13,6 +14,7 @@ export default function HomePage() {
       <DomainSearch />
       <Pricing />
       <HowWorks />
+      <TrustedClients />
       <Feature />
       <WorkProof />
       <WhyShouldChoose />

@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { FiFacebook, FiTwitter, FiInstagram, FiGlobe, FiClock } from "react-icons/fi";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Footer = () => {
   const year = new Date().getFullYear();
-  const [language, setLanguage] = useState("EN");
+  const { lang, setLang, t } = useLanguage();
 
   return (
-    <footer className="w-full bg-primary/95 backdrop-blur-sm px-4 sm:px-6 md:px-12 py-10 border-t border-white/20">
+    <footer className="w-full bg-primary/95 backdrop-blur-sm px-4 sm:px-6 md:px-12 py-10 border-t border-white/20 select-none">
       <div className="w-full">
         <div className="w-full rounded-[28px] border border-white/20 bg-primary/95 backdrop-blur-sm overflow-hidden">
           <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-10 sm:py-12">
@@ -31,13 +32,12 @@ const Footer = () => {
                   </h2>
                 </Link>
 
-                <p className="mt-4 text-sm sm:text-[15px] leading-7 text-dark/70 max-w-sm mx-auto lg:mx-0">
-                  A modern learning platform built for students with smart digital
-                  learning, accessible resources, and a seamless online experience.
+                <p className="mt-4 text-sm sm:text-[15px] leading-7 text-dark/70 max-w-sm mx-auto lg:mx-0 font-medium">
+                  {t("footer.description")}
                 </p>
 
-                <p className="mt-4 text-sm text-dark/65 font-medium">
-                  Learn smarter. Grow faster.
+                <p className="mt-4 text-sm text-dark/65 font-bold">
+                  {t("footer.slogan")}
                 </p>
               </div>
 
@@ -47,16 +47,16 @@ const Footer = () => {
               {/* Quick Links */}
               <div className="text-center lg:text-left">
                 <h3 className="text-[18px] font-bold text-dark mb-5">
-                  Quick Links
+                  {t("footer.quickLinks")}
                 </h3>
 
-                <ul className="space-y-3">
+                <ul className="space-y-3 p-0 list-none">
                   <li>
                     <Link
                       href="/privacy-policy"
                       className="relative inline-flex items-center text-[15px] text-dark/75 hover:text-secondary font-medium transition-all duration-300"
                     >
-                      Privacy Policy
+                      {t("footer.privacyPolicy")}
                     </Link>
                   </li>
                   <li>
@@ -64,7 +64,7 @@ const Footer = () => {
                       href="/terms-of-service"
                       className="relative inline-flex items-center text-[15px] text-dark/75 hover:text-secondary font-medium transition-all duration-300"
                     >
-                      Terms of Service
+                      {t("footer.termsOfService")}
                     </Link>
                   </li>
                   <li>
@@ -72,7 +72,7 @@ const Footer = () => {
                       href="/contact"
                       className="relative inline-flex items-center text-[15px] text-dark/75 hover:text-secondary font-medium transition-all duration-300"
                     >
-                      Contact Us
+                      {t("footer.contactUs")}
                     </Link>
                   </li>
                 </ul>
@@ -81,11 +81,11 @@ const Footer = () => {
               {/* Social */}
               <div className="text-center lg:text-left">
                 <h3 className="text-[18px] font-bold text-dark mb-5">
-                  Follow Us
+                  {t("footer.followUs")}
                 </h3>
 
-                <p className="text-sm text-dark/65">
-                  Stay connected on social media
+                <p className="text-sm text-dark/65 font-medium">
+                  {t("footer.stayConnected")}
                 </p>
 
                 <div className="mt-4 flex items-center justify-center lg:justify-start gap-3">
@@ -127,10 +127,10 @@ const Footer = () => {
 
             {/* Bottom Row */}
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto] items-center text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-dark/65">
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-dark/65 font-medium">
                 <FiClock className="h-4 w-4" />
                 <span>
-                  Copyright © {year} EduBari. All rights reserved by Botbari.
+                  Copyright © {year} EduBari. {t("footer.copyright")}
                 </span>
               </div>
 
@@ -139,7 +139,7 @@ const Footer = () => {
                   href="/cookies"
                   className="text-sm font-medium text-dark/75 hover:text-secondary transition-colors duration-300"
                 >
-                  Cookies
+                  {t("footer.cookies")}
                 </Link>
               </div>
 
@@ -148,21 +148,21 @@ const Footer = () => {
                   href="/sitemap"
                   className="text-sm font-medium text-dark/75 hover:text-secondary transition-colors duration-300"
                 >
-                  Sitemap
+                  {t("footer.sitemap")}
                 </Link>
               </div>
 
               <div className="flex items-center justify-center gap-2 text-sm text-dark/65">
                 <FiGlobe className="h-4 w-4" />
-                <span className="font-medium text-dark/75">Language:</span>
+                <span className="font-bold text-dark/75">{t("footer.languageLabel")}</span>
 
                 <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="rounded-full border border-white/30 bg-white/40 px-3 py-1.5 text-dark/80 transition-all duration-300 hover:bg-white/60 hover:text-secondary focus:outline-none cursor-pointer"
+                  value={lang.toUpperCase()}
+                  onChange={(e) => setLang(e.target.value.toLowerCase())}
+                  className="rounded-full border border-white/30 bg-white/40 px-3 py-1.5 text-dark/80 font-bold transition-all duration-300 hover:bg-white/60 hover:text-secondary focus:outline-none cursor-pointer"
                 >
-                  <option value="EN">EN</option>
-                  <option value="BN">BN</option>
+                  <option value="BN">BN (বাংলা)</option>
+                  <option value="EN">EN (English)</option>
                 </select>
               </div>
             </div>
@@ -172,5 +172,4 @@ const Footer = () => {
     </footer>
   );
 };
-
 export default Footer;

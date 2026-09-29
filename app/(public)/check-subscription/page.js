@@ -1,20 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import {
   FiSearch,
   FiGlobe,
   FiCalendar,
   FiClock,
-  FiCheckCircle,
   FiAlertCircle,
-  FiActivity,
   FiArrowRight,
   FiArrowLeft,
-  FiRefreshCw,
-  FiCpu,
-  FiLayers
+  FiRefreshCw
 } from "react-icons/fi";
 
 const formatDateTime = (value) => {
@@ -37,52 +32,6 @@ export default function CheckSubscriptionPage() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [now, setNow] = useState(new Date());
 
-  // AI credit states
-  const [aiBalance, setAiBalance] = useState(null);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiPackages, setAiPackages] = useState([]);
-
-  // Fetch active AI packages on mount
-  useEffect(() => {
-    async function loadAiPackages() {
-      try {
-        const res = await fetch("/api/ai-packages");
-        if (res.ok) {
-          const data = await res.json();
-          const active = data.filter(p => p.isActive);
-          setAiPackages(active);
-        }
-      } catch (err) {
-        console.error("Failed to load AI packages:", err);
-      }
-    }
-    loadAiPackages();
-  }, []);
-
-  // Fetch AI credit balance when selectedClient changes
-  useEffect(() => {
-    if (!selectedClient) {
-      setAiBalance(null);
-      return;
-    }
-
-    async function loadAiBalance() {
-      setAiLoading(true);
-      try {
-        const res = await fetch(`/api/ai-purchases?type=balance&domain=${selectedClient.domain}`);
-        if (res.ok) {
-          const data = await res.json();
-          setAiBalance(data);
-        }
-      } catch (err) {
-        console.error("Failed to load AI balance:", err);
-      } finally {
-        setAiLoading(false);
-      }
-    }
-    loadAiBalance();
-  }, [selectedClient]);
-
   // Dynamic live countdown updates
   useEffect(() => {
     const timer = setInterval(() => {
@@ -95,7 +44,7 @@ export default function CheckSubscriptionPage() {
   useEffect(() => {
     async function loadClients() {
       try {
-        const res = await fetch("/api/billing/clients");
+        const res = await fetch("/api/public/clients");
         if (!res.ok) throw new Error("Failed to load institution directory.");
         const data = await res.json();
         setClients(Array.isArray(data) ? data : []);
@@ -233,13 +182,13 @@ export default function CheckSubscriptionPage() {
         {/* Header Section */}
         <div className="text-center space-y-3">
           <span className="px-3.5 py-1.5 rounded-full bg-tertiary/10 text-tertiary text-xs font-extrabold uppercase tracking-widest border border-tertiary/20">
-            Tenant Lookup Portal
+            Subscription Status
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-dark tracking-tight leading-none mt-2">
             Check Institution Subscription
           </h2>
           <p className="text-xs sm:text-sm text-dark/50 max-w-md mx-auto font-medium">
-            Search your institution domain name or username to review current limits, expiration dates, and license options.
+            Search your institution name or domain to see its subscription status and remaining time.
           </p>
         </div>
 
@@ -310,151 +259,12 @@ export default function CheckSubscriptionPage() {
 
                   {/* Pricing Plan Details */}
                   <div className="rounded-xl border border-white bg-white/60 p-5 shadow-sm space-y-1">
-                    <span className="text-[10px] font-bold text-dark/40 uppercase block tracking-wider">Current Enabled Plan</span>
+                    <span className="text-[10px] font-bold text-dark/40 uppercase block tracking-wider">Current Plan</span>
                     <span className="text-base font-extrabold text-tertiary block">
                       {activeSub?.plans?.plan_name || "No Plan Associated"}
                     </span>
-                    {activeSub?.plans && (
-                      <p className="text-[10px] text-dark/50 font-bold lining-nums">
-                        ৳{Number(activeSub.plans.price).toLocaleString()} / {activeSub.plans.duration_days} Days
-                      </p>
-                    )}
                   </div>
                 </div>
-
-                {/* Sub quotas & parameters */}
-                {activeSub?.plans && (
-                  <div className="rounded-xl border border-dark/5 bg-dark/[0.015] p-5 space-y-4">
-                    <span className="text-[10px] font-bold text-dark/40 uppercase block tracking-wider">Resource Allocation & Quotas</span>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <div className="p-3 bg-white border border-dark/5 rounded-xl">
-                        <span className="text-[10px] text-dark/45 block font-bold">Students</span>
-                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.max_students ?? 0}</span>
-                      </div>
-                      <div className="p-3 bg-white border border-dark/5 rounded-xl">
-                        <span className="text-[10px] text-dark/45 block font-bold">Instructors</span>
-                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.max_instructors ?? 0}</span>
-                      </div>
-                      <div className="p-3 bg-white border border-dark/5 rounded-xl">
-                        <span className="text-[10px] text-dark/45 block font-bold">Batches</span>
-                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.max_batches ?? 1}</span>
-                      </div>
-                      <div className="p-3 bg-white border border-dark/5 rounded-xl">
-                        <span className="text-[10px] text-dark/45 block font-bold">AI Credits/Mo</span>
-                        <span className="text-lg font-black text-dark lining-nums">{activeSub.plans.monthly_ai_credits ?? 0}</span>
-                      </div>
-                    </div>
-                    <div className="px-3 py-2.5 rounded-lg bg-white border border-dark/5 text-[10px] font-bold text-dark/65 flex justify-between items-center">
-                      <span>Branding Requirements:</span>
-                      <span className={activeSub.plans.show_branding ? "text-amber-600" : "text-emerald-600 font-extrabold"}>
-                        {activeSub.plans.show_branding ? "Powered by EDUBARI forced branding" : "Branding Removed (Whitelabel)"}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* AI Credit Pool Wallet Status */}
-                <div className="rounded-xl border border-white bg-white/60 p-5 shadow-sm space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="h-7 w-7 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center">
-                        <FiCpu className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-dark/40 uppercase block tracking-wider">Shared AI Credit Pool</span>
-                        <h4 className="text-xs font-bold text-dark/85">Authorized Teacher Privileges</h4>
-                      </div>
-                    </div>
-                    {aiLoading ? (
-                      <span className="text-[10px] font-bold text-dark/45 animate-pulse">Syncing...</span>
-                    ) : aiBalance ? (
-                      <span className={`px-2.5 py-0.5 rounded text-3xs font-extrabold uppercase border ${
-                        aiBalance.remainingCredits > 0
-                          ? "bg-green-50 text-green-600 border-green-200"
-                          : "bg-amber-50 text-amber-600 border-amber-200"
-                      }`}>
-                        {aiBalance.remainingCredits > 0 ? "Credits Loaded" : "Empty Wallet"}
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-bold text-dark/40">Not Synchronized</span>
-                    )}
-                  </div>
-
-                  {aiLoading ? (
-                    <div className="py-4 text-center animate-pulse">
-                      <div className="h-5 bg-dark/10 rounded w-1/3 mx-auto mb-2"></div>
-                      <div className="h-3 bg-dark/5 rounded w-1/2 mx-auto"></div>
-                    </div>
-                  ) : aiBalance && (aiBalance.remainingCredits > 0 || aiBalance.totalCredits > 0) ? (
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 bg-white border border-dark/5 rounded-xl">
-                        <span className="text-[10px] text-dark/45 block font-bold">Remaining AI Credits</span>
-                        <span className="text-lg font-black text-tertiary">{aiBalance.remainingCredits} Credits</span>
-                      </div>
-                      <div className="p-3 bg-white border border-dark/5 rounded-xl">
-                        <span className="text-[10px] text-dark/45 block font-bold">Expiry Date</span>
-                        <span className="text-xs font-extrabold text-dark/70">
-                          {aiBalance.expiresAt ? (
-                            new Date(aiBalance.expiresAt) < new Date() ? (
-                              <span className="text-red-500 font-black">Expired</span>
-                            ) : (
-                              new Date(aiBalance.expiresAt).toLocaleDateString()
-                            )
-                          ) : (
-                            <span className="text-dark/40">Never Expire</span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-3 bg-amber-50/50 border border-amber-200 rounded-xl text-2xs text-amber-700 font-medium leading-relaxed">
-                      No active AI Credits ledger has been initialized for this domain yet. Add credits to enable automatic Presentation Slide Maker and Question Maker operations inside the Teacher panel.
-                    </div>
-                  )}
-                </div>
-
-                {/* AI Add-on Purchase Packages */}
-                {aiPackages.length > 0 && (
-                  <div className="rounded-xl border border-dark/5 bg-dark/[0.015] p-5 space-y-4">
-                    <div>
-                      <span className="text-[10px] font-bold text-dark/40 uppercase block tracking-wider">Purchase AI Credit Add-ons</span>
-                      <p className="text-2xs text-dark/45 font-semibold mt-0.5">Top-up your subdomain with global credits pool. Both features deduct from this same balance.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      {aiPackages.map((pkg) => (
-                        <div
-                          key={pkg.id}
-                          className={`p-4 rounded-xl border flex flex-col justify-between transition-all bg-white relative ${
-                            pkg.highlight
-                              ? "border-tertiary bg-white shadow-xs"
-                              : "border-dark/5 hover:border-dark/10"
-                          }`}
-                        >
-                          {pkg.highlight && (
-                            <span className="absolute -top-2 right-4 px-2 py-0.5 bg-tertiary text-white text-[7px] font-extrabold uppercase rounded-full tracking-widest leading-none">
-                              Popular
-                            </span>
-                          )}
-                          <div>
-                            <span className="text-2xs font-extrabold text-dark/80 block truncate">{pkg.name}</span>
-                            <span className="text-xs font-black text-tertiary block mt-1">+{pkg.credits} Credits</span>
-                          </div>
-                          
-                          <div className="mt-4 pt-2.5 border-t border-dark/5 flex items-center justify-between gap-1">
-                            <span className="text-xs font-black text-dark leading-none">৳{pkg.price}</span>
-                            <Link
-                              href={`/checkout?domain=${selectedClient.domain}&package_id=${pkg.id}&redirect_url=${encodeURIComponent(window.location.href)}`}
-                              className="px-2.5 py-1.5 rounded-lg bg-linear-to-r from-tertiary to-[#8B5CF6] text-white text-[9px] font-extrabold text-center transition-all hover:-translate-y-0.5 cursor-pointer no-underline border-none"
-                            >
-                              Buy Tier
-                            </Link>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Dates Span */}
                 {activeSub && (
@@ -470,25 +280,6 @@ export default function CheckSubscriptionPage() {
                   </div>
                 )}
 
-                {/* Expiry Action Button */}
-                <div className="pt-4 border-t border-dark/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="text-left text-xs font-medium text-dark/45">
-                    {details.isExpired ? (
-                      <span className="text-red-500 font-bold">Your instance has expired. Please renew immediately to restore services.</span>
-                    ) : details.isGrace ? (
-                      <span className="text-amber-600 font-bold">Your instance is in grace mode. Renew now to avoid suspension.</span>
-                    ) : (
-                      <span>Need resources upgrade? Select a new plan to scale your features dynamically.</span>
-                    )}
-                  </div>
-
-                  <Link
-                    href={`/payment-purchase?name=${encodeURIComponent(selectedClient.client_name)}&preferredDomain=${encodeURIComponent(selectedClient.domain)}${activeSub ? `&plan=${activeSub.plan_id}` : ""}&existing=true`}
-                    className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-tertiary to-[#8B5CF6] text-white text-xs font-bold text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 inline-flex items-center justify-center gap-2 border-none"
-                  >
-                    Renew / Buy Subscription <FiArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
               </div>
             );
           })()

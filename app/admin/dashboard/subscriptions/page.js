@@ -16,6 +16,12 @@ import {
   FiUser,
   FiX,
   FiSearch,
+  FiServer,
+  FiWifi,
+  FiWifiOff,
+  FiClock,
+  FiPlus,
+  FiCopy,
 } from "react-icons/fi";
 
 const formatDateTime = (value) => {
@@ -93,14 +99,47 @@ const getSubscriptionMeta = (item) => {
 };
 
 export default function AdminSubscriptionsPage() {
+  const [activeTab, setActiveTab] = useState("requests"); // "requests" | "erp"
   const [subscriptions, setSubscriptions] = useState([]);
+  const [erpConnections, setErpConnections] = useState([]);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [erpLoading, setErpLoading] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all"); // all, verified, pending
+
+  // Add School Modal States
+  const [addSchoolModalOpen, setAddSchoolModalOpen] = useState(false);
+
+  // School ERP payment history + manual payment form
+  const [payments, setPayments] = useState([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(false);
+  const [paymentForm, setPaymentForm] = useState(null); // { client_id, client_name, periods, amount, channel, trx_id, note }
+  const [paymentSaving, setPaymentSaving] = useState(false);
+  const [plansList, setPlansList] = useState([]);
+  const [addSchoolLoading, setAddSchoolLoading] = useState(false);
+  const [createdCredentials, setCreatedCredentials] = useState(null);
+  const [newSchoolForm, setNewSchoolForm] = useState({
+    client_name: "",
+    domain: "",
+    phone: "",
+    client_type: "school_erp",
+    plan_id: "",
+    status: "active",
+  });
+
+  const fetchPlans = useCallback(async () => {
+    try {
+      const res = await fetch("/api/plans");
+      if (res.ok) {
+        const data = await res.json();
+        setPlansList(Array.isArray(data) ? data : []);
+      }
+    } catch (_) {}
+  }, []);
 
   const fetchSubscriptions = useCallback(async () => {
     setLoading(true);
@@ -130,6 +169,113 @@ export default function AdminSubscriptionsPage() {
     }
   }, []);
 
+  const fetchErpConnections = useCallback(async () => {
+    setErpLoading(true);
+    try {
+      const res = await fetch("/api/erp/ping");
+      if (!res.ok) throw new Error("Failed");
+      const data = await res.json();
+      setErpConnections(Array.isArray(data) ? data : []);
+    } catch (_) {
+      setErpConnections([]);
+    } finally {
+      setErpLoading(false);
+    }
+  }, []);
+
+  const fetchPayments = useCallback(async () => {
+    setPaymentsLoading(true);
+    try {
+      const res = await fetch("/api/billing/payments");
+      if (!res.ok) throw new Error("Failed");
+      const data = await res.json();
+      setPayments(Array.isArray(data) ? data : []);
+    } catch (_) {
+      setPayments([]);
+    } finally {
+      setPaymentsLoading(false);
+    }
+  }, []);
+
+  const handleRecordPayment = async (e) => {
+    e.preventDefault();
+    if (!paymentForm?.client_id) return;
+    setPaymentSaving(true);
+    try {
+      const res = await fetch("/api/billing/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: paymentForm.client_id,
+          periods: Number(paymentForm.periods) || 1,
+          amount: paymentForm.amount === "" ? undefined : Number(paymentForm.amount),
+          channel: paymentForm.channel,
+          trx_id: paymentForm.trx_id,
+          note: paymentForm.note,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to record payment");
+      alert(`Payment recorded. Subscription now runs until ${formatDateTime(data.period_end)}.`);
+      setPaymentForm(null);
+      fetchPayments();
+      fetchErpConnections();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setPaymentSaving(false);
+    }
+  };
+
+  const handleCreateSchool = async (e) => {
+    e.preventDefault();
+    if (!newSchoolForm.client_name || !newSchoolForm.domain || !newSchoolForm.plan_id) {
+      alert("Please fill in School Name, Domain, and Plan.");
+      return;
+    }
+
+    setAddSchoolLoading(true);
+    try {
+      const res = await fetch("/api/billing/clients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSchoolForm),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to register school client");
+      }
+
+      const created = await res.json();
+      setAddSchoolModalOpen(false);
+      setCreatedCredentials(created);
+      
+      // Reset form
+      setNewSchoolForm({
+        client_name: "",
+        domain: "",
+        phone: "",
+        client_type: "school_erp",
+        plan_id: "",
+        status: "active",
+      });
+
+      fetchSubscriptions();
+      fetchErpConnections();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setAddSchoolLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Start loading after mount instead of setting state inside the effect body itself
+    const t = setTimeout(fetchPlans, 0);
+    return () => clearTimeout(t);
+  }, [fetchPlans]);
+
   const handleViewDetails = async (id) => {
     setDetailsLoading(true);
     setError("");
@@ -158,7 +304,8 @@ export default function AdminSubscriptionsPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update subscription");
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to update subscription");
       }
 
       const data = await response.json();
@@ -208,8 +355,13 @@ export default function AdminSubscriptionsPage() {
   };
 
   useEffect(() => {
-    fetchSubscriptions();
-  }, [fetchSubscriptions]);
+    const t = setTimeout(() => {
+      fetchSubscriptions();
+      fetchErpConnections();
+      fetchPayments();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchSubscriptions, fetchErpConnections, fetchPayments]);
 
   /* Derived Stats & Filters */
   const totalRevenue = useMemo(() => {
@@ -240,24 +392,64 @@ export default function AdminSubscriptionsPage() {
       <div className="rounded-2xl border border-white/40 bg-white/70 backdrop-blur-sm p-5 sm:p-6 shadow-lg shadow-dark/3">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h2 className="text-lg sm:text-xl font-extrabold text-dark tracking-tight">
-              Subscriptions
+            <h2 className="text-lg sm:text-xl font-extrabold text-dark tracking-tight flex items-center gap-2">
+              <FiServer className="w-5 h-5 text-tertiary" />
+              School ERP Subscriptions
             </h2>
             <p className="text-xs sm:text-sm text-dark/45 font-medium mt-1">
-              All submitted subscription requests from the purchase form
+              Manage School ERP connections and subscription purchase requests
             </p>
           </div>
 
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setAddSchoolModalOpen(true)}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-tertiary to-[#8B5CF6] text-white text-xs font-bold shadow-md hover:shadow-tertiary/20 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 border-none"
+            >
+              <FiPlus className="w-4 h-4" />
+              Add School ERP Instance
+            </button>
+            <button
+              type="button"
+              onClick={() => { fetchSubscriptions(); fetchErpConnections(); }}
+              className="px-3 py-2 rounded-xl border border-dark/10 text-xs font-semibold text-dark/60 hover:bg-dark/5 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 border-none bg-transparent"
+            >
+              <FiRefreshCw className="w-4 h-4" />
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="flex p-1 rounded-2xl bg-dark/[0.04] w-max border border-dark/5 mb-5">
           <button
             type="button"
-            onClick={fetchSubscriptions}
-            className="px-3 py-2 rounded-xl border border-dark/10 text-sm font-semibold text-dark/60 hover:bg-dark/5 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 border-none bg-transparent"
+            onClick={() => setActiveTab("requests")}
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border-none flex items-center gap-1.5 ${
+              activeTab === "requests"
+                ? "bg-white text-tertiary shadow-sm font-extrabold"
+                : "bg-transparent text-dark/50 hover:text-dark/80"
+            }`}
           >
-            <FiRefreshCw className="w-4 h-4" />
-            Refresh
+            <FiCreditCard className="w-4 h-4" /> Subscription Requests
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("erp")}
+            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer border-none flex items-center gap-1.5 ${
+              activeTab === "erp"
+                ? "bg-white text-tertiary shadow-sm font-extrabold"
+                : "bg-transparent text-dark/50 hover:text-dark/80"
+            }`}
+          >
+            <FiServer className="w-4 h-4" /> ERP Connections ({erpConnections.length})
           </button>
         </div>
 
+        {/* ── TAB: Subscription Requests ── */}
+        {activeTab === "requests" && (
+          <>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           <div className="rounded-xl border border-white/40 bg-white/75 p-3">
             <p className="text-xs font-bold text-dark/40">Total Requests</p>
@@ -698,6 +890,448 @@ export default function AdminSubscriptionsPage() {
             )}
           </>
         )}
+        </>
+        )}
+        {/* ── END: requests tab ── */}
+
+        {/* ── TAB: ERP Connections ── */}
+        {activeTab === "erp" && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-xl border border-white/40 bg-white/75 p-3">
+                <p className="text-xs font-bold text-dark/40">Total ERP Instances</p>
+                <p className="text-xl font-extrabold text-dark mt-1">{erpConnections.length}</p>
+              </div>
+              <div className="rounded-xl border border-white/40 bg-white/75 p-3">
+                <p className="text-xs font-bold text-dark/40">Connected</p>
+                <p className="text-xl font-extrabold text-emerald-600 mt-1">
+                  {erpConnections.filter(e => e.connection_status === "connected").length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/40 bg-white/75 p-3">
+                <p className="text-xs font-bold text-dark/40">Pending / Disconnected</p>
+                <p className="text-xl font-extrabold text-amber-600 mt-1">
+                  {erpConnections.filter(e => e.connection_status !== "connected").length}
+                </p>
+              </div>
+            </div>
+
+            {erpLoading && (
+              <div className="py-12 flex items-center justify-center gap-2 text-sm text-dark/50 font-medium">
+                <FiLoader className="w-4 h-4 animate-spin" /> Loading ERP connections...
+              </div>
+            )}
+
+            {!erpLoading && erpConnections.length === 0 && (
+              <div className="rounded-xl border border-dark/10 bg-white/60 text-dark/55 text-sm font-semibold px-4 py-10 text-center space-y-2">
+                <FiServer className="w-10 h-10 mx-auto text-dark/20 mb-2" />
+                <p>No School ERP instances connected yet.</p>
+                <p className="text-xs font-medium text-dark/40">Use <strong>Add School ERP Instance</strong> to register a school and get its API credentials.</p>
+              </div>
+            )}
+
+            {!erpLoading && erpConnections.length > 0 && (
+              <div className="overflow-x-auto rounded-2xl border border-dark/8">
+                <table className="min-w-full bg-white/80">
+                  <thead className="bg-dark/3">
+                    <tr>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Institution</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Domain</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">API Token</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Status</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Last Ping</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Laravel Ver</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Plan / Expires</th>
+                      <th className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">Payment</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {erpConnections.map((conn) => (
+                      <tr key={conn.id} className="border-t border-dark/8 hover:bg-dark/[0.015] transition-colors">
+                        <td className="px-4 py-3">
+                          <p className="text-sm font-bold text-dark">{conn.client_name || "-"}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs font-semibold text-dark/70 flex items-center gap-1">
+                            <FiGlobe className="w-3 h-3 text-tertiary" /> {conn.domain}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <code className="text-[10px] bg-dark/5 px-2 py-1 rounded-lg font-mono text-dark/60 break-all">
+                            {conn.erp_api_token ? `${conn.erp_api_token.substring(0, 16)}...` : "-"}
+                          </code>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold ${
+                            conn.connection_status === "connected"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : conn.connection_status === "pending"
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-red-100 text-red-700"
+                          }`}>
+                            {conn.connection_status === "connected" ? <FiWifi className="w-3 h-3" /> : <FiWifiOff className="w-3 h-3" />}
+                            {conn.connection_status?.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs text-dark/55 flex items-center gap-1">
+                            <FiClock className="w-3 h-3" />
+                            {conn.last_ping_at ? new Date(conn.last_ping_at).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "Never"}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs text-dark/55 font-mono">{conn.laravel_version || "-"}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs font-bold text-dark">{conn.plan_name || "-"}</p>
+                          <p className={`text-[11px] font-semibold ${
+                            conn.subscription_end_date && new Date(conn.subscription_end_date) < new Date() ? "text-red-600" : "text-dark/50"
+                          }`}>
+                            {conn.subscription_end_date ? formatDateTime(conn.subscription_end_date) : "No subscription"}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            type="button"
+                            onClick={() => setPaymentForm({
+                              client_id: conn.client_id,
+                              client_name: conn.client_name || conn.domain,
+                              price: Number(conn.plan_price || 0),
+                              periods: 1,
+                              amount: "",
+                              channel: "cash",
+                              trx_id: "",
+                              note: "",
+                            })}
+                            className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer border-none"
+                          >
+                            <FiPlus className="w-3 h-3" /> Add Payment
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Payment history: every School ERP payment (bKash / Nagad / recorded by admin) */}
+            <div className="flex items-center justify-between pt-4">
+              <h3 className="text-sm font-extrabold text-dark flex items-center gap-2">
+                <FiCreditCard className="w-4 h-4 text-tertiary" /> Payment History
+              </h3>
+              <p className="text-xs font-bold text-dark/50">
+                Collected: ৳{payments.filter((p) => p.status === "completed").reduce((sum, p) => sum + Number(p.amount || 0), 0).toLocaleString()}
+              </p>
+            </div>
+            {paymentsLoading ? (
+              <div className="py-8 flex items-center justify-center gap-2 text-sm text-dark/50 font-medium">
+                <FiLoader className="w-4 h-4 animate-spin" /> Loading payments...
+              </div>
+            ) : payments.length === 0 ? (
+              <div className="rounded-xl border border-dark/10 bg-white/60 text-dark/55 text-sm font-semibold px-4 py-6 text-center">
+                No payments yet.
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-2xl border border-dark/8">
+                <table className="min-w-full bg-white/80">
+                  <thead className="bg-dark/3">
+                    <tr>
+                      {["Date", "School", "Plan", "Method", "Amount", "Period", "Trx ID", "Status"].map((h) => (
+                        <th key={h} className="text-left px-4 py-3 text-xs font-black text-dark/55 uppercase tracking-wide">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map((p) => (
+                      <tr key={p.id} className="border-t border-dark/8">
+                        <td className="px-4 py-3 text-xs text-dark/60">{formatDateTime(p.completed_at || p.created_at)}</td>
+                        <td className="px-4 py-3">
+                          <p className="text-xs font-bold text-dark">{p.client_name}</p>
+                          <p className="text-[11px] text-dark/45">{p.domain}</p>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-dark/70">{p.plan_name || "-"}{p.periods > 1 ? ` ×${p.periods}` : ""}</td>
+                        <td className="px-4 py-3 text-xs font-bold text-dark/70 uppercase">
+                          {p.method}{p.channel ? <span className="block text-[10px] font-semibold text-dark/40 normal-case">{p.channel}</span> : null}
+                        </td>
+                        <td className="px-4 py-3 text-xs font-extrabold text-dark">৳{Number(p.amount || 0).toLocaleString()}</td>
+                        <td className="px-4 py-3 text-[11px] text-dark/55">
+                          {p.period_start ? `${formatDateTime(p.period_start)} → ${formatDateTime(p.period_end)}` : "-"}
+                        </td>
+                        <td className="px-4 py-3"><code className="text-[10px] font-mono text-dark/60">{p.trx_id || p.merchant_invoice}</code></td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex px-2.5 py-1 rounded-full text-[11px] font-extrabold ${
+                            p.status === "completed" ? "bg-emerald-100 text-emerald-700"
+                              : p.status === "initiated" ? "bg-amber-100 text-amber-700"
+                                : "bg-red-100 text-red-700"
+                          }`} title={p.failure_reason || ""}>
+                            {p.status.toUpperCase()}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── MODAL: Record a manual payment ── */}
+        {paymentForm && (
+          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white border border-dark/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+              <button
+                type="button"
+                onClick={() => setPaymentForm(null)}
+                className="absolute top-4 right-4 text-dark/40 hover:text-dark cursor-pointer border-none bg-transparent"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-2 mb-1">
+                <FiCreditCard className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-lg font-bold text-dark">Add Payment</h3>
+              </div>
+              <p className="text-xs text-dark/55 mb-4">
+                {paymentForm.client_name} — the subscription is extended at once and the ERP unlocks on its next check.
+              </p>
+              <form onSubmit={handleRecordPayment} className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-dark/70 mb-1">Terms (plan periods)</label>
+                    <input
+                      type="number" min="1" max="10" required
+                      value={paymentForm.periods}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, periods: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-dark/70 mb-1">Amount (৳)</label>
+                    <input
+                      type="number" min="0" step="0.01"
+                      placeholder={String((paymentForm.price || 0) * (Number(paymentForm.periods) || 1))}
+                      value={paymentForm.amount}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-dark/70 mb-1">Received via</label>
+                    <select
+                      value={paymentForm.channel}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, channel: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary bg-white"
+                    >
+                      <option value="cash">Cash</option>
+                      <option value="bank">Bank</option>
+                      <option value="bkash">bKash (send money)</option>
+                      <option value="nagad">Nagad (send money)</option>
+                      <option value="cheque">Cheque</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-dark/70 mb-1">Trx ID / Ref</label>
+                    <input
+                      type="text" maxLength={100}
+                      value={paymentForm.trx_id}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, trx_id: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-dark/70 mb-1">Note</label>
+                  <input
+                    type="text" maxLength={500}
+                    value={paymentForm.note}
+                    onChange={(e) => setPaymentForm({ ...paymentForm, note: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                  />
+                </div>
+                <div className="pt-2 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentForm(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-dark/60 hover:bg-dark/5 border-none bg-transparent cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={paymentSaving}
+                    className="px-5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold cursor-pointer border-none"
+                  >
+                    {paymentSaving ? "Saving..." : "Save Payment"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── MODAL: Register New School Client ── */}
+        {addSchoolModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white border border-dark/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative animate-[scaleIn_0.2s_ease-out]">
+              <button
+                type="button"
+                onClick={() => setAddSchoolModalOpen(false)}
+                className="absolute top-4 right-4 text-dark/40 hover:text-dark transition cursor-pointer border-none bg-transparent"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+              
+              <div className="flex items-center gap-2 mb-4">
+                <FiServer className="w-5 h-5 text-tertiary" />
+                <h3 className="text-lg font-bold text-dark">Register New Client Instance</h3>
+              </div>
+
+              <form onSubmit={handleCreateSchool} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-dark/70 mb-1">Institution / Client Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. EduBari Academy"
+                    value={newSchoolForm.client_name}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, client_name: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-dark/70 mb-1">App Domain Binding *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. academy.edubari.bd"
+                    value={newSchoolForm.domain}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, domain: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-dark/70 mb-1">Client Type</label>
+                    <p className="w-full px-3 py-2 rounded-xl border border-dark/10 bg-dark/3 text-xs font-semibold text-dark/70">
+                      School ERP (Laravel/Blade)
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-dark/70 mb-1">Phone Number</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. +88017xxxxxxxx"
+                      value={newSchoolForm.phone}
+                      onChange={(e) => setNewSchoolForm({ ...newSchoolForm, phone: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-dark/70 mb-1">Activate Pricing Plan *</label>
+                  <select
+                    required
+                    value={newSchoolForm.plan_id}
+                    onChange={(e) => setNewSchoolForm({ ...newSchoolForm, plan_id: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-dark/15 text-xs text-dark outline-none focus:border-tertiary bg-white"
+                  >
+                    <option value="">Select Pricing Plan...</option>
+                    {plansList.filter((p) => (p.plan_type || p.planType) === "school_erp").map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.plan_name || p.name} (৳{Number(p.price || 0).toLocaleString()} / {p.duration_days || 30} days)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="pt-3 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAddSchoolModalOpen(false)}
+                    className="px-4 py-2 rounded-xl border border-dark/15 text-xs font-semibold text-dark/60 hover:bg-dark/5 border-none bg-transparent cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={addSchoolLoading}
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-tertiary to-[#8B5CF6] text-white text-xs font-bold shadow-md hover:shadow-tertiary/20 cursor-pointer border-none"
+                  >
+                    {addSchoolLoading ? "Creating..." : "Save & Generate API Credentials"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ── MODAL: Show Generated Credentials ── */}
+        {createdCredentials && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white border border-dark/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl relative">
+              <button
+                type="button"
+                onClick={() => setCreatedCredentials(null)}
+                className="absolute top-4 right-4 text-dark/40 hover:text-dark cursor-pointer border-none bg-transparent"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-2 text-emerald-600 mb-2">
+                <FiCheck className="w-6 h-6" />
+                <h3 className="text-lg font-extrabold">Client Instance Registered!</h3>
+              </div>
+              <p className="text-xs text-dark/60 mb-4">
+                Give the following <strong>API Credentials</strong> to the School ERP developer to place in their <code>.env</code> file:
+              </p>
+
+              <div className="space-y-3 bg-dark/5 p-4 rounded-xl font-mono text-xs text-dark border border-dark/10">
+                <div>
+                  <span className="text-dark/50 text-[10px] uppercase font-bold tracking-wider block">EDUBARI_API_URL</span>
+                  <p className="font-bold select-all text-tertiary mt-0.5">https://edubari.bd</p>
+                </div>
+                <div>
+                  <span className="text-dark/50 text-[10px] uppercase font-bold tracking-wider block">ERP_API_TOKEN</span>
+                  <p className="font-bold select-all text-dark break-all mt-0.5">{createdCredentials.erp_api_token || createdCredentials.erpToken || "Generated Token"}</p>
+                </div>
+                <div>
+                  <span className="text-dark/50 text-[10px] uppercase font-bold tracking-wider block">ERP_API_SECRET</span>
+                  <p className="font-bold select-all text-dark break-all mt-0.5">{createdCredentials.erp_secret || createdCredentials.erpSecret || "Generated Secret"}</p>
+                </div>
+              </div>
+
+              <div className="mt-5 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const text = `EDUBARI_API_URL=https://edubari.bd\nERP_API_TOKEN=${createdCredentials.erp_api_token || createdCredentials.erpToken}\nERP_API_SECRET=${createdCredentials.erp_secret || createdCredentials.erpSecret}`;
+                    navigator.clipboard.writeText(text);
+                    alert("Credentials copied to clipboard!");
+                  }}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold inline-flex items-center gap-2 cursor-pointer border-none"
+                >
+                  <FiCopy className="w-4 h-4" /> Copy Credentials (.env Format)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCreatedCredentials(null)}
+                  className="px-4 py-2 rounded-xl border border-dark/15 text-xs font-semibold text-dark/60 cursor-pointer border-none bg-transparent"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

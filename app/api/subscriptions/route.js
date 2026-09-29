@@ -1,57 +1,61 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { query, execute } from "@/lib/db";
+import crypto from "crypto";
+import { requireAdmin } from "@/lib/auth";
 
-export async function GET() {
+/**
+ * GET /api/subscriptions
+ * List all subscription requests, newest first.
+ */
+export async function GET(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
-    const { data, error } = await supabaseAdmin
-      .from("subscription_requests")
-      .select("*")
-      .order("submitted_at", { ascending: false });
-
-    if (error) throw error;
-    return NextResponse.json(data);
+    const rows = await query("SELECT * FROM subscription_requests ORDER BY submitted_at DESC");
+    return NextResponse.json(rows || []);
   } catch (error) {
-    console.error("Error fetching subscriptions:", error);
+    console.error("Error fetching subscriptions:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
+/**
+ * POST /api/subscriptions
+ * Create a new subscription request (from the public pricing page) & sync to Google Sheets.
+ */
 export async function POST(request) {
   try {
     const body = await request.json();
+
+    const id = crypto.randomUUID();
     
-    // Map payload to PostgreSQL fields
-    const mappedSubscription = {
-      institution_name: body.institutionName,
-      full_name: body.fullName,
-      email: body.email,
-      phone: body.phone,
-      preferred_domain: body.preferredDomain,
-      address: body.address,
-      payment_method: body.paymentMethod || "Direct Order (No Payment)",
-      transaction_id: body.transactionId || "N/A",
-      selected_plan_id: body.selectedPlanId || null,
-      selected_plan_name: body.selectedPlanName || null,
-      selected_plan_duration: body.selectedPlanDuration || null,
-      selected_plan_price: body.selectedPlanPrice || null,
-      verified: false
-    };
-
-    // 1. Try DB Insert (Supabase)
-    let createdRecordId = null;
+    // 1. Save to DB if MySQL db configured
     try {
-      const { data, error } = await supabaseAdmin
-        .from("subscription_requests")
-        .insert([mappedSubscription])
-        .select();
-
-      if (!error && data && data.length > 0) {
-        createdRecordId = data[0].id;
-      } else if (error) {
-        console.warn("Supabase insert notice:", error.message);
-      }
+      await execute(
+        `INSERT INTO subscription_requests
+          (id, institution_name, full_name, email, phone, preferred_domain,
+           address, payment_method, transaction_id, selected_plan_id,
+           selected_plan_name, selected_plan_duration, selected_plan_price, verified)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+        [
+          id,
+          body.institutionName || null,
+          body.fullName || null,
+          body.email || null,
+          body.phone || null,
+          body.preferredDomain || null,
+          body.address || null,
+          body.paymentMethod || "Direct Order (No Payment)",
+          body.transactionId || "N/A",
+          body.selectedPlanId || null,
+          body.selectedPlanName || null,
+          body.selectedPlanDuration ? String(body.selectedPlanDuration) : null,
+          body.selectedPlanPrice ? Number(body.selectedPlanPrice) : 0,
+        ]
+      );
     } catch (dbErr) {
-      console.warn("Supabase connection warning:", dbErr.message);
+      console.warn("DB insert notice:", dbErr.message);
     }
 
     // 2. Post to Google Sheets Web App Endpoint
@@ -72,12 +76,9 @@ export async function POST(request) {
       }
     }
 
-    return NextResponse.json({ 
-      message: "Order submitted successfully", 
-      subscriptionId: createdRecordId || "recorded" 
-    }, { status: 201 });
+    return NextResponse.json({ message: "Order submitted successfully", subscriptionId: id }, { status: 201 });
   } catch (error) {
-    console.error("Error creating subscription:", error);
+    console.error("Error creating subscription:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

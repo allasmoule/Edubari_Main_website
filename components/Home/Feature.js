@@ -3,83 +3,21 @@
 import React, { useState, useEffect } from "react";
 import {
   FiBookOpen,
+  FiCreditCard,
+  FiDollarSign,
+  FiTruck,
+  FiHome,
+  FiCoffee,
   FiUsers,
   FiCheckSquare,
   FiBarChart2,
   FiFileText,
-  FiDollarSign,
   FiBell,
   FiTrendingUp,
   FiPlay,
   FiX,
 } from "react-icons/fi";
-
-const features = [
-  {
-    icon: <FiBookOpen className="h-5 w-5" />,
-    title: "Student Management",
-    description: "Complete student profiles, enrollment, and academic records",
-    color: "text-tertiary",
-    bg: "bg-tertiary/10",
-    border: "group-hover:border-tertiary/25",
-  },
-  {
-    icon: <FiUsers className="h-5 w-5" />,
-    title: "Teacher Panel",
-    description: "Dedicated dashboard for teachers to manage classes and grades",
-    color: "text-secondary",
-    bg: "bg-secondary/10",
-    border: "group-hover:border-secondary/25",
-  },
-  {
-    icon: <FiCheckSquare className="h-5 w-5" />,
-    title: "Attendance Tracking",
-    description: "Digital attendance system with reports and analytics",
-    color: "text-[#8B5CF6]",
-    bg: "bg-[#8B5CF6]/10",
-    border: "group-hover:border-[#8B5CF6]/25",
-  },
-  {
-    icon: <FiBarChart2 className="h-5 w-5" />,
-    title: "Result & Grade Management",
-    description: "Automated grading, report cards, and result publishing",
-    color: "text-tertiary",
-    bg: "bg-tertiary/10",
-    border: "group-hover:border-tertiary/25",
-  },
-  {
-    icon: <FiFileText className="h-5 w-5" />,
-    title: "Online Exam System",
-    description: "Create and conduct online exams with auto-marking",
-    color: "text-[#10B981]",
-    bg: "bg-[#10B981]/10",
-    border: "group-hover:border-[#10B981]/25",
-  },
-  {
-    icon: <FiDollarSign className="h-5 w-5" />,
-    title: "Fee Management",
-    description: "Track fee collection, generate receipts, and manage payments",
-    color: "text-[#F59E0B]",
-    bg: "bg-[#F59E0B]/10",
-    border: "group-hover:border-[#F59E0B]/25",
-  },
-  {
-    icon: <FiBell className="h-5 w-5" />,
-    title: "Notice Board",
-    description: "Publish announcements and notices for students and parents",
-    color: "text-secondary",
-    bg: "bg-secondary/10",
-    border: "group-hover:border-secondary/25",
-  },
-  {
-    icon: <FiTrendingUp className="h-5 w-5" />,
-    title: "Reports & Analytics",
-    description: "Comprehensive reports to track institutional performance",
-    color: "text-tertiary",
-    bg: "bg-tertiary/10",
-    border: "group-hover:border-tertiary/25",
-  },
-];
+import { useLanguage } from "@/context/LanguageContext";
 
 const getYouTubeEmbedUrl = (url) => {
   if (!url) return null;
@@ -91,8 +29,120 @@ const getYouTubeEmbedUrl = (url) => {
 };
 
 const Feature = () => {
+  const { t } = useLanguage();
   const [videos, setVideos] = useState({});
   const [activeVideo, setActiveVideo] = useState(null);
+
+  const features = [
+    {
+      key: "Student Management",
+      icon: <FiBookOpen className="h-5 w-5" />,
+      title: t("feature.f1Title"),
+      description: t("feature.f1Desc"),
+      color: "text-tertiary",
+      bg: "bg-tertiary/10",
+      border: "group-hover:border-tertiary/25",
+    },
+    {
+      key: "Payment Management",
+      icon: <FiCreditCard className="h-5 w-5" />,
+      title: t("feature.f2Title"),
+      description: t("feature.f2Desc"),
+      color: "text-[#2563EB]",
+      bg: "bg-[#2563EB]/10",
+      border: "group-hover:border-[#2563EB]/25",
+    },
+    {
+      key: "Online Payment",
+      icon: <FiDollarSign className="h-5 w-5" />,
+      title: t("feature.f3Title"),
+      description: t("feature.f3Desc"),
+      color: "text-[#10B981]",
+      bg: "bg-[#10B981]/10",
+      border: "group-hover:border-[#10B981]/25",
+    },
+    {
+      key: "Garage & Transport",
+      icon: <FiTruck className="h-5 w-5" />,
+      title: t("feature.f4Title"),
+      description: t("feature.f4Desc"),
+      color: "text-[#F59E0B]",
+      bg: "bg-[#F59E0B]/10",
+      border: "group-hover:border-[#F59E0B]/25",
+    },
+    {
+      key: "Hostel Management",
+      icon: <FiHome className="h-5 w-5" />,
+      title: t("feature.f5Title"),
+      description: t("feature.f5Desc"),
+      color: "text-[#8B5CF6]",
+      bg: "bg-[#8B5CF6]/10",
+      border: "group-hover:border-[#8B5CF6]/25",
+    },
+    {
+      key: "Canteen Management",
+      icon: <FiCoffee className="h-5 w-5" />,
+      title: t("feature.f6Title"),
+      description: t("feature.f6Desc"),
+      color: "text-[#EC4899]",
+      bg: "bg-[#EC4899]/10",
+      border: "group-hover:border-[#EC4899]/25",
+    },
+    {
+      key: "Teacher Panel",
+      icon: <FiUsers className="h-5 w-5" />,
+      title: t("feature.f7Title"),
+      description: t("feature.f7Desc"),
+      color: "text-secondary",
+      bg: "bg-secondary/10",
+      border: "group-hover:border-secondary/25",
+    },
+    {
+      key: "Attendance Tracking",
+      icon: <FiCheckSquare className="h-5 w-5" />,
+      title: t("feature.f8Title"),
+      description: t("feature.f8Desc"),
+      color: "text-[#8B5CF6]",
+      bg: "bg-[#8B5CF6]/10",
+      border: "group-hover:border-[#8B5CF6]/25",
+    },
+    {
+      key: "Result & Grade Management",
+      icon: <FiBarChart2 className="h-5 w-5" />,
+      title: t("feature.f9Title"),
+      description: t("feature.f9Desc"),
+      color: "text-tertiary",
+      bg: "bg-tertiary/10",
+      border: "group-hover:border-tertiary/25",
+    },
+    {
+      key: "Online Exam System",
+      icon: <FiFileText className="h-5 w-5" />,
+      title: t("feature.f10Title"),
+      description: t("feature.f10Desc"),
+      color: "text-[#10B981]",
+      bg: "bg-[#10B981]/10",
+      border: "group-hover:border-[#10B981]/25",
+    },
+    {
+      key: "Notice Board",
+      icon: <FiBell className="h-5 w-5" />,
+      title: t("feature.f11Title"),
+      description: t("feature.f11Desc"),
+      color: "text-secondary",
+      bg: "bg-secondary/10",
+      border: "group-hover:border-secondary/25",
+    },
+    {
+      key: "Reports & Analytics",
+      icon: <FiTrendingUp className="h-5 w-5" />,
+      title: t("feature.f12Title"),
+      description: t("feature.f12Desc"),
+      color: "text-[#2563EB]",
+      bg: "bg-[#2563EB]/10",
+      border: "group-hover:border-[#2563EB]/25",
+    },
+  ];
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -114,7 +164,7 @@ const Feature = () => {
   }, []);
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-primary/20">
+    <section className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-primary/20 select-none">
       <div className="w-full rounded-[32px] border border-white bg-primary-light/80 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
         {/* Subtle Ambient flows */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-tertiary/5 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32" />
@@ -124,28 +174,28 @@ const Feature = () => {
           {/* Header */}
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-              🚀 Features
+              {t("feature.badge")}
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-4.5xl font-black tracking-tight text-dark leading-tight">
-              Everything Your Institution{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary via-[#8B5CF6] to-[#7c3aed] drop-shadow-sm">
-                Needs
+              {t("feature.titleMain")}{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500 drop-shadow-sm">
+                {t("feature.titleGradient")}
               </span>
             </h2>
 
             <p className="mt-4 text-sm sm:text-base leading-relaxed text-dark/70 max-w-2xl mx-auto font-medium">
-              A comprehensive suite of tools designed to digitize and streamline your educational institution
+              {t("feature.subtitle")}
             </p>
           </div>
 
           {/* Feature Cards Grid */}
           <div className="mt-10 lg:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature, idx) => {
-              const videoUrl = videos[feature.title];
+              const videoUrl = videos[feature.key];
               return (
                 <div
-                  key={feature.title}
+                  key={feature.key}
                   className="group relative rounded-2xl border border-white bg-white/70 backdrop-blur-xs p-5 sm:p-5.5 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-tertiary/5 hover:bg-white flex flex-col justify-between"
                   style={{
                     animationDelay: `${idx * 60}ms`,
@@ -166,13 +216,13 @@ const Feature = () => {
                       <button
                         onClick={() => setActiveVideo(videoUrl || "empty")}
                         className="group/btn inline-flex items-center gap-1.5 pl-1.5 pr-3 py-1.5 rounded-full bg-white border border-red-100 shadow-[0_2px_8px_-2px_rgba(239,68,68,0.15)] hover:shadow-[0_4px_12px_-2px_rgba(239,68,68,0.25)] hover:border-red-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
-                        title="Watch Demo Video"
+                        title={t("feature.watchDemo")}
                       >
                         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white shadow-sm group-hover/btn:scale-110 transition-transform duration-300">
                           <FiPlay className="h-3 w-3 ml-0.5" />
                         </span>
                         <span className="text-[10px] font-extrabold text-red-600 uppercase tracking-widest mt-0.5">
-                          Demo
+                          {t("feature.demoBtn")}
                         </span>
                       </button>
                     </div>

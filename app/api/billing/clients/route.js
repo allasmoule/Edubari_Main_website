@@ -1,88 +1,100 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { query, queryOne, execute } from "@/lib/db";
+import crypto from "crypto";
+import { requireAdmin } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
-    const { data, error } = await supabaseAdmin
-      .from("clients")
-      .select(`
-        *,
-        subscriptions (
-          *,
-          plans (*)
-        )
-      `)
-      .order("created_at", { ascending: false });
+    const clients = await query("SELECT * FROM clients ORDER BY created_at DESC");
+    const subscriptions = await query("SELECT * FROM subscriptions WHERE is_current = 1");
+    const plans = await query("SELECT * FROM plans");
 
-    if (error) throw error;
-    return NextResponse.json(data);
+    const plansMap = {};
+    (plans || []).forEach((p) => {
+      plansMap[p.id] = p;
+    });
+
+    const subsMap = {};
+    (subscriptions || []).forEach((s) => {
+      subsMap[s.client_id] = {
+        ...s,
+        plans: plansMap[s.plan_id] || null,
+      };
+    });
+
+    const result = (clients || []).map((c) => ({
+      ...c,
+      subscriptions: subsMap[c.id] ? [subsMap[c.id]] : [],
+    }));
+
+    return NextResponse.json(result);
   } catch (error) {
-    console.error("Error fetching clients:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("Error fetching clients:", error.message);
+    return NextResponse.json([]);
   }
 }
 
 export async function POST(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
   try {
     const body = await request.json();
-    const { client_name, domain, status, phone, plan_id, logo_url } = body;
+    const { client_name, domain, status, phone, plan_id, logo_url, client_type } = body;
 
     if (!client_name || !domain || !status || !plan_id) {
-      return NextResponse.json({ error: "Client name, domain binding, status, and subscription plan are required" }, { status: 400 });
+      return NextResponse.json({ error: "Client name, domain, status, and plan are required" }, { status: 400 });
     }
 
-    // 1. Fetch Selected Plan details to calculate dates
-    const { data: plan, error: planError } = await supabaseAdmin
-      .from("plans")
-      .select("*")
-      .eq("id", plan_id)
-      .single();
-
-    if (planError || !plan) {
+    const plan = await queryOne("SELECT * FROM plans WHERE id = ?", [plan_id]);
+    if (!plan) {
       return NextResponse.json({ error: "Selected pricing plan not found" }, { status: 404 });
     }
 
-    // 2. Create the Client
-    const { data: client, error: clientError } = await supabaseAdmin
-      .from("clients")
-      .insert({ client_name, domain, status, phone, logo_url })
-      .select()
-      .single();
+    const resolvedType = client_type || "school_erp";
 
-    if (clientError) {
-      if (clientError.code === "23505") {
-        return NextResponse.json({ error: "Domain already registered" }, { status: 400 });
-      }
-      throw clientError;
-    }
+    // Auto-generate 64-character hex ERP credentials for all clients
+    const erpToken = crypto.randomBytes(32).toString("hex");
+    const erpSecret = crypto.randomBytes(32).toString("hex");
 
-    // 3. Calculate Dates for the Subscription
+    const clientId = crypto.randomUUID();
+    await execute(
+      "INSERT INTO clients (id, client_name, domain, phone, logo_url, status, client_type, erp_api_token, erp_secret) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [clientId, client_name, domain, phone || null, logo_url || null, status || "active", resolvedType, erpToken, erpSecret]
+    );
+
     const start = new Date();
-    const end = new Date(start.getTime() + plan.duration_days * 24 * 60 * 60 * 1000);
-    const grace = new Date(end.getTime() + 7 * 24 * 60 * 60 * 1000); // 7-day grace period
+    const end = new Date(start.getTime() + (plan.duration_days || 30) * 24 * 60 * 60 * 1000);
+    const grace = new Date(end.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    // 4. Create the Active Subscription
-    const { error: subError } = await supabaseAdmin
-      .from("subscriptions")
-      .insert({
-        client_id: client.id,
-        plan_id: plan.id,
-        start_date: start.toISOString(),
-        end_date: end.toISOString(),
-        grace_end_date: grace.toISOString(),
-        is_current: true,
-        payment_status: "paid"
-      });
+    const subId = crypto.randomUUID();
+    await execute(
+      `INSERT INTO subscriptions (id, client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status)
+       VALUES (?, ?, ?, ?, ?, ?, 1, 'paid')`,
+      [subId, clientId, plan.id, start, end, grace]
+    );
 
-    if (subError) {
-      // Roll back client insertion on subscription failure
-      await supabaseAdmin.from("clients").delete().eq("id", client.id);
-      throw subError;
-    }
+    // Create tracking row in erp_connections table
+    const erpConnId = crypto.randomUUID();
+    await execute(
+      `INSERT INTO erp_connections (id, client_id, domain, erp_api_token, connection_status)
+       VALUES (?, ?, ?, ?, 'pending')`,
+      [erpConnId, clientId, domain, erpToken]
+    ).catch(() => {}); // non-blocking if duplicate key
 
-    return NextResponse.json(client, { status: 201 });
+    const createdClient = await queryOne("SELECT * FROM clients WHERE id = ?", [clientId]);
+    return NextResponse.json({
+      ...createdClient,
+      erp_api_token: createdClient?.erp_api_token || erpToken,
+      erp_secret: createdClient?.erp_secret || erpSecret,
+      erpToken: createdClient?.erp_api_token || erpToken,
+      erpSecret: createdClient?.erp_secret || erpSecret,
+    }, { status: 201 });
   } catch (error) {
-    console.error("Error creating client with plan:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("Error creating client:", error.message);
+    return NextResponse.json({ error: error.message || "Failed to create client" }, { status: 500 });
   }
 }

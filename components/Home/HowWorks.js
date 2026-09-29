@@ -2,37 +2,39 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { FiClipboard, FiSettings, FiZap } from "react-icons/fi";
-
-const steps = [
-  {
-    number: "1",
-    icon: <FiClipboard className="h-6 w-6" />,
-    title: "Choose a Plan",
-    description: "Select the plan that fits your institution's needs",
-    accent: "text-tertiary bg-tertiary/10 border-tertiary/20",
-    gradient: "from-tertiary to-[#8B5CF6]",
-  },
-  {
-    number: "2",
-    icon: <FiSettings className="h-6 w-6" />,
-    title: "We Set Up Everything",
-    description: "We deploy and configure your app within 24 hours",
-    accent: "text-secondary bg-secondary/10 border-secondary/20",
-    gradient: "from-secondary to-accent",
-  },
-  {
-    number: "3",
-    icon: <FiZap className="h-6 w-6" />,
-    title: "Start Using",
-    description: "Your institution goes digital immediately with no hassle",
-    accent: "text-[#8B5CF6] bg-[#8B5CF6]/10 border-[#8B5CF6]/20",
-    gradient: "from-[#8B5CF6] to-tertiary",
-  },
-];
+import { useLanguage } from "@/context/LanguageContext";
 
 const HowWorks = () => {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
+
+  const steps = [
+    {
+      number: "1",
+      icon: <FiClipboard className="h-6 w-6" />,
+      title: t("howWorks.step1Title"),
+      description: t("howWorks.step1Desc"),
+      accent: "text-tertiary bg-tertiary/10 border-tertiary/20",
+      gradient: "from-tertiary to-[#8B5CF6]",
+    },
+    {
+      number: "2",
+      icon: <FiSettings className="h-6 w-6" />,
+      title: t("howWorks.step2Title"),
+      description: t("howWorks.step2Desc"),
+      accent: "text-secondary bg-secondary/10 border-secondary/20",
+      gradient: "from-secondary to-accent",
+    },
+    {
+      number: "3",
+      icon: <FiZap className="h-6 w-6" />,
+      title: t("howWorks.step3Title"),
+      description: t("howWorks.step3Desc"),
+      accent: "text-[#8B5CF6] bg-[#8B5CF6]/10 border-[#8B5CF6]/20",
+      gradient: "from-[#8B5CF6] to-tertiary",
+    },
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -53,23 +55,23 @@ const HowWorks = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 lg:py-12 bg-primary/10 overflow-hidden">
+    <section ref={sectionRef} className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 lg:py-12 bg-primary/10 overflow-hidden select-none">
       <div className={`transition-all duration-1000 transform ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"} max-w-7xl mx-auto`}>
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-tertiary/20 shadow-sm text-tertiary text-xs font-bold tracking-wide uppercase mb-4 transition-transform hover:scale-105">
-            📋 Process
+            {t("howWorks.badge")}
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-dark leading-tight">
-            How It{" "}
-            <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary via-[#8B5CF6] to-secondary drop-shadow-sm animate-pulse">
-              Works
+            {t("howWorks.titleMain")}{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500 drop-shadow-sm">
+              {t("howWorks.titleGradient")}
             </span>
           </h2>
 
           <p className="mt-4 text-sm sm:text-base leading-relaxed text-dark/70 max-w-2xl mx-auto font-medium">
-            Get your entire institution online and fully automated in just three simple steps.
+            {t("howWorks.subtitle")}
           </p>
         </div>
 
