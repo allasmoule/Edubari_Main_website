@@ -133,11 +133,18 @@ function CheckoutContent() {
 
       // 2. Direct client-side push to Google Sheets Web App
       const sheetUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBAPP_URL || HARDCODED_GOOGLE_SHEET_URL;
+      
+      const formDataEncoded = new URLSearchParams();
+      Object.entries(payload).forEach(([key, value]) => {
+        formDataEncoded.append(key, value);
+      });
+      formDataEncoded.append("data", JSON.stringify(payload));
+
       fetch(sheetUrl, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formDataEncoded.toString(),
       }).catch(err => console.warn("Google sheet client post:", err));
 
       setIsSuccess(true);

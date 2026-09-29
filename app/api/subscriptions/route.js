@@ -68,20 +68,28 @@ export async function POST(request) {
 
     if (googleSheetUrl && googleSheetUrl.startsWith("http")) {
       try {
+        const payload = {
+          institutionName: body.institutionName || body.domain || "",
+          fullName: body.fullName || body.name || body.userName || "",
+          email: body.email || "",
+          phone: body.phone || body.userPhone || "",
+          preferredDomain: body.preferredDomain || body.domain || "",
+          address: body.address || "",
+          selectedPlanName: body.selectedPlanName || body.packageName || "",
+          selectedPlanPrice: body.selectedPlanPrice || body.price || 0,
+          selectedPlanDuration: body.selectedPlanDuration || "Direct Order"
+        };
+        
+        const formDataEncoded = new URLSearchParams();
+        Object.entries(payload).forEach(([key, value]) => {
+          formDataEncoded.append(key, value);
+        });
+        formDataEncoded.append("data", JSON.stringify(payload));
+
         const sheetResponse = await fetch(googleSheetUrl, {
           method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            institutionName: body.institutionName || body.domain || "",
-            fullName: body.fullName || body.name || body.userName || "",
-            email: body.email || "",
-            phone: body.phone || body.userPhone || "",
-            preferredDomain: body.preferredDomain || body.domain || "",
-            address: body.address || "",
-            selectedPlanName: body.selectedPlanName || body.packageName || "",
-            selectedPlanPrice: body.selectedPlanPrice || body.price || 0,
-            selectedPlanDuration: body.selectedPlanDuration || "Direct Order"
-          }),
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formDataEncoded.toString(),
           redirect: "follow",
         });
         const sheetText = await sheetResponse.text();
