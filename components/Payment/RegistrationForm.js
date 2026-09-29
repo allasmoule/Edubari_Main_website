@@ -234,8 +234,8 @@ const RegistrationForm = ({ selectedPlan, preferredDomain = "", institutionName 
         throw new Error("Failed to submit subscription");
       }
 
-      // 2. Direct client-side backup push to Google Sheets if configured
-      const sheetUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBAPP_URL;
+      // 2. Direct client-side backup push to Google Sheets (with production fallback)
+      const sheetUrl = process.env.NEXT_PUBLIC_GOOGLE_SHEET_WEBAPP_URL || "https://script.google.com/macros/s/AKfycbw1mIEzNBLv6YLZpYwhewI5S7MITs1a8BYqId3QQhk30rn6VAN5sbYc8zOZ3cctoiJu/exec";
       if (sheetUrl && sheetUrl.startsWith("http")) {
         try {
           await fetch(sheetUrl, {
