@@ -206,9 +206,26 @@ const Pricing = () => {
           {/* Pricing Cards Grid */}
           <div className="mt-6 sm:mt-8 max-w-7xl mx-auto">
             {loading ? (
-              <div className="text-center py-12 bg-white/40 rounded-2xl border border-slate-100 backdrop-blur-md">
-                <FiLoader className="w-8 h-8 mx-auto text-tertiary animate-spin mb-2" />
-                <p className="text-xs text-slate-600 font-bold">{t("pricing.loadingPlans") || "Loading plans..."}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <div
+                    key={n}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-4 space-y-4 animate-pulse shadow-xs"
+                  >
+                    <div className="h-4 bg-slate-200/80 rounded-md w-2/3" />
+                    <div className="h-3 bg-slate-100/90 rounded-md w-1/2" />
+                    <div className="p-3 bg-slate-100/80 rounded-xl space-y-1.5">
+                      <div className="h-2 bg-slate-200/60 rounded-xs w-1/3" />
+                      <div className="h-6 bg-slate-200/80 rounded-md w-3/4" />
+                    </div>
+                    <div className="space-y-2 pt-2 border-t border-slate-100">
+                      <div className="h-3 bg-slate-100/90 rounded-md w-full" />
+                      <div className="h-3 bg-slate-100/90 rounded-md w-5/6" />
+                      <div className="h-3 bg-slate-100/90 rounded-md w-4/6" />
+                    </div>
+                    <div className="h-9 bg-slate-200/80 rounded-xl w-full" />
+                  </div>
+                ))}
               </div>
             ) : error ? (
               <div className="text-center py-10 px-6 rounded-2xl bg-red-50/80 border border-red-200/80 max-w-md mx-auto shadow-sm">

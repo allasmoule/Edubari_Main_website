@@ -89,9 +89,22 @@ const WorkProof = () => {
           {/* Work Proof Cards */}
           <div className="mt-10 lg:mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {loading ? (
-              <div className="col-span-full flex flex-col items-center justify-center py-16 text-dark/50 font-bold">
-                <FiLoader className="w-10 h-10 animate-spin text-tertiary mb-4" />
-                <span>{t("workProof.loading")}</span>
+              <div className="col-span-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((n) => (
+                  <div
+                    key={n}
+                    className="rounded-2xl border border-slate-200/60 bg-white/80 p-5 space-y-4 animate-pulse shadow-xs"
+                  >
+                    <div className="h-40 bg-slate-200/80 rounded-xl w-full" />
+                    <div className="h-3 bg-slate-200/60 rounded-md w-1/3" />
+                    <div className="h-5 bg-slate-200/80 rounded-md w-3/4" />
+                    <div className="space-y-2 pt-2 border-t border-slate-100">
+                      <div className="h-3 bg-slate-100/90 rounded-md w-full" />
+                      <div className="h-3 bg-slate-100/90 rounded-md w-4/5" />
+                    </div>
+                    <div className="h-9 bg-slate-200/80 rounded-xl w-full" />
+                  </div>
+                ))}
               </div>
             ) : error ? (
               <div className="col-span-full text-center py-12 px-6 rounded-2xl bg-red-50 border border-red-200 max-w-md mx-auto shadow-sm">
