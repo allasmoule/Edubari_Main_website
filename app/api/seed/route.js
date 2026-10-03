@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { execute } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
 
+import { SAMPLE_BLOG_POSTS } from "@/lib/blogData";
+
 export async function GET(request) {
   return handleSeed(request);
 }
@@ -70,6 +72,25 @@ async function handleSeed(request) {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
     results.push("Ensured 'ai_packages' table exists");
+
+    await execute(`
+      CREATE TABLE IF NOT EXISTS \`blog_posts\` (
+        \`id\` VARCHAR(36) NOT NULL PRIMARY KEY,
+        \`title\` VARCHAR(255) NOT NULL,
+        \`slug\` VARCHAR(255) NOT NULL UNIQUE,
+        \`category\` VARCHAR(100) NOT NULL,
+        \`cover_image\` TEXT DEFAULT NULL,
+        \`excerpt\` TEXT DEFAULT NULL,
+        \`content\` LONGTEXT NOT NULL,
+        \`author_name\` VARCHAR(100) DEFAULT 'Admin',
+        \`read_time\` VARCHAR(50) DEFAULT '5 min read',
+        \`tags\` JSON DEFAULT NULL,
+        \`active\` BOOLEAN DEFAULT TRUE,
+        \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
+        \`updated_at\` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    results.push("Ensured 'blog_posts' table exists");
 
     await execute(`
       CREATE TABLE IF NOT EXISTS \`admin_login_attempts\` (
@@ -221,6 +242,18 @@ async function handleSeed(request) {
       );
     }
     results.push(`Seeded ${aiPacks.length} AI packages`);
+
+    // 5. Blog Posts Seed
+    for (const post of SAMPLE_BLOG_POSTS) {
+      await execute(
+        `INSERT INTO \`blog_posts\` 
+         (\`id\`, \`title\`, \`slug\`, \`category\`, \`cover_image\`, \`excerpt\`, \`content\`, \`author_name\`, \`read_time\`, \`tags\`, \`active\`)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE \`title\` = VALUES(\`title\`), \`cover_image\` = VALUES(\`cover_image\`), \`content\` = VALUES(\`content\`)`,
+        [post.id, post.title, post.slug, post.category, post.cover_image, post.excerpt, post.content, post.author_name, post.read_time, JSON.stringify(post.tags), post.active]
+      );
+    }
+    results.push(`Seeded ${SAMPLE_BLOG_POSTS.length} blog posts`);
 
     return NextResponse.json({
       success: true,

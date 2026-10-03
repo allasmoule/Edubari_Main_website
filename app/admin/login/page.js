@@ -18,6 +18,7 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | error
 
@@ -51,10 +52,12 @@ export default function AdminLoginPage() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (serverError) setServerError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setServerError("");
     const errs = validate();
     if (Object.keys(errs).length) {
       setErrors(errs);
@@ -74,8 +77,10 @@ export default function AdminLoginPage() {
       router.replace("/admin/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
+      const msg = error?.message || "Invalid credentials. Please try again.";
+      setServerError(msg);
       setStatus("error");
-      setTimeout(() => setStatus("idle"), 3000);
+      setTimeout(() => setStatus("idle"), 6000);
     }
   };
 
@@ -220,9 +225,9 @@ export default function AdminLoginPage() {
 
           {/* Error Toast */}
           {status === "error" && (
-            <div className="mt-5 flex items-center gap-2 rounded-xl border border-red-300/50 bg-red-50/80 px-4 py-3 text-sm font-medium text-red-600 animate-[fadeInUp_0.3s_ease-out]">
-              <FiAlertCircle className="h-4 w-4 shrink-0" />
-              Invalid credentials. Please try again.
+            <div className="mt-5 flex items-start gap-2 rounded-xl border border-red-300/50 bg-red-50/80 px-4 py-3 text-sm font-medium text-red-600 animate-[fadeInUp_0.3s_ease-out]">
+              <FiAlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{serverError || "Invalid credentials. Please try again."}</span>
             </div>
           )}
 
