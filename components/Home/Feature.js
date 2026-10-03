@@ -189,28 +189,28 @@ const Feature = () => {
             </p>
           </div>
 
-          {/* Feature Cards Grid (3D Animated & Compact) */}
-          <div className="mt-8 lg:mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 [perspective:1200px]">
+          {/* Feature Cards Grid (5 Cards per Row on Desktop, Compact & 3D Animated) */}
+          <div className="mt-6 lg:mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-3.5 [perspective:1200px]">
             {features.map((feature, idx) => {
               const videoUrl = videos[feature.key];
               return (
                 <div
                   key={feature.key}
-                  className="group relative rounded-2xl border border-slate-200/70 bg-white/90 backdrop-blur-md p-4 sm:p-4.5 transition-all duration-500 ease-out transform-gpu hover:[transform:rotateX(5deg)_rotateY(-5deg)_translateZ(10px)] hover:shadow-xl hover:shadow-indigo-500/10 hover:border-blue-400 flex flex-col justify-between overflow-hidden cursor-pointer"
+                  className="group relative rounded-xl border border-slate-200/70 bg-white/90 backdrop-blur-md p-3.5 sm:p-4 transition-all duration-300 ease-out transform-gpu hover:[transform:rotateX(5deg)_rotateY(-5deg)_translateZ(8px)] hover:shadow-lg hover:shadow-indigo-500/10 hover:border-blue-400 flex flex-col justify-between overflow-hidden cursor-pointer"
                   style={{
-                    animationDelay: `${idx * 40}ms`,
+                    animationDelay: `${idx * 30}ms`,
                     animation: "fadeInUp 0.4s cubic-bezier(0.23, 1, 0.32, 1) backwards",
                   }}
                 >
                   {/* Top 3D Accent Line */}
-                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                   <div>
                     {/* Header: Icon & Demo Button */}
                     <div className="flex items-center justify-between">
-                      {/* Icon Container with 3D Depth */}
+                      {/* Icon Container */}
                       <div
-                        className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${feature.bg} ${feature.color} shadow-xs transition-all duration-300 group-hover:scale-110 group-hover:shadow-md`}
+                        className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${feature.bg} ${feature.color} shadow-2xs transition-all duration-300 group-hover:scale-105`}
                       >
                         {feature.icon}
                       </div>
@@ -221,25 +221,25 @@ const Feature = () => {
                           e.stopPropagation();
                           setActiveVideo(videoUrl || "empty");
                         }}
-                        className="group/btn inline-flex items-center gap-1 pl-1 pr-2.5 py-1 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200/80 hover:border-red-200 transition-all duration-200 cursor-pointer shadow-2xs"
+                        className="group/btn inline-flex items-center gap-1 pl-1 pr-2 py-0.5 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200/80 hover:border-red-200 transition-all duration-200 cursor-pointer shadow-2xs"
                         title={t("feature.watchDemo") || "Watch Demo"}
                       >
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white shadow-xs group-hover/btn:scale-110 transition-transform">
-                          <FiPlay className="h-2.5 w-2.5 ml-0.5" />
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white shadow-2xs group-hover/btn:scale-110 transition-transform">
+                          <FiPlay className="h-2 w-2 ml-0.5" />
                         </span>
-                        <span className="text-[9px] font-black text-slate-700 group-hover/btn:text-red-600 uppercase tracking-wider">
+                        <span className="text-[8.5px] font-black text-slate-700 group-hover/btn:text-red-600 uppercase tracking-wider">
                           {t("feature.demoBtn") || "DEMO"}
                         </span>
                       </button>
                     </div>
 
                     {/* Title */}
-                    <h3 className="mt-3.5 text-sm font-extrabold text-slate-900 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">
+                    <h3 className="mt-2.5 text-xs sm:text-[13px] font-extrabold text-slate-900 tracking-tight leading-tight group-hover:text-blue-600 transition-colors">
                       {feature.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-1.5 text-[11px] leading-relaxed text-slate-600 font-medium">
+                    <p className="mt-1 text-[10.5px] leading-snug text-slate-500 font-medium">
                       {feature.description}
                     </p>
                   </div>
