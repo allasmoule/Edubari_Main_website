@@ -147,185 +147,209 @@ const Pricing = () => {
     : (singleTeacherPlans.length > 0 ? singleTeacherPlans : plans);
 
   return (
-    <section id="pricing" className="w-full px-3 sm:px-6 md:px-12 py-4 sm:py-6 lg:py-8 bg-white select-none">
-      <div className="w-full rounded-3xl sm:rounded-[32px] border border-white bg-primary-light/85 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
-        {/* Ambient glows */}
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-tertiary/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-[#8B5CF6]/5 rounded-full blur-3xl pointer-events-none" />
+    <section id="pricing" className="w-full px-3 sm:px-6 md:px-12 py-8 sm:py-12 lg:py-16 bg-gradient-to-b from-slate-50/50 via-white to-slate-50/80 select-none relative overflow-hidden">
+      {/* Background Decorative Ambient Orbs */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-tr from-blue-400/10 via-indigo-500/10 to-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-sky-400/10 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="px-4 sm:px-6 md:px-10 lg:px-12 py-8 sm:py-10 relative z-10">
+      <div className="w-full rounded-3xl sm:rounded-[36px] border border-white/80 bg-white/70 shadow-[0_25px_60px_-15px_rgba(37,99,235,0.08)] backdrop-blur-xl overflow-hidden relative">
+        {/* Subtle top border highlight */}
+        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+
+        <div className="px-4 sm:px-8 md:px-12 lg:px-16 py-10 sm:py-14 lg:py-16 relative z-10">
           {/* Header */}
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-[10px] font-black tracking-wider uppercase mb-3">
-              {t("pricing.badge")}
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/20 text-tertiary text-xs font-black tracking-widest uppercase shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse" />
+              {t("pricing.badge") || "SIMPLE & TRANSPARENT PRICING"}
             </div>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4.5xl font-black tracking-tight text-dark leading-tight">
-              {t("pricing.titleMain")}{" "}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500 drop-shadow-sm">
-                {t("pricing.titleGradient")}
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+              {t("pricing.titleMain") || "Choose the Perfect Plan for"}{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 drop-shadow-xs">
+                {t("pricing.titleGradient") || "Your Institution"}
               </span>
             </h2>
 
-            <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-dark/65 max-w-2xl mx-auto font-medium">
-              {t("pricing.subtitle")}
+            <p className="text-sm sm:text-base leading-relaxed text-slate-600 max-w-2xl mx-auto font-medium">
+              {t("pricing.subtitle") || "No hidden fees, no extra charges. Transparent pricing plans tailored to scale with your institution."}
             </p>
 
             {/* Plan Category Tabs (School ERP vs Single Teacher) */}
-            <div className="mt-6 inline-flex p-1.5 rounded-2xl bg-slate-200/70 border border-slate-300/60 shadow-inner max-w-md w-full">
-              <button
-                type="button"
-                onClick={() => setActiveTab("school_erp")}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer border-none ${
-                  activeTab === "school_erp"
-                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/20"
-                    : "text-slate-600 hover:text-slate-900 bg-transparent"
-                }`}
-              >
-                School ERP Packages
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("single_teacher")}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer border-none ${
-                  activeTab === "single_teacher"
-                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-md shadow-tertiary/20"
-                    : "text-slate-600 hover:text-slate-900 bg-transparent"
-                }`}
-              >
-                Single Teacher Plans
-              </button>
+            <div className="pt-4 flex justify-center">
+              <div className="inline-flex p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200/80 shadow-inner max-w-md w-full">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("school_erp")}
+                  className={`flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer border-none flex items-center justify-center gap-2 ${
+                    activeTab === "school_erp"
+                      ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent"
+                  }`}
+                >
+                  🏫 School ERP Packages
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("single_teacher")}
+                  className={`flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-black transition-all duration-300 cursor-pointer border-none flex items-center justify-center gap-2 ${
+                    activeTab === "single_teacher"
+                      ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-white/60 bg-transparent"
+                  }`}
+                >
+                  👨‍🏫 Single Teacher Plans
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Pricing Cards */}
-          <div className="mt-8 max-w-6xl mx-auto">
+          {/* Pricing Cards Grid */}
+          <div className="mt-10 lg:mt-14 max-w-7xl mx-auto">
             {loading ? (
-              <div className="text-center py-16">
-                <FiLoader className="w-10 h-10 mx-auto text-tertiary animate-spin mb-4" />
-                <p className="text-dark/50 font-bold">{t("pricing.loadingPlans")}</p>
+              <div className="text-center py-20 bg-white/40 rounded-3xl border border-slate-100 backdrop-blur-md">
+                <FiLoader className="w-12 h-12 mx-auto text-tertiary animate-spin mb-4" />
+                <p className="text-slate-600 font-bold">{t("pricing.loadingPlans") || "Loading pricing plans..."}</p>
               </div>
             ) : error ? (
-              <div className="text-center py-12 px-6 rounded-2xl bg-red-50 border border-red-200 max-w-md mx-auto shadow-sm">
-                <p className="text-red-600 font-extrabold">{t("pricing.failedPlans")}</p>
-                <p className="text-sm text-red-500/80 mt-1.5 leading-relaxed">{error}</p>
+              <div className="text-center py-14 px-8 rounded-3xl bg-red-50/80 border border-red-200/80 max-w-md mx-auto shadow-md">
+                <p className="text-red-700 font-extrabold text-lg">{t("pricing.failedPlans") || "Failed to load plans"}</p>
+                <p className="text-xs text-red-600/80 mt-2 leading-relaxed">{error}</p>
                 <button
                   onClick={fetchPlans}
-                  className="mt-5 px-6 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-black tracking-wider uppercase shadow-md shadow-red-500/20 transition-all cursor-pointer border-none"
+                  className="mt-6 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black tracking-wider uppercase shadow-lg shadow-red-500/25 transition-all cursor-pointer border-none"
                 >
-                  {t("pricing.retry")}
+                  {t("pricing.retry") || "Retry"}
                 </button>
               </div>
             ) : displayPlans.length === 0 ? (
-              <div className="text-center py-16 bg-white/40 border border-white rounded-2xl">
-                <p className="text-dark/45 font-bold">
-                  {t("pricing.noPlans")}
+              <div className="text-center py-16 bg-white/60 border border-slate-200/60 rounded-3xl shadow-sm">
+                <p className="text-slate-500 font-bold">
+                  {t("pricing.noPlans") || "No active plans found for this category."}
                 </p>
               </div>
             ) : (
-              <div className="space-y-10">
+              <div className="space-y-12">
                 <div>
-                  <h3 className="text-center text-xs sm:text-sm font-black text-dark/50 mb-6 uppercase tracking-widest">
-                    {activeTab === "school_erp" ? "School, College & Madrasha Flexible ERP Packages" : t("pricing.lmsTitle")}
-                  </h3>
+                  <div className="flex items-center justify-center gap-3 mb-8">
+                    <span className="h-px w-12 bg-gradient-to-r from-transparent to-slate-300" />
+                    <h3 className="text-center text-xs sm:text-sm font-black text-slate-500 uppercase tracking-widest">
+                      {activeTab === "school_erp" ? "School, College & Madrasha Flexible ERP Packages" : t("pricing.lmsTitle") || "Individual Teacher & Coaching Plans"}
+                    </h3>
+                    <span className="h-px w-12 bg-gradient-to-l from-transparent to-slate-300" />
+                  </div>
 
-                  <div className={`grid grid-cols-1 sm:grid-cols-2 ${activeTab === "school_erp" ? "lg:grid-cols-3 xl:grid-cols-6" : "lg:grid-cols-3 xl:grid-cols-5"} gap-4 items-stretch`}>
+                  <div className={`grid grid-cols-1 md:grid-cols-2 ${activeTab === "school_erp" ? "lg:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-5"} gap-6 sm:gap-8 items-stretch`}>
                     {displayPlans.map((plan) => {
                       const planId = plan.id || plan._id;
-                      const isPopular = plan.popular || plan.plan_tier === 'professional';
+                      const isPopular = plan.popular || plan.plan_tier === 'professional' || plan.plan_tier === 'enterprise';
                       return (
                         <div
                           key={planId}
-                          className={`group relative rounded-2xl border p-4 sm:p-5 text-left transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-between ${
+                          className={`group relative rounded-3xl border p-6 sm:p-7 text-left transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between ${
                             isPopular
-                              ? "border-transparent bg-white shadow-[0_20px_40px_-15px_rgba(37,99,235,0.15)] ring-2 ring-tertiary/40"
-                              : "border-white bg-white/70 backdrop-blur-xs hover:shadow-xl hover:shadow-dark/5 hover:border-tertiary/20"
+                              ? "border-transparent bg-gradient-to-b from-white via-blue-50/40 to-indigo-50/20 shadow-[0_25px_50px_-12px_rgba(59,130,246,0.22)] ring-2 ring-blue-500/80"
+                              : "border-slate-200/80 bg-white/90 backdrop-blur-md hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-blue-300"
                           }`}
                         >
                           <div>
                             {/* Badge */}
                             {(plan.badge || isPopular) && (
-                              <div
-                                className={`absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[8px] sm:text-[9px] font-black tracking-widest uppercase whitespace-nowrap shadow-md ${
+                              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center justify-center">
+                                <span className={`px-4 py-1 rounded-full text-[10px] font-black tracking-widest uppercase whitespace-nowrap shadow-md flex items-center gap-1.5 ${
                                   isPopular
-                                    ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white shadow-tertiary/25"
-                                    : "bg-[#F59E0B]/15 text-[#D97706] border border-[#F59E0B]/30"
-                                }`}
-                              >
-                                {plan.badge || t("pricing.recommended")}
-                              </div>
-                            )}
-
-                            {/* Popular label */}
-                            {isPopular && (
-                              <div className="text-[8px] font-black text-tertiary uppercase tracking-widest mb-1 mt-1">
-                                {t("pricing.mostPopular")}
+                                    ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-blue-500/30"
+                                    : "bg-amber-100 text-amber-800 border border-amber-300/60"
+                                }`}>
+                                  {isPopular && <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />}
+                                  {plan.badge || t("pricing.recommended") || "MOST POPULAR"}
+                                </span>
                               </div>
                             )}
 
                             {/* Plan Name */}
-                            <h3 className="mt-1 text-base sm:text-lg font-extrabold text-dark tracking-tight leading-snug">
-                              {plan.name}
-                            </h3>
+                            <div className="mt-2">
+                              <h3 className="text-xl font-extrabold text-slate-900 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">
+                                {plan.name || plan.plan_name}
+                              </h3>
 
-                            {/* Duration */}
-                            <p className="mt-0.5 text-[9px] font-bold text-dark/40 uppercase tracking-wide">
-                              {plan.badge ? plan.badge : `${plan.duration} ${plan.duration_days ? `(${plan.duration_days} Days)` : ""}`}
-                            </p>
+                              {/* Duration / Subtitle */}
+                              <p className="mt-1 text-[11px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                {plan.duration ? plan.duration : `${plan.duration_days ? `${plan.duration_days} Days Validity` : "Monthly Subscription"}`}
+                              </p>
+                            </div>
 
-                            {/* Price */}
-                            <div className="mt-3 flex items-baseline gap-1">
-                              <span
-                                className={`text-xl sm:text-2xl font-black tracking-tight ${
-                                  isPopular
-                                    ? "bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] drop-shadow-sm"
-                                    : "text-dark"
-                                }`}
-                              >
-                                ৳{(plan.price || 0).toLocaleString()}
-                              </span>
-                              <span className="text-[10px] font-bold text-dark/50">/ mo</span>
-                              {plan.oldPrice && (
-                                <span className="text-[11px] font-bold text-dark/30 line-through ml-1">
-                                  ৳{(plan.oldPrice || 0).toLocaleString()}
-                                </span>
+                            {/* Price Section */}
+                            <div className="mt-5 p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/30 border border-slate-100 flex items-baseline justify-between">
+                              <div>
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Price</span>
+                                <div className="flex items-baseline gap-1">
+                                  <span
+                                    className={`text-3xl sm:text-4xl font-black tracking-tight ${
+                                      isPopular
+                                        ? "bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 drop-shadow-xs"
+                                        : "text-slate-900"
+                                    }`}
+                                  >
+                                    ৳{(plan.price || 0).toLocaleString()}
+                                  </span>
+                                  <span className="text-xs font-bold text-slate-500">
+                                    {plan.duration_days >= 300 ? "/ year" : "/ month"}
+                                  </span>
+                                </div>
+                              </div>
+                              {plan.old_price && (
+                                <div className="text-right">
+                                  <span className="text-xs font-bold text-slate-400 line-through block">
+                                    ৳{(plan.old_price || 0).toLocaleString()}
+                                  </span>
+                                  <span className="text-[9px] font-black text-emerald-600 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                                    SAVE {Math.round(((plan.old_price - plan.price) / plan.old_price) * 100)}%
+                                  </span>
+                                </div>
                               )}
                             </div>
 
-                            {/* Features */}
+                            {/* Features list */}
                             {plan.features &&
-                              Array.isArray(plan.features) &&
-                              plan.features.length > 0 && (
-                                <ul className="mt-3 space-y-1.5 p-0 list-none border-t border-dark/5 pt-3">
-                                  {plan.features.map((feat, idx) => (
-                                    <li
-                                      key={idx}
-                                      className="flex items-start gap-1.5 text-[11px] text-dark/75"
-                                    >
-                                      <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 font-bold">
-                                        ✓
-                                      </span>
-                                      <span className="leading-3.5 font-bold text-dark/80">
-                                        {feat}
-                                      </span>
-                                    </li>
-                                  ))}
-                                </ul>
+                              Array.isArray(typeof plan.features === "string" ? JSON.parse(plan.features) : plan.features) && (
+                                <div className="mt-5 space-y-2 border-t border-slate-100 pt-4">
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Included Features:</p>
+                                  <ul className="space-y-2.5 p-0 list-none">
+                                    {(typeof plan.features === "string" ? JSON.parse(plan.features) : plan.features).map((feat, idx) => (
+                                      <li
+                                        key={idx}
+                                        className="flex items-start gap-2.5 text-xs text-slate-700 font-semibold leading-tight"
+                                      >
+                                        <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-black text-[10px] shadow-xs">
+                                          ✓
+                                        </span>
+                                        <span className="font-semibold text-slate-800">
+                                          {feat}
+                                        </span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
                               )}
                           </div>
 
-                          {/* CTA */}
-                          <button
-                            type="button"
-                            onClick={() => handleGetStarted(planId)}
-                            className={`mt-4 w-full block rounded-xl px-3 py-2.5 text-[10px] font-black text-center uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer shadow-md ${
-                              isPopular
-                                ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white hover:shadow-lg hover:shadow-tertiary/30 border-none"
-                                : "bg-white hover:bg-tertiary/5 text-tertiary border border-tertiary/30 hover:border-tertiary/50 hover:shadow-sm"
-                            }`}
-                          >
-                            {t("pricing.getStarted")}
-                          </button>
+                          {/* CTA Button */}
+                          <div className="mt-6 pt-4 border-t border-slate-100">
+                            <button
+                              type="button"
+                              onClick={() => handleGetStarted(planId)}
+                              className={`w-full flex items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-md ${
+                                isPopular
+                                  ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white hover:shadow-xl hover:shadow-indigo-500/30 border-none hover:-translate-y-0.5 active:translate-y-0"
+                                  : "bg-slate-900 hover:bg-blue-600 text-white hover:shadow-lg border-none hover:-translate-y-0.5 active:translate-y-0"
+                              }`}
+                            >
+                              <span>{t("pricing.getStarted") || "Select Package"}</span>
+                              <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
@@ -334,32 +358,33 @@ const Pricing = () => {
 
                 {/* ERP Poster Details Section (Website Features & Cost/Support Summary) */}
                 {activeTab === "school_erp" && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
                     {/* Free School Website Banner */}
-                    <div className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/50 p-6 sm:p-8 shadow-lg relative overflow-hidden">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-black tracking-wider uppercase mb-3 shadow-sm">
-                        FULL FREE WEBSITE
+                    <div className="rounded-3xl border border-emerald-200/80 bg-gradient-to-br from-emerald-500/10 via-white to-teal-500/10 p-7 sm:p-9 shadow-xl relative overflow-hidden group hover:border-emerald-300 transition-all">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-black tracking-widest uppercase mb-4 shadow-md">
+                        🎉 FULL FREE WEBSITE
                       </div>
-                      <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                        School Website <span className="text-emerald-600">Full Free</span>
+                      <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                        School Website <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600">Completely Free</span>
                       </h3>
-                      <p className="text-xs text-slate-600 font-bold mt-1">
-                        Get a Professional Website for Your School Completely Free with EduBari
+                      <p className="text-xs sm:text-sm text-slate-600 font-bold mt-1.5">
+                        Get a high-end, responsive professional website for your school completely free with EduBari ERP connection.
                       </p>
 
-                      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         {[
                           "Modern & Responsive Design",
-                          "School Info & History",
                           "Notice, Events & Announcements",
-                          "Online Admission Info",
-                          "Teacher & Staff Details",
-                          "Gallery (Photos & Videos)",
-                          "Contact Form & Location Map",
-                          "Mobile Friendly & SEO Google Ranking (Free)",
+                          "Online Admission Portal",
+                          "Teacher & Staff Directory",
+                          "Photo & Video Gallery",
+                          "Contact Form & Map Location",
+                          "Mobile Friendly & Auto SEO",
+                          "Instant Sync with School ERP",
                         ].map((item, i) => (
-                          <div key={i} className="flex items-center gap-2 text-xs font-extrabold text-slate-800">
-                            <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shrink-0 font-black">✓</span>
+                          <div key={i} className="flex items-center gap-2.5 text-xs font-extrabold text-slate-800 bg-white/80 backdrop-blur-xs p-2.5 rounded-xl border border-emerald-100 shadow-xs">
+                            <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shrink-0 font-black shadow-xs">✓</span>
                             <span>{item}</span>
                           </div>
                         ))}
@@ -367,37 +392,38 @@ const Pricing = () => {
                     </div>
 
                     {/* Cost & Support Summary Panel */}
-                    <div className="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-purple-50/50 p-6 sm:p-8 shadow-lg relative overflow-hidden">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-black tracking-wider uppercase mb-3 shadow-sm">
-                        COST & SUPPORT
+                    <div className="rounded-3xl border border-indigo-200/80 bg-gradient-to-br from-indigo-500/10 via-white to-purple-500/10 p-7 sm:p-9 shadow-xl relative overflow-hidden group hover:border-indigo-300 transition-all">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-400/10 rounded-full blur-2xl pointer-events-none" />
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-black tracking-widest uppercase mb-4 shadow-md">
+                        ⚡ TRANSPARENT COSTS
                       </div>
-                      <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                        Everything You Need for a <span className="text-indigo-600">Smarter School</span>
+                      <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                        Everything Needed for a <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Smart Institution</span>
                       </h3>
 
-                      <div className="mt-4 space-y-3">
-                        <div className="p-3.5 rounded-2xl bg-white border border-indigo-100 shadow-xs flex items-center justify-between">
+                      <div className="mt-6 space-y-3.5">
+                        <div className="p-4 rounded-2xl bg-white/90 border border-indigo-100 shadow-xs flex items-center justify-between hover:shadow-md transition-shadow">
                           <div>
-                            <p className="text-xs font-black text-slate-900">First Install Cost (One Time Only)</p>
-                            <p className="text-[11px] font-bold text-slate-500">Complete setup, configuration & training support</p>
+                            <p className="text-xs font-black text-slate-900">First Install & Setup Cost (One Time)</p>
+                            <p className="text-[11px] font-bold text-slate-500 mt-0.5">Complete setup, data import, configuration & staff training</p>
                           </div>
-                          <span className="text-lg font-black text-indigo-600 shrink-0">৳ 5,000</span>
+                          <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 shrink-0 ml-3">৳ 5,000</span>
                         </div>
 
-                        <div className="p-3.5 rounded-2xl bg-white border border-indigo-100 shadow-xs flex items-center justify-between">
+                        <div className="p-4 rounded-2xl bg-white/90 border border-indigo-100 shadow-xs flex items-center justify-between hover:shadow-md transition-shadow">
                           <div>
-                            <p className="text-xs font-black text-slate-900">Annual Management Cost (Yearly)</p>
-                            <p className="text-[11px] font-bold text-slate-500">Domain, High Perf Server, Website, Free SEO & Tech Support</p>
+                            <p className="text-xs font-black text-slate-900">Annual Management & Server (Yearly)</p>
+                            <p className="text-[11px] font-bold text-slate-500 mt-0.5">Custom Domain, Cloud Server, Free SSL, High Speed CDN & 24/7 Tech Support</p>
                           </div>
-                          <span className="text-lg font-black text-indigo-600 shrink-0">৳ 5,000 / yr</span>
+                          <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 shrink-0 ml-3">৳ 5,000 / yr</span>
                         </div>
 
-                        <div className="p-3.5 rounded-2xl bg-white border border-indigo-100 shadow-xs flex items-center justify-between">
+                        <div className="p-4 rounded-2xl bg-white/90 border border-indigo-100 shadow-xs flex items-center justify-between hover:shadow-md transition-shadow">
                           <div>
-                            <p className="text-xs font-black text-slate-900">SMS Cost (Notifications)</p>
-                            <p className="text-[11px] font-bold text-slate-500">Admission, Notice, Results, Fee Alerts & Attendance</p>
+                            <p className="text-xs font-black text-slate-900">SMS Gateway Charges</p>
+                            <p className="text-[11px] font-bold text-slate-500 mt-0.5">Instant Attendance, Exam Result, Fee Alerts & Notices via Non-Masking SMS</p>
                           </div>
-                          <span className="text-lg font-black text-indigo-600 shrink-0">৳ 0.30 / SMS</span>
+                          <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 shrink-0 ml-3">৳ 0.30 / SMS</span>
                         </div>
                       </div>
                     </div>
@@ -406,25 +432,27 @@ const Pricing = () => {
 
                 {/* AI Credits Banner Section */}
                 {selectedAiPkg && (
-                  <div className="max-w-3xl mx-auto rounded-3xl border border-white/60 bg-white/70 backdrop-blur-md p-6 sm:p-8 shadow-xl shadow-dark/3 flex flex-col md:flex-row items-center justify-between gap-6 ring-1 ring-[#8B5CF6]/20">
-                    <div className="space-y-4 text-left max-w-md">
-                      <div className="text-[9px] font-black text-[#8B5CF6] uppercase tracking-widest flex items-center gap-1.5">
-                        <FiCpu className="h-4.5 w-4.5 animate-spin text-[#8B5CF6]" style={{ animationDuration: "4s" }} /> {t("pricing.aiAddon")}
+                  <div className="max-w-4xl mx-auto rounded-3xl border border-purple-200/80 bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 p-7 sm:p-9 shadow-2xl text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="space-y-4 text-left max-w-lg z-10">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-[10px] font-black uppercase tracking-widest">
+                        <FiCpu className="h-4 w-4 animate-spin text-purple-300" style={{ animationDuration: "6s" }} /> {t("pricing.aiAddon") || "AI POWERED ADDON"}
                       </div>
-                      <h3 className="text-xl font-extrabold text-dark tracking-tight">
-                        {t("pricing.aiTitle")}
+                      <h3 className="text-2xl font-black tracking-tight text-white">
+                        {t("pricing.aiTitle") || "Need Extra AI Credits for Question & Presentation Generator?"}
                       </h3>
-                      <p className="text-xs text-dark/60 font-medium leading-relaxed">
-                        {t("pricing.aiSub")}
+                      <p className="text-xs sm:text-sm text-purple-200/80 font-medium leading-relaxed">
+                        {t("pricing.aiSub") || "Supercharge your classes with instant AI question paper creation, slides & automatic grading."}
                       </p>
                       
                       {/* Tier Selector Pills */}
                       {aiPackages.length > 0 && (
                         <div className="pt-2">
-                          <label className="block text-[9px] font-black uppercase tracking-widest text-[#8B5CF6] mb-1.5">
-                            {t("pricing.selectAiPack")}
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-purple-300 mb-2">
+                            {t("pricing.selectAiPack") || "SELECT AI CREDIT PACKAGE"}
                           </label>
-                          <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-100/70 border border-slate-200/50 max-w-xs">
+                          <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 max-w-xs">
                             {aiPackages.map((pkg) => {
                               const isSelected = selectedAiPkg.id === pkg.id;
                               return (
@@ -432,14 +460,14 @@ const Pricing = () => {
                                   key={pkg.id}
                                   type="button"
                                   onClick={() => setSelectedAiPkg(pkg)}
-                                  className={`relative py-1 px-0.5 rounded-lg text-xs font-black tracking-tight transition-all duration-300 cursor-pointer border flex flex-col items-center justify-center ${
+                                  className={`relative py-2 px-2 rounded-xl text-xs font-black tracking-tight transition-all duration-300 cursor-pointer border flex flex-col items-center justify-center ${
                                     isSelected
-                                      ? "bg-linear-to-r from-tertiary to-[#8B5CF6] text-white border-transparent shadow-md scale-102"
-                                      : "bg-white text-dark/70 hover:text-dark border-gray-200/80 hover:border-tertiary/30"
+                                      ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-transparent shadow-lg scale-105"
+                                      : "bg-white/5 text-purple-200 hover:bg-white/10 border-transparent"
                                   }`}
                                 >
-                                  <span className="text-[11px] font-extrabold">{pkg.credits}</span>
-                                  <span className={`text-[7px] font-black uppercase tracking-widest ${isSelected ? "text-white/80" : "text-dark/45"}`}>
+                                  <span className="text-sm font-black">{pkg.credits}</span>
+                                  <span className="text-[8px] font-black uppercase tracking-widest text-purple-200/70">
                                     Credits
                                   </span>
                                 </button>
@@ -450,22 +478,22 @@ const Pricing = () => {
                       )}
                     </div>
 
-                    <div className="shrink-0 flex flex-col items-center justify-center p-6 bg-linear-to-br from-[#8B5CF6]/5 to-[#7c3aed]/5 rounded-2xl border border-[#8B5CF6]/15 min-w-[240px]">
-                      <div className="flex items-baseline gap-1.5 mb-4">
-                        <span className="text-3.5xl sm:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6] drop-shadow-sm">
+                    <div className="shrink-0 flex flex-col items-center justify-center p-7 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 min-w-[260px] z-10 w-full md:w-auto">
+                      <div className="flex items-baseline gap-1.5 mb-5">
+                        <span className="text-4xl font-black tracking-tight text-white drop-shadow-md">
                           ৳{(selectedAiPkg.price || 0).toLocaleString()}
                         </span>
-                        <span className="text-[10px] font-black text-dark/40 uppercase tracking-wider">
-                          / {selectedAiPkg.validityDays} Days
+                        <span className="text-xs font-bold text-purple-200/70 uppercase">
+                          / {selectedAiPkg.validityDays || selectedAiPkg.validity_days || 30} Days
                         </span>
                       </div>
                       
                       <button
                         type="button"
                         onClick={handleAiPlanPurchase}
-                        className="w-full py-3.5 px-6 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer bg-linear-to-r from-[#8B5CF6] to-[#7c3aed] text-white shadow-md shadow-[#8B5CF6]/20 hover:shadow-lg border-none"
+                        className="w-full py-4 px-8 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-100 cursor-pointer bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 text-white shadow-xl shadow-purple-500/30 border-none"
                       >
-                        {t("pricing.buyAiCredits")}
+                        {t("pricing.buyAiCredits") || "Buy AI Credits Now"}
                       </button>
                     </div>
                   </div>
@@ -475,13 +503,13 @@ const Pricing = () => {
           </div>
 
           {/* View All Plans */}
-          <div className="mt-8 text-center">
+          <div className="mt-12 text-center">
             <button
               onClick={() => router.push("/payment-purchase")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-dark/15 text-xs font-bold text-dark hover:bg-dark/5 hover:border-dark/25 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
+              className="inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-slate-900 hover:bg-blue-600 text-white text-xs font-black uppercase tracking-wider shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer border-none"
             >
-              {t("pricing.exploreAll")}
-              <FiArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+              <span>{t("pricing.exploreAll") || "Explore All Plans & Custom Quotes"}</span>
+              <FiArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
