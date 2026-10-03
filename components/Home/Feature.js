@@ -164,76 +164,82 @@ const Feature = () => {
   }, []);
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-12 py-8 sm:py-10 bg-primary/20 select-none">
-      <div className="w-full rounded-[32px] border border-white bg-primary-light/80 shadow-[0_20px_50px_-20px_rgba(37,99,235,0.08)] backdrop-blur-md overflow-hidden relative">
-        {/* Subtle Ambient flows */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-tertiary/5 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#8B5CF6]/5 rounded-full blur-3xl pointer-events-none -ml-32 -mb-32" />
+    <section className="w-full px-3 sm:px-6 md:px-10 py-6 sm:py-8 lg:py-10 bg-slate-50/50 select-none relative overflow-hidden">
+      {/* Background Decorative Orbs */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-blue-400/10 via-indigo-500/10 to-purple-500/10 rounded-full blur-[110px] pointer-events-none" />
 
-        <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-10 sm:py-12 relative z-10">
+      <div className="w-full rounded-2xl sm:rounded-3xl border border-white/80 bg-white/80 shadow-[0_15px_40px_-15px_rgba(37,99,235,0.06)] backdrop-blur-xl overflow-hidden relative">
+        <div className="px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-10 relative z-10">
           {/* Header */}
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tertiary/8 border border-tertiary/15 text-tertiary text-xs font-bold tracking-wide uppercase mb-4">
-              {t("feature.badge")}
+          <div className="max-w-2xl mx-auto text-center space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/60 text-blue-600 text-[10px] font-black tracking-widest uppercase shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+              {t("feature.badge") || "EVERYTHING YOUR INSTITUTION NEEDS"}
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-4.5xl font-black tracking-tight text-dark leading-tight">
-              {t("feature.titleMain")}{" "}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500 drop-shadow-sm">
-                {t("feature.titleGradient")}
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 leading-tight">
+              {t("feature.titleMain") || "Everything Your Institution Needs"}{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+                {t("feature.titleGradient") || "in One Platform"}
               </span>
             </h2>
 
-            <p className="mt-4 text-sm sm:text-base leading-relaxed text-dark/70 max-w-2xl mx-auto font-medium">
-              {t("feature.subtitle")}
+            <p className="text-xs sm:text-sm leading-relaxed text-slate-600 max-w-xl mx-auto font-medium">
+              {t("feature.subtitle") || "Complete digital automation for admissions, attendance, exams, payments, and guardian communication."}
             </p>
           </div>
 
-          {/* Feature Cards Grid */}
-          <div className="mt-10 lg:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Feature Cards Grid (3D Animated & Compact) */}
+          <div className="mt-8 lg:mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 [perspective:1200px]">
             {features.map((feature, idx) => {
               const videoUrl = videos[feature.key];
               return (
                 <div
                   key={feature.key}
-                  className="group relative rounded-2xl border border-white bg-white/70 backdrop-blur-xs p-5 sm:p-5.5 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-tertiary/5 hover:bg-white flex flex-col justify-between"
+                  className="group relative rounded-2xl border border-slate-200/70 bg-white/90 backdrop-blur-md p-4 sm:p-4.5 transition-all duration-500 ease-out transform-gpu hover:[transform:rotateX(5deg)_rotateY(-5deg)_translateZ(10px)] hover:shadow-xl hover:shadow-indigo-500/10 hover:border-blue-400 flex flex-col justify-between overflow-hidden cursor-pointer"
                   style={{
-                    animationDelay: `${idx * 60}ms`,
-                    animation: "fadeInUp 0.5s cubic-bezier(0.23, 1, 0.32, 1) backwards",
+                    animationDelay: `${idx * 40}ms`,
+                    animation: "fadeInUp 0.4s cubic-bezier(0.23, 1, 0.32, 1) backwards",
                   }}
                 >
+                  {/* Top 3D Accent Line */}
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
                   <div>
-                    {/* Header: Icon & Video Button */}
-                    <div className="flex items-start justify-between">
-                      {/* Icon */}
+                    {/* Header: Icon & Demo Button */}
+                    <div className="flex items-center justify-between">
+                      {/* Icon Container with 3D Depth */}
                       <div
-                        className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${feature.bg} ${feature.color} shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:shadow-md`}
+                        className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${feature.bg} ${feature.color} shadow-xs transition-all duration-300 group-hover:scale-110 group-hover:shadow-md`}
                       >
                         {feature.icon}
                       </div>
 
-                      {/* YouTube Button */}
+                      {/* YouTube Demo Button */}
                       <button
-                        onClick={() => setActiveVideo(videoUrl || "empty")}
-                        className="group/btn inline-flex items-center gap-1.5 pl-1.5 pr-3 py-1.5 rounded-full bg-white border border-red-100 shadow-[0_2px_8px_-2px_rgba(239,68,68,0.15)] hover:shadow-[0_4px_12px_-2px_rgba(239,68,68,0.25)] hover:border-red-300 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
-                        title={t("feature.watchDemo")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveVideo(videoUrl || "empty");
+                        }}
+                        className="group/btn inline-flex items-center gap-1 pl-1 pr-2.5 py-1 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200/80 hover:border-red-200 transition-all duration-200 cursor-pointer shadow-2xs"
+                        title={t("feature.watchDemo") || "Watch Demo"}
                       >
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white shadow-sm group-hover/btn:scale-110 transition-transform duration-300">
-                          <FiPlay className="h-3 w-3 ml-0.5" />
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white shadow-xs group-hover/btn:scale-110 transition-transform">
+                          <FiPlay className="h-2.5 w-2.5 ml-0.5" />
                         </span>
-                        <span className="text-[10px] font-extrabold text-red-600 uppercase tracking-widest mt-0.5">
-                          {t("feature.demoBtn")}
+                        <span className="text-[9px] font-black text-slate-700 group-hover/btn:text-red-600 uppercase tracking-wider">
+                          {t("feature.demoBtn") || "DEMO"}
                         </span>
                       </button>
                     </div>
 
                     {/* Title */}
-                    <h3 className="mt-4 text-base font-extrabold text-dark tracking-tight leading-snug">
+                    <h3 className="mt-3.5 text-sm font-extrabold text-slate-900 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">
                       {feature.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-2 text-xs leading-relaxed text-dark/60 font-medium">
+                    <p className="mt-1.5 text-[11px] leading-relaxed text-slate-600 font-medium">
                       {feature.description}
                     </p>
                   </div>

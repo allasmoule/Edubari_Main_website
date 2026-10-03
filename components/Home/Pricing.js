@@ -182,22 +182,22 @@ const Pricing = () => {
                   onClick={() => setActiveTab("school_erp")}
                   className={`flex-1 py-2 px-3 rounded-lg text-xs font-black transition-all duration-300 cursor-pointer border-none flex items-center justify-center gap-1.5 ${
                     activeTab === "school_erp"
-                      ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/20"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-indigo-500/20"
                       : "text-slate-600 hover:text-slate-900 bg-transparent"
                   }`}
                 >
-                  🏫 School ERP Packages
+                  School ERP Packages
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("single_teacher")}
                   className={`flex-1 py-2 px-3 rounded-lg text-xs font-black transition-all duration-300 cursor-pointer border-none flex items-center justify-center gap-1.5 ${
                     activeTab === "single_teacher"
-                      ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/20"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-indigo-500/20"
                       : "text-slate-600 hover:text-slate-900 bg-transparent"
                   }`}
                 >
-                  👨‍🏫 Single Teacher Plans
+                  Single Teacher Plans
                 </button>
               </div>
             </div>
@@ -247,7 +247,7 @@ const Pricing = () => {
                           key={planId}
                           className={`group relative rounded-2xl border p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between ${
                             isPopular
-                              ? "border-transparent bg-gradient-to-b from-white via-blue-50/30 to-indigo-50/10 shadow-lg ring-2 ring-blue-500/80"
+                              ? "border-transparent bg-gradient-to-b from-white via-blue-50/20 to-indigo-50/10 shadow-lg ring-2 ring-blue-500/80"
                               : "border-slate-200/80 bg-white/90 backdrop-blur-md hover:shadow-xl hover:border-blue-300"
                           }`}
                         >
@@ -258,7 +258,7 @@ const Pricing = () => {
                                 <span className={`px-3 py-0.5 rounded-full text-[9px] font-black tracking-widest uppercase whitespace-nowrap shadow-xs flex items-center gap-1 ${
                                   isPopular
                                     ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/20"
-                                    : "bg-amber-100 text-amber-800 border border-amber-300/60"
+                                    : "bg-slate-100 text-slate-700 border border-slate-300/60"
                                 }`}>
                                   {isPopular && <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />}
                                   {plan.badge || t("pricing.recommended") || "POPULAR"}
@@ -287,7 +287,7 @@ const Pricing = () => {
                                   <span
                                     className={`text-2xl sm:text-3xl font-black tracking-tight ${
                                       isPopular
-                                        ? "bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"
+                                        ? "bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
                                         : "text-slate-900"
                                     }`}
                                   >
@@ -303,7 +303,7 @@ const Pricing = () => {
                                   <span className="text-[10px] font-bold text-slate-400 line-through block">
                                     ৳{(plan.old_price || 0).toLocaleString()}
                                   </span>
-                                  <span className="text-[8px] font-black text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">
+                                  <span className="text-[8px] font-black text-slate-700 bg-slate-200/80 px-1.5 py-0.5 rounded-full">
                                     SAVE {Math.round(((plan.old_price - plan.price) / plan.old_price) * 100)}%
                                   </span>
                                 </div>
@@ -320,7 +320,7 @@ const Pricing = () => {
                                         key={idx}
                                         className="flex items-start gap-2 text-[11px] text-slate-700 font-semibold leading-tight"
                                       >
-                                        <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white font-black text-[9px] shadow-xs">
+                                        <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white font-black text-[9px] shadow-xs">
                                           ✓
                                         </span>
                                         <span className="font-semibold text-slate-800">
@@ -340,7 +340,7 @@ const Pricing = () => {
                               onClick={() => handleGetStarted(planId)}
                               className={`w-full flex items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-[11px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-xs ${
                                 isPopular
-                                  ? "bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white hover:shadow-md border-none"
+                                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-md border-none"
                                   : "bg-slate-900 hover:bg-blue-600 text-white border-none"
                               }`}
                             >
@@ -358,12 +358,12 @@ const Pricing = () => {
                 {activeTab === "school_erp" && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
                     {/* Free School Website Banner */}
-                    <div className="rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-500/10 via-white to-teal-500/10 p-5 sm:p-6 shadow-md relative overflow-hidden">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black tracking-widest uppercase mb-2 shadow-xs">
-                        🎉 FULL FREE WEBSITE
+                    <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-500/5 via-white to-indigo-500/5 p-5 sm:p-6 shadow-md relative overflow-hidden">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-600 text-white text-[9px] font-black tracking-widest uppercase mb-2 shadow-xs">
+                        FULL FREE WEBSITE
                       </div>
                       <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                        School Website <span className="text-emerald-600">Completely Free</span>
+                        School Website <span className="text-blue-600">Completely Free</span>
                       </h3>
                       <p className="text-xs text-slate-600 font-bold mt-1">
                         Get a high-end professional website for your school completely free with EduBari ERP connection.
@@ -380,8 +380,8 @@ const Pricing = () => {
                           "Mobile Friendly & Auto SEO",
                           "Instant Sync with School ERP",
                         ].map((item, i) => (
-                          <div key={i} className="flex items-center gap-2 text-[11px] font-extrabold text-slate-800 bg-white/80 p-2 rounded-lg border border-emerald-100 shadow-xs">
-                            <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shrink-0 font-black">✓</span>
+                          <div key={i} className="flex items-center gap-2 text-[11px] font-extrabold text-slate-800 bg-white/80 p-2 rounded-lg border border-slate-100 shadow-xs">
+                            <span className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] shrink-0 font-black">✓</span>
                             <span>{item}</span>
                           </div>
                         ))}
@@ -389,16 +389,16 @@ const Pricing = () => {
                     </div>
 
                     {/* Cost & Support Summary Panel */}
-                    <div className="rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-500/10 via-white to-purple-500/10 p-5 sm:p-6 shadow-md relative overflow-hidden">
+                    <div className="rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-500/5 via-white to-slate-500/5 p-5 sm:p-6 shadow-md relative overflow-hidden">
                       <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-indigo-600 text-white text-[9px] font-black tracking-widest uppercase mb-2 shadow-xs">
-                        ⚡ TRANSPARENT COSTS
+                        TRANSPARENT COSTS
                       </div>
                       <h3 className="text-xl font-black text-slate-900 tracking-tight">
                         Everything Needed for a <span className="text-indigo-600">Smart Institution</span>
                       </h3>
 
                       <div className="mt-4 space-y-2.5">
-                        <div className="p-3 rounded-xl bg-white/90 border border-indigo-100 shadow-xs flex items-center justify-between">
+                        <div className="p-3 rounded-xl bg-white/90 border border-slate-100 shadow-xs flex items-center justify-between">
                           <div>
                             <p className="text-xs font-black text-slate-900">First Install & Setup Cost (One Time)</p>
                             <p className="text-[10px] font-bold text-slate-500">Complete setup, data import & staff training</p>
@@ -406,7 +406,7 @@ const Pricing = () => {
                           <span className="text-lg font-black text-indigo-600 shrink-0 ml-2">৳ 5,000</span>
                         </div>
 
-                        <div className="p-3 rounded-xl bg-white/90 border border-indigo-100 shadow-xs flex items-center justify-between">
+                        <div className="p-3 rounded-xl bg-white/90 border border-slate-100 shadow-xs flex items-center justify-between">
                           <div>
                             <p className="text-xs font-black text-slate-900">Annual Management & Server (Yearly)</p>
                             <p className="text-[10px] font-bold text-slate-500">Domain, Cloud Server, Free SSL & 24/7 Support</p>
@@ -414,7 +414,7 @@ const Pricing = () => {
                           <span className="text-lg font-black text-indigo-600 shrink-0 ml-2">৳ 5,000 / yr</span>
                         </div>
 
-                        <div className="p-3 rounded-xl bg-white/90 border border-indigo-100 shadow-xs flex items-center justify-between">
+                        <div className="p-3 rounded-xl bg-white/90 border border-slate-100 shadow-xs flex items-center justify-between">
                           <div>
                             <p className="text-xs font-black text-slate-900">SMS Gateway Charges</p>
                             <p className="text-[10px] font-bold text-slate-500">Attendance, Result & Fee Alerts via SMS</p>
