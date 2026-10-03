@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { execute, query } from "@/lib/db";
+import { execute } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
 
 export async function GET(request) {
@@ -11,26 +11,74 @@ export async function POST(request) {
 }
 
 async function handleSeed(request) {
+  const results = [];
   try {
-    const results = [];
+    // 1. Ensure required tables exist
+    await execute(`
+      CREATE TABLE IF NOT EXISTS \`users\` (
+        \`id\` VARCHAR(36) NOT NULL PRIMARY KEY,
+        \`name\` VARCHAR(255) NOT NULL,
+        \`email\` VARCHAR(255) NOT NULL UNIQUE,
+        \`password\` VARCHAR(255) NOT NULL,
+        \`role\` VARCHAR(50) DEFAULT 'admin',
+        \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
+        \`updated_at\` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    results.push("Ensured 'users' table exists");
 
-    // 1. Ensure tables exist (optional check)
-    try {
-      await execute(`
-        CREATE TABLE IF NOT EXISTS \`users\` (
-          \`id\` VARCHAR(36) NOT NULL PRIMARY KEY,
-          \`name\` VARCHAR(255) NOT NULL,
-          \`email\` VARCHAR(255) NOT NULL UNIQUE,
-          \`password\` VARCHAR(255) NOT NULL,
-          \`role\` VARCHAR(50) DEFAULT 'admin',
-          \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
-          \`updated_at\` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-      `);
-      results.push("Checked/Created users table");
-    } catch (e) {
-      results.push(`Users table check: ${e.message}`);
-    }
+    await execute(`
+      CREATE TABLE IF NOT EXISTS \`plans\` (
+        \`id\` VARCHAR(36) NOT NULL PRIMARY KEY,
+        \`plan_name\` VARCHAR(255) NOT NULL,
+        \`plan_type\` ENUM('single_teacher', 'school_erp') NOT NULL DEFAULT 'single_teacher',
+        \`duration_days\` INT NOT NULL,
+        \`max_students\` INT NOT NULL,
+        \`max_instructors\` INT NOT NULL,
+        \`price\` DECIMAL(10, 2) NOT NULL,
+        \`features\` JSON NOT NULL,
+        \`plan_tier\` VARCHAR(50) DEFAULT 'free',
+        \`max_batches\` INT DEFAULT 1,
+        \`monthly_ai_credits\` INT DEFAULT 0,
+        \`show_branding\` BOOLEAN DEFAULT TRUE,
+        \`is_active\` BOOLEAN DEFAULT TRUE,
+        \`sort_order\` INT DEFAULT 0,
+        \`feature_gates\` JSON DEFAULT NULL,
+        \`old_price\` DECIMAL(10, 2) DEFAULT NULL,
+        \`price_label\` VARCHAR(255) DEFAULT NULL,
+        \`duration\` VARCHAR(100) DEFAULT NULL,
+        \`description\` TEXT DEFAULT NULL,
+        \`popular\` BOOLEAN DEFAULT FALSE,
+        \`badge\` VARCHAR(100) DEFAULT NULL,
+        \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
+        \`updated_at\` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    results.push("Ensured 'plans' table exists");
+
+    await execute(`
+      CREATE TABLE IF NOT EXISTS \`ai_packages\` (
+        \`id\` VARCHAR(36) NOT NULL PRIMARY KEY,
+        \`name\` VARCHAR(255) NOT NULL,
+        \`credits\` INT NOT NULL,
+        \`price\` DECIMAL(10, 2) NOT NULL,
+        \`validity_days\` INT DEFAULT 30,
+        \`is_active\` BOOLEAN DEFAULT TRUE,
+        \`highlight\` BOOLEAN DEFAULT FALSE,
+        \`currency\` VARCHAR(10) DEFAULT 'BDT',
+        \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    results.push("Ensured 'ai_packages' table exists");
+
+    await execute(`
+      CREATE TABLE IF NOT EXISTS \`admin_login_attempts\` (
+        \`ip\` VARCHAR(64) NOT NULL PRIMARY KEY,
+        \`attempts\` INT NOT NULL DEFAULT 0,
+        \`reset_at\` DATETIME NOT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+    results.push("Ensured 'admin_login_attempts' table exists");
 
     // 2. Admin User Seed
     const adminEmail = "botbari@edubari.bd";
@@ -48,7 +96,6 @@ async function handleSeed(request) {
 
     // 3. SaaS & School ERP Plans Seed
     const plans = [
-      // Single Teacher SaaS Plans
       [
         "f0000000-0000-0000-0000-000000000001",
         "EDUBARI Free",
@@ -109,7 +156,6 @@ async function handleSeed(request) {
         "enterprise", 999, 50, false, true, 5,
         JSON.stringify({ personal_website: true, online_class: true, recorded_class: true, ai_presentation: true, ai_presentation_limited: false, guardian_portal: true, advanced_analytics: true, multi_teacher: true, salary_management: true, custom_branding: true, course_management: true, student_performance: true, assignment_system: true, payment_tracking: true, payment_tracking_advanced: true, custom_development: true })
       ],
-      // School ERP Plans
       [
         "e0000000-0000-0000-0000-000000000001",
         "ERP Basic School",
@@ -183,7 +229,8 @@ async function handleSeed(request) {
       details: results,
     });
   } catch (error) {
-    console.error("Seed Route Error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const errorMsg = error?.message || error?.sqlMessage || error?.code || String(error);
+    console.error("Seed Route Error:", errorMsg, error);
+    return NextResponse.json({ success: false, error: errorMsg }, { status: 500 });
   }
 }
