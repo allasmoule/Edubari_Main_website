@@ -3,27 +3,17 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
-  const timeoutPromise = new Promise((resolve) =>
-    setTimeout(() => resolve({ data: [] }), 1500)
-  );
-
   try {
-    const fetchPromise = supabaseAdmin
+    const { data } = await supabaseAdmin
       .from("work_proofs")
       .select("*")
       .eq("active", true)
       .order("order_index", { ascending: true });
-    const res = await Promise.race([fetchPromise, timeoutPromise]);
-    const data = res?.data || [];
 
-    return NextResponse.json(data, {
-      headers: { "Cache-Control": "public, max-age=600, s-maxage=3600" },
-    });
+    return NextResponse.json(data || []);
   } catch (error) {
-    console.error("Error fetching work proofs:", error);
-    return NextResponse.json([], {
-      headers: { "Cache-Control": "public, max-age=600, s-maxage=3600" },
-    });
+    console.warn("Error fetching work proofs:", error?.message);
+    return NextResponse.json([]);
   }
 }
 

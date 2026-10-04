@@ -3,23 +3,12 @@ import { supabase } from "@/lib/supabase";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
-  const timeoutPromise = new Promise((resolve) =>
-    setTimeout(() => resolve({ data: [] }), 1500)
-  );
-
   try {
-    const fetchPromise = supabase.from("feature_videos").select("*");
-    const res = await Promise.race([fetchPromise, timeoutPromise]);
-    const data = res?.data || [];
-
-    return NextResponse.json(data, {
-      headers: { "Cache-Control": "public, max-age=600, s-maxage=3600" },
-    });
+    const { data } = await supabase.from("feature_videos").select("*");
+    return NextResponse.json(data || []);
   } catch (err) {
-    console.error("Error fetching feature videos:", err);
-    return NextResponse.json([], {
-      headers: { "Cache-Control": "public, max-age=600, s-maxage=3600" },
-    });
+    console.warn("Error fetching feature videos:", err?.message);
+    return NextResponse.json([]);
   }
 }
 
