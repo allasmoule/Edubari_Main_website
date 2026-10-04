@@ -75,7 +75,7 @@ export default function FeaturesOverviewPage() {
             return (
               <Link
                 key={feature.slug}
-                href={`/features/${feature.slug}`}
+                href={`/${feature.slug}`}
                 className="group relative bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-xl hover:border-blue-400 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
               >
                 {/* Top Accent Gradient */}

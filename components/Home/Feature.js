@@ -211,7 +211,7 @@ const Feature = () => {
               return (
                 <Link
                   key={feature.key}
-                  href={`/features/${feature.slug}`}
+                  href={`/${feature.slug}`}
                   className="group relative rounded-xl border border-slate-200/70 bg-white/90 backdrop-blur-md p-3.5 sm:p-4 transition-all duration-300 ease-out transform-gpu hover:[transform:rotateX(5deg)_rotateY(-5deg)_translateZ(8px)] hover:shadow-lg hover:shadow-indigo-500/10 hover:border-blue-400 flex flex-col justify-between overflow-hidden cursor-pointer"
                   style={{
                     animationDelay: `${idx * 30}ms`,
