@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   FiBookOpen,
   FiCreditCard,
@@ -16,6 +17,7 @@ import {
   FiTrendingUp,
   FiPlay,
   FiX,
+  FiArrowRight,
 } from "react-icons/fi";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -29,13 +31,15 @@ const getYouTubeEmbedUrl = (url) => {
 };
 
 const Feature = () => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [videos, setVideos] = useState({});
   const [activeVideo, setActiveVideo] = useState(null);
+  const isBn = lang === "bn";
 
   const features = [
     {
       key: "Student Management",
+      slug: "student-management",
       icon: <FiBookOpen className="h-5 w-5" />,
       title: t("feature.f1Title"),
       description: t("feature.f1Desc"),
@@ -45,6 +49,7 @@ const Feature = () => {
     },
     {
       key: "Payment Management",
+      slug: "payment-management",
       icon: <FiCreditCard className="h-5 w-5" />,
       title: t("feature.f2Title"),
       description: t("feature.f2Desc"),
@@ -54,6 +59,7 @@ const Feature = () => {
     },
     {
       key: "Online Payment",
+      slug: "online-payment",
       icon: <FiDollarSign className="h-5 w-5" />,
       title: t("feature.f3Title"),
       description: t("feature.f3Desc"),
@@ -63,6 +69,7 @@ const Feature = () => {
     },
     {
       key: "Garage & Transport",
+      slug: "garage-transport",
       icon: <FiTruck className="h-5 w-5" />,
       title: t("feature.f4Title"),
       description: t("feature.f4Desc"),
@@ -72,6 +79,7 @@ const Feature = () => {
     },
     {
       key: "Hostel Management",
+      slug: "hostel-management",
       icon: <FiHome className="h-5 w-5" />,
       title: t("feature.f5Title"),
       description: t("feature.f5Desc"),
@@ -81,6 +89,7 @@ const Feature = () => {
     },
     {
       key: "Canteen Management",
+      slug: "canteen-management",
       icon: <FiCoffee className="h-5 w-5" />,
       title: t("feature.f6Title"),
       description: t("feature.f6Desc"),
@@ -90,6 +99,7 @@ const Feature = () => {
     },
     {
       key: "Teacher Panel",
+      slug: "teacher-panel",
       icon: <FiUsers className="h-5 w-5" />,
       title: t("feature.f7Title"),
       description: t("feature.f7Desc"),
@@ -99,6 +109,7 @@ const Feature = () => {
     },
     {
       key: "Attendance Tracking",
+      slug: "attendance-tracking",
       icon: <FiCheckSquare className="h-5 w-5" />,
       title: t("feature.f8Title"),
       description: t("feature.f8Desc"),
@@ -108,6 +119,7 @@ const Feature = () => {
     },
     {
       key: "Result & Grade Management",
+      slug: "result-grade-management",
       icon: <FiBarChart2 className="h-5 w-5" />,
       title: t("feature.f9Title"),
       description: t("feature.f9Desc"),
@@ -117,6 +129,7 @@ const Feature = () => {
     },
     {
       key: "Online Exam System",
+      slug: "online-exam-system",
       icon: <FiFileText className="h-5 w-5" />,
       title: t("feature.f10Title"),
       description: t("feature.f10Desc"),
@@ -126,6 +139,7 @@ const Feature = () => {
     },
     {
       key: "Notice Board",
+      slug: "notice-board",
       icon: <FiBell className="h-5 w-5" />,
       title: t("feature.f11Title"),
       description: t("feature.f11Desc"),
@@ -135,6 +149,7 @@ const Feature = () => {
     },
     {
       key: "Reports & Analytics",
+      slug: "reports-analytics",
       icon: <FiTrendingUp className="h-5 w-5" />,
       title: t("feature.f12Title"),
       description: t("feature.f12Desc"),
@@ -164,7 +179,7 @@ const Feature = () => {
   }, []);
 
   return (
-    <section className="w-full px-3 sm:px-6 md:px-10 py-6 sm:py-8 lg:py-10 bg-slate-50/50 select-none relative overflow-hidden">
+    <section id="features" className="w-full px-3 sm:px-6 md:px-10 py-6 sm:py-8 lg:py-10 bg-slate-50/50 select-none relative overflow-hidden">
       {/* Background Decorative Orbs */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-blue-400/10 via-indigo-500/10 to-purple-500/10 rounded-full blur-[110px] pointer-events-none" />
 
@@ -194,8 +209,9 @@ const Feature = () => {
             {features.map((feature, idx) => {
               const videoUrl = videos[feature.key];
               return (
-                <div
+                <Link
                   key={feature.key}
+                  href={`/features/${feature.slug}`}
                   className="group relative rounded-xl border border-slate-200/70 bg-white/90 backdrop-blur-md p-3.5 sm:p-4 transition-all duration-300 ease-out transform-gpu hover:[transform:rotateX(5deg)_rotateY(-5deg)_translateZ(8px)] hover:shadow-lg hover:shadow-indigo-500/10 hover:border-blue-400 flex flex-col justify-between overflow-hidden cursor-pointer"
                   style={{
                     animationDelay: `${idx * 30}ms`,
@@ -217,7 +233,9 @@ const Feature = () => {
 
                       {/* YouTube Demo Button */}
                       <button
+                        type="button"
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
                           setActiveVideo(videoUrl || "empty");
                         }}
@@ -239,11 +257,17 @@ const Feature = () => {
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-1 text-[10.5px] leading-snug text-slate-500 font-medium">
+                    <p className="mt-1 text-[10.5px] leading-snug text-slate-500 font-medium line-clamp-2">
                       {feature.description}
                     </p>
                   </div>
-                </div>
+
+                  {/* Bottom Link indicator */}
+                  <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-blue-600 opacity-80 group-hover:opacity-100">
+                    <span>{isBn ? "বিস্তারিত দেখুন" : "View Details"}</span>
+                    <FiArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
               );
             })}
           </div>
