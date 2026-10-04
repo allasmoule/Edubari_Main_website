@@ -3,19 +3,23 @@ import { supabase } from "@/lib/supabase";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
-  try {
-    const { data, error } = await supabase
-      .from("feature_videos")
-      .select("*");
+  const timeoutPromise = new Promise((resolve) =>
+    setTimeout(() => resolve({ data: [] }), 1500)
+  );
 
-    if (error) throw error;
-    return NextResponse.json(data || []);
+  try {
+    const fetchPromise = supabase.from("feature_videos").select("*");
+    const res = await Promise.race([fetchPromise, timeoutPromise]);
+    const data = res?.data || [];
+
+    return NextResponse.json(data, {
+      headers: { "Cache-Control": "public, max-age=600, s-maxage=3600" },
+    });
   } catch (err) {
     console.error("Error fetching feature videos:", err);
-    return NextResponse.json(
-      { error: "Failed to fetch feature videos" },
-      { status: 500 }
-    );
+    return NextResponse.json([], {
+      headers: { "Cache-Control": "public, max-age=600, s-maxage=3600" },
+    });
   }
 }
 

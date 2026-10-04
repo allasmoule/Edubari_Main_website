@@ -397,18 +397,27 @@ const DEFAULT_PLANS = [
 ];
 
 export async function GET() {
+  const timeoutPromise = new Promise((resolve) =>
+    setTimeout(() => resolve(null), 1500)
+  );
+
   try {
-    const rows = await query("SELECT * FROM plans ORDER BY sort_order ASC, price ASC");
+    const fetchPromise = query("SELECT * FROM plans ORDER BY sort_order ASC, price ASC");
+    const rows = await Promise.race([fetchPromise, timeoutPromise]);
     if (rows && rows.length > 0) {
       const dbPlans = rows.map(mapPlanFromDb);
       const dbIds = new Set(dbPlans.map((p) => p.id || p._id));
       const missingDefaults = DEFAULT_PLANS.filter((p) => !dbIds.has(p.id));
-      return NextResponse.json([...dbPlans, ...missingDefaults]);
+      return NextResponse.json([...dbPlans, ...missingDefaults], {
+        headers: { "Cache-Control": "public, max-age=300, s-maxage=600" },
+      });
     }
   } catch (error) {
     console.error("Error fetching plans from DB, falling back to defaults:", error.message);
   }
-  return NextResponse.json(DEFAULT_PLANS);
+  return NextResponse.json(DEFAULT_PLANS, {
+    headers: { "Cache-Control": "public, max-age=300, s-maxage=600" },
+  });
 }
 
 export async function POST(request) {
