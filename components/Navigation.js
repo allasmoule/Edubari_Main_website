@@ -48,9 +48,14 @@ const Navigation = () => {
             window.scrollTo({ top: 0, behavior: "smooth" });
           }
         }}
-        className="z-50 shrink-0 flex items-center cursor-pointer group select-none relative"
+        className="z-50 shrink-0 flex items-center gap-2.5 cursor-pointer group select-none relative"
       >
-        <h1 className="text-[24px] sm:text-[28px] font-black tracking-tighter sm:group-hover:tracking-tight flex items-center transition-all duration-300">
+        <img
+          src="/logo.png"
+          alt="EduBari Logo"
+          className="h-9 sm:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-xs"
+        />
+        <h1 className="text-[22px] sm:text-[26px] font-black tracking-tighter sm:group-hover:tracking-tight flex items-center transition-all duration-300">
           <span className="text-dark sm:group-hover:text-tertiary transition-colors duration-300">
             Edu
           </span>

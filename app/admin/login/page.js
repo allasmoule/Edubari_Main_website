@@ -109,7 +109,12 @@ export default function AdminLoginPage() {
         <div className="relative rounded-2xl border border-white/40 bg-white/70 backdrop-blur-md p-8 sm:p-10 shadow-xl shadow-dark/5">
           {/* Logo / Brand */}
           <div className="text-center mb-8">
-            <Link href="/" className="inline-block no-underline">
+            <Link href="/" className="inline-flex items-center gap-3 no-underline justify-center">
+              <img
+                src="/logo.png"
+                alt="EduBari Logo"
+                className="h-12 w-auto object-contain"
+              />
               <h1 className="text-3xl font-black tracking-tight text-dark select-none m-0">
                 Edu
                 <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">

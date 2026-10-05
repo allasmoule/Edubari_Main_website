@@ -118,12 +118,19 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
         >
           {isExpanded ? (
             <div className="flex items-center justify-between w-full">
-              <h1 className="text-[22px] font-black tracking-tight text-dark select-none">
-                Edu
-                <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
-                  Bari
-                </span>
-              </h1>
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/logo.png"
+                  alt="EduBari Logo"
+                  className="h-8 w-auto object-contain"
+                />
+                <h1 className="text-[20px] font-black tracking-tight text-dark select-none m-0">
+                  Edu
+                  <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
+                    Bari
+                  </span>
+                </h1>
+              </div>
               {isMobile && (
                 <button
                   type="button"
@@ -135,9 +142,11 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
               )}
             </div>
           ) : (
-            <div className="w-9 h-9 rounded-xl bg-linear-to-br from-tertiary to-[#8B5CF6] flex items-center justify-center shadow-md shadow-tertiary/20">
-              <span className="text-white font-black text-sm">E</span>
-            </div>
+            <img
+              src="/logo.png"
+              alt="EduBari Logo"
+              className="w-8 h-8 object-contain"
+            />
           )}
         </div>
 

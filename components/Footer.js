@@ -20,8 +20,13 @@ const Footer = () => {
               <div className="text-center lg:text-left">
                 <Link
                   href="/"
-                  className="inline-flex items-center cursor-pointer group select-none"
+                  className="inline-flex items-center gap-3 cursor-pointer group select-none"
                 >
+                  <img
+                    src="/logo.png"
+                    alt="EduBari Logo"
+                    className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                  />
                   <h2 className="text-[24px] sm:text-[28px] font-black tracking-tighter sm:group-hover:tracking-tight flex items-center transition-all duration-300">
                     <span className="text-dark sm:group-hover:text-tertiary transition-colors duration-300">
                       Edu

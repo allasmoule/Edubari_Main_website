@@ -3,6 +3,11 @@ import "./globals.css";
 export const metadata = {
   title: "EduBari | Smart Digital Learning Platform",
   description: "EduBari is a modern educational learning platform built to provide smart digital learning, accessible interactive resources, and a seamless online learning experience for institutions and coaching centers in Bangladesh.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export const viewport = {
