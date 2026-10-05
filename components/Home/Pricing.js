@@ -25,6 +25,27 @@ const Pricing = () => {
   const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
+    // Check client-side instant memory cache for 0ms load time
+    try {
+      const cachedPlans = sessionStorage.getItem("edubari_cached_plans");
+      if (cachedPlans) {
+        const parsed = JSON.parse(cachedPlans);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setPlans(parsed);
+          setLoading(false);
+        }
+      }
+      const cachedAi = sessionStorage.getItem("edubari_cached_ai_pkgs");
+      if (cachedAi) {
+        const parsedAi = JSON.parse(cachedAi);
+        if (Array.isArray(parsedAi) && parsedAi.length > 0) {
+          setAiPackages(parsedAi);
+          const highlighted = parsedAi.find((p) => p.highlight) || parsedAi[0];
+          setSelectedAiPkg(highlighted);
+        }
+      }
+    } catch (_) {}
+
     fetchPlans();
     fetchAiPackages();
     fetchClients();
@@ -53,17 +74,19 @@ const Pricing = () => {
 
   const fetchPlans = async () => {
     try {
-      setLoading(true);
       setError(null);
       const response = await fetch("/api/plans");
       if (!response.ok) throw new Error("Failed to fetch plans");
       const data = await response.json();
       const activePlans = (data || []).filter((plan) => plan.active !== false && plan.is_active !== false);
-      setPlans(activePlans.length > 0 ? activePlans : data || []);
+      const finalPlans = activePlans.length > 0 ? activePlans : data || [];
+      setPlans(finalPlans);
+      try {
+        sessionStorage.setItem("edubari_cached_plans", JSON.stringify(finalPlans));
+      } catch (_) {}
     } catch (err) {
       console.error("Error fetching plans:", err);
-      setError(err.message);
-      setPlans([]);
+      if (plans.length === 0) setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -76,9 +99,11 @@ const Pricing = () => {
         const data = await res.json();
         const activePkgs = data.filter((p) => p.isActive);
         setAiPackages(activePkgs);
-        // Default to highlighted package (Pro) or first active
         const highlighted = activePkgs.find((p) => p.highlight) || activePkgs[0];
         setSelectedAiPkg(highlighted);
+        try {
+          sessionStorage.setItem("edubari_cached_ai_pkgs", JSON.stringify(activePkgs));
+        } catch (_) {}
       }
     } catch (err) {
       console.error("Error fetching AI packages:", err);

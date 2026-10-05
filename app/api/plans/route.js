@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { query, queryOne, execute } from "@/lib/db";
 import crypto from "crypto";
 import { requireAdmin } from "@/lib/auth";
+import { getCachedPlans, setCachedPlans, invalidatePlansCache } from "@/lib/plansCache";
 
 function parseRowJsonFields(row) {
   if (!row) return row;
@@ -397,17 +398,25 @@ const DEFAULT_PLANS = [
 ];
 
 export async function GET() {
+  const cached = getCachedPlans();
+  if (cached) {
+    return NextResponse.json(cached);
+  }
+
   try {
     const rows = await query("SELECT * FROM plans ORDER BY sort_order ASC, price ASC");
     if (rows && Array.isArray(rows) && rows.length > 0) {
       const dbPlans = rows.map(mapPlanFromDb);
       const dbIds = new Set(dbPlans.map((p) => p.id || p._id));
       const missingDefaults = DEFAULT_PLANS.filter((p) => !dbIds.has(p.id));
-      return NextResponse.json([...dbPlans, ...missingDefaults]);
+      const result = [...dbPlans, ...missingDefaults];
+      setCachedPlans(result);
+      return NextResponse.json(result);
     }
   } catch (error) {
     console.warn("Error fetching plans from DB, falling back to defaults:", error?.message);
   }
+  setCachedPlans(DEFAULT_PLANS);
   return NextResponse.json(DEFAULT_PLANS);
 }
 
@@ -469,6 +478,7 @@ export async function POST(request) {
       ]
     );
 
+    invalidatePlansCache();
     const created = await queryOne("SELECT * FROM plans WHERE id = ?", [planId]);
     return NextResponse.json(mapPlanFromDb(created), { status: 201 });
   } catch (error) {
@@ -476,4 +486,5 @@ export async function POST(request) {
     return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }
+
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, execute } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { invalidatePlansCache } from "@/lib/plansCache";
 
 function parseRowJsonFields(row) {
   if (!row) return row;
@@ -177,6 +178,7 @@ export async function PATCH(request, { params }) {
       await execute(`UPDATE plans SET ${updates.join(", ")} WHERE id = ?`, values);
     }
 
+    invalidatePlansCache();
     const updatedRow = await queryOne("SELECT * FROM plans WHERE id = ?", [id]);
     return NextResponse.json({ message: "Plan updated", plan: mapPlanFromDb(updatedRow) });
   } catch (error) {
@@ -192,6 +194,7 @@ export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
     await execute("DELETE FROM plans WHERE id = ?", [id]);
+    invalidatePlansCache();
     return NextResponse.json({ message: "Plan deleted" });
   } catch (error) {
     console.error("Error deleting plan:", error.message);

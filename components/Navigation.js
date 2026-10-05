@@ -131,7 +131,7 @@ const Navigation = () => {
         {/* Desktop Software Demo */}
         <div className="hidden lg:flex items-center gap-3">
           <Link
-            href="https://software.edubari.bd/"
+            href="https://erp.edubari.bd/"
             target="_blank"
             rel="noopener noreferrer"
             className="relative font-bold shadow-md hover:shadow-lg group overflow-hidden rounded-full p-[2px] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
@@ -232,7 +232,7 @@ const Navigation = () => {
           }}
         >
           <Link
-            href="https://software.edubari.bd/"
+            href="https://erp.edubari.bd/"
             target="_blank"
             rel="noopener noreferrer"
             onClick={closeMobileMenu}

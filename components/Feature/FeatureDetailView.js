@@ -156,7 +156,7 @@ export default function FeatureDetailView({ slug }) {
                   <FiArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
-                  href="https://software.edubari.bd/"
+                  href="https://erp.edubari.bd/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold shadow-md transition-all duration-200 flex items-center gap-2"

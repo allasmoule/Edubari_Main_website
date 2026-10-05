@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import BlogHero from "@/components/Blog/BlogHero";
 import BlogGrid from "@/components/Blog/BlogGrid";
 import BlogSidebar from "@/components/Blog/BlogSidebar";
+import { SAMPLE_BLOG_POSTS } from "@/lib/blogData";
 
 const DEFAULT_TAGS = [
   "EdTech",
@@ -23,34 +24,9 @@ const DEFAULT_TAGS = [
 export default function BlogListingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const loadPosts = async () => {
-      setIsLoading(true);
-      setError("");
-
-      try {
-        const response = await fetch("/api/blog-posts");
-        if (!response.ok) {
-          throw new Error("Failed to fetch blog posts");
-        }
-
-        const data = await response.json();
-        setPosts(Array.isArray(data) ? data : []);
-      } catch (fetchError) {
-        console.error("Error loading blog posts:", fetchError);
-        setError(fetchError.message || "Failed to fetch blog posts");
-        setPosts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadPosts();
-  }, []);
+  const [posts] = useState(SAMPLE_BLOG_POSTS);
+  const isLoading = false;
+  const error = "";
 
   const categories = useMemo(() => {
     const fromPosts = [

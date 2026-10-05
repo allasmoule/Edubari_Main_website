@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -13,39 +13,16 @@ import {
   FiLoader,
 } from "react-icons/fi";
 import BlogCard from "@/components/Blog/BlogCard";
+import { SAMPLE_BLOG_POSTS } from "@/lib/blogData";
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
   const router = useRouter();
   
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [posts] = useState(SAMPLE_BLOG_POSTS);
+  const isLoading = false;
+  const error = "";
   const [popup, setPopup] = useState({ open: false, message: "" });
-
-  useEffect(() => {
-    const loadPosts = async () => {
-      setIsLoading(true);
-      setError("");
-
-      try {
-        const response = await fetch("/api/blog-posts");
-        if (!response.ok) {
-          throw new Error("Failed to fetch blog posts");
-        }
-        const data = await response.json();
-        setPosts(Array.isArray(data) ? data : []);
-      } catch (fetchError) {
-        console.error("Error loading blog posts:", fetchError);
-        setError(fetchError.message || "Failed to fetch blog posts");
-        setPosts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadPosts();
-  }, []);
 
   const post = useMemo(
     () => posts.find((p) => p.slug === slug || p.id === slug || p._id === slug),

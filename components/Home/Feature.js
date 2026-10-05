@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   FiBookOpen,
   FiCreditCard,
@@ -32,7 +33,7 @@ const getYouTubeEmbedUrl = (url) => {
 
 const Feature = () => {
   const { t, lang } = useLanguage();
-  const [videos, setVideos] = useState({});
+  const router = useRouter();
   const [activeVideo, setActiveVideo] = useState(null);
   const isBn = lang === "bn";
 
@@ -159,24 +160,12 @@ const Feature = () => {
     },
   ];
 
+  // Prefetch feature pages for instant navigation on click
   useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const res = await fetch("/api/feature-videos");
-        if (res.ok) {
-          const data = await res.json();
-          const videoMap = {};
-          data.forEach((item) => {
-            videoMap[item.feature_title] = item.video_url;
-          });
-          setVideos(videoMap);
-        }
-      } catch (err) {
-        console.error("Failed to load feature videos:", err);
-      }
-    };
-    fetchVideos();
-  }, []);
+    features.forEach((feature) => {
+      router.prefetch(`/${feature.slug}`);
+    });
+  }, [router]);
 
   return (
     <section id="features" className="w-full px-3 sm:px-6 md:px-10 py-6 sm:py-8 lg:py-10 bg-slate-50/50 select-none relative overflow-hidden">
@@ -207,11 +196,10 @@ const Feature = () => {
           {/* Feature Cards Grid (5 Cards per Row on Desktop, Compact & 3D Animated) */}
           <div className="mt-6 lg:mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-3.5 [perspective:1200px]">
             {features.map((feature, idx) => {
-              const videoUrl = videos[feature.key];
               return (
-                <Link
+                <div
                   key={feature.key}
-                  href={`/${feature.slug}`}
+                  onClick={() => router.push(`/${feature.slug}`)}
                   className="group relative rounded-xl border border-slate-200/70 bg-white/90 backdrop-blur-md p-3.5 sm:p-4 transition-all duration-300 ease-out transform-gpu hover:[transform:rotateX(5deg)_rotateY(-5deg)_translateZ(8px)] hover:shadow-lg hover:shadow-indigo-500/10 hover:border-blue-400 flex flex-col justify-between overflow-hidden cursor-pointer"
                   style={{
                     animationDelay: `${idx * 30}ms`,
@@ -235,9 +223,8 @@ const Feature = () => {
                       <button
                         type="button"
                         onClick={(e) => {
-                          e.preventDefault();
                           e.stopPropagation();
-                          setActiveVideo(videoUrl || "empty");
+                          setActiveVideo("empty");
                         }}
                         className="group/btn inline-flex items-center gap-1 pl-1 pr-2 py-0.5 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200/80 hover:border-red-200 transition-all duration-200 cursor-pointer shadow-2xs"
                         title={t("feature.watchDemo") || "Watch Demo"}
@@ -267,7 +254,7 @@ const Feature = () => {
                     <span>{isBn ? "বিস্তারিত দেখুন" : "View Details"}</span>
                     <FiArrowRight className="w-3 h-3 transform group-hover:translate-x-1 transition-transform" />
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
