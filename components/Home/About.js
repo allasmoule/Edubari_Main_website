@@ -1,30 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { FiHeart, FiTarget, FiShield, FiZap, FiLoader } from "react-icons/fi";
+import React from "react";
+import { FiHeart, FiTarget, FiShield, FiZap } from "react-icons/fi";
 
 const About = () => {
-  const [team, setTeam] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchTeam = async () => {
-      try {
-        const res = await fetch("/api/team");
-        if (res.ok) {
-          const data = await res.json();
-          // Filter out inactive members
-          setTeam(data.filter((m) => m.active));
-        }
-      } catch (err) {
-        console.error("Failed to load team:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTeam();
-  }, []);
-
   return (
     <section
       id="about"
@@ -117,46 +96,6 @@ const About = () => {
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Team Section */}
-          <div className="mt-16 pt-12 border-t border-dark/5 relative">
-            <div className="text-center mb-10">
-              <h3 className="text-2xl sm:text-3xl font-black text-dark tracking-tight">
-                Meet the <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">Team</span>
-              </h3>
-              <p className="text-sm font-medium text-dark/50 mt-2 max-w-lg mx-auto">
-                The passionate minds behind EduBari.
-              </p>
-            </div>
-
-            {loading ? (
-              <div className="flex justify-center py-10">
-                <FiLoader className="w-8 h-8 text-tertiary animate-spin" />
-              </div>
-            ) : team.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
-                {team.map((member) => (
-                  <div key={member.id} className="group flex flex-col items-center text-center p-4 rounded-2xl border border-white/50 bg-white/40 backdrop-blur-sm hover:bg-white/80 shadow-md hover:shadow-xl hover:shadow-tertiary/10 transition-all duration-300 hover:-translate-y-1">
-                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden mb-4 border-4 border-white shadow-md relative bg-dark/5">
-                      {member.image_url ? (
-                        <img 
-                          src={member.image_url} 
-                          alt={member.name} 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl font-black text-dark/20 uppercase">
-                          {member.name.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                    <h4 className="text-sm sm:text-base font-bold text-dark w-full line-clamp-1">{member.name}</h4>
-                    <p className="text-xs font-semibold text-tertiary mt-1 w-full line-clamp-2">{member.description}</p>
-                  </div>
-                ))}
-              </div>
-            ) : null}
           </div>
         </div>
       </div>
