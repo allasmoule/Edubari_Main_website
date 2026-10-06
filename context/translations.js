@@ -182,6 +182,58 @@ export const translations = {
       sitemap: "সাইটম্যাপ",
       languageLabel: "ভাষা:",
     },
+    // About & Roadmap Section
+    aboutPage: {
+      badge: "আমাদের রূপকল্প ও ভবিষ্যৎ পরিকল্পনা",
+      titleMain: "শিক্ষা ডিজিটালাইজেশনের",
+      titleGradient: "এক নতুন দিগন্ত",
+      subtitle: "EduBari হলো বাংলাদেশের শিক্ষা প্রতিষ্ঠানগুলোর জন্য তৈরি একটি সর্বাধুনিক স্মার্ট ডিজিটাল ব্যবস্থাপনা প্ল্যাটফর্ম।",
+      
+      // Mission & Vision
+      missionBadge: "আমাদের মিশন",
+      missionTitle: "শিক্ষকদের ক্ষমতায়ন ও সহজ পরিচালনা",
+      missionDesc: "আমাদের মিশন হলো বাংলাদেশের প্রতিটি শিক্ষা প্রতিষ্ঠান ও শিক্ষকের কাছে আধুনিক, সহজলভ্য এবং উদ্ভাবনী ডিজিটাল ও AI প্রযুক্তি পৌঁছে দেওয়া — যাতে শিক্ষা ব্যবস্থাপনা হয় সহজ, দ্রুত এবং নির্ভুল।",
+      missionPoint1: "১০০% ডিজিটাল রূপান্তর সুবিধা",
+      missionPoint2: "স্বয়ংক্রিয় ভর্তি ও পেমেন্ট ট্র্যাকিং",
+      missionPoint3: "স্মার্ট AI চালিত টিচার প্যানেল",
+
+      visionBadge: "আমাদের ভিশন",
+      visionTitle: "২০৩০ সালের স্মার্ট শিক্ষা ইকোসিস্টেম",
+      visionDesc: "২০৩০ সালের মধ্যে বাংলাদেশের সমগ্র শিক্ষা ব্যবস্থাকে একটি একক, সমন্বিত এবং কৃত্রিম বুদ্ধিমত্তা নির্ভর (AI-powered) স্মার্ট শিক্ষা ইকোসিস্টেমে রূপান্তর করা।",
+      visionPoint1: "জাতীয় পর্যায়ের সমন্বিত ভার্চুয়াল লার্নিং",
+      visionPoint2: "AI-ভিত্তিক পার্সোনালাইজড লার্নিং পাথ",
+      visionPoint3: "ডিজিটাল বৈষম্য দূরীকরণ ও স্মার্ট সেবা",
+
+      // Roadmap Header
+      roadmapBadge: "উন্নয়ন রোডম্যাপ",
+      roadmapHeaderTitle: "EduBari ২০২৫–২০৩০ | বাংলাদেশের শিক্ষা উন্নয়ন পরিকল্পনা",
+      roadmapHeaderSub: "ডিজিটাল ভিত্তি থেকে একটি সমন্বিত AI-ভিত্তিক শিক্ষা ব্যবস্থার পথে",
+      
+      item2025Year: "২০২৫",
+      item2025Title: "ডিজিটাল ভিত্তি স্থাপন",
+      item2025Badge: "ERP, Single Teacher Software complete",
+      item2025Desc: "শিক্ষা প্রতিষ্ঠানের জন্য সম্পূর্ণ ERP এবং একক শিক্ষকদের জন্য সফটওয়্যার প্রস্তুত ও সফলভাবে স্থাপন।",
+
+      item2026Year: "২০২৬-২৭",
+      item2026Title: "ডিজিটাল স্কুল",
+      item2026Badge: "School Digitalization Drive",
+      item2026Desc: "দেশের সকল স্থান থেকে নিবন্ধিত ও নতুন স্কুলসমূহকে EduBari প্ল্যাটফর্মে যুক্ত করে ডিজিটালাইজ করা।",
+
+      item2028Year: "২০২৮",
+      item2028Title: "AI-সক্ষম শিক্ষক",
+      item2028Badge: "AI Teacher Assistance",
+      item2028Desc: "শিক্ষকদের জন্য স্বয়ংক্রিয় প্রশ্নপত্র জেনারেটর, স্লাইড মেকার এবং কন্টেন্ট তৈরিতে AI প্রযুক্তি উন্মুক্তকরণ।",
+
+      item2029Year: "২০২৯",
+      item2029Title: "AI সমন্বিত অনলাইন স্কুল ব্যবস্থা",
+      item2029Badge: "Smart Virtual Schooling",
+      item2029Desc: "স্মার্ট অনলাইন ভার্চুয়াল ক্লাসরুম, রিয়েল-টাইম উপস্থিতি এবং AIচালিত অনলাইন স্কুলিং সিস্টেম।",
+
+      item2030Year: "২০৩০",
+      item2030Title: "AI-ভিত্তিক শিক্ষা ইকোসিস্টেম",
+      item2030Badge: "Unified AI Education Ecosystem",
+      item2030Desc: "সমগ্র বাংলাদেশের শিক্ষা ব্যবস্থা নিয়ে একটি একীভূত, শক্তিশালী এবং কৃত্রিম বুদ্ধিমত্তা চালিত স্মার্ট ইকোসিস্টেম।",
+    },
     // Global / Common
     global: {
       langBn: "বাংলা",
@@ -370,6 +422,58 @@ export const translations = {
       cookies: "Cookies",
       sitemap: "Sitemap",
       languageLabel: "Language:",
+    },
+    // About & Roadmap Section
+    aboutPage: {
+      badge: "Our Vision & Future Roadmap",
+      titleMain: "A New Horizon of",
+      titleGradient: "Educational Digitalization",
+      subtitle: "EduBari is a state-of-the-art smart digital management system built specifically for educational institutions in Bangladesh.",
+      
+      // Mission & Vision
+      missionBadge: "OUR MISSION",
+      missionTitle: "Empowering Educators & Management",
+      missionDesc: "Our mission is to empower every educational institution and teacher in Bangladesh with modern, accessible, and innovative digital & AI technology — making education management simple, fast, and hassle-free.",
+      missionPoint1: "100% Digital School Transformation",
+      missionPoint2: "Automated Admission & Fee Tracking",
+      missionPoint3: "Smart AI-Powered Teacher Panel",
+
+      visionBadge: "OUR VISION",
+      visionTitle: "Smart Education Ecosystem by 2030",
+      visionDesc: "By 2030, to transform the entire education system of Bangladesh into a unified, integrated, and AI-powered smart education ecosystem.",
+      visionPoint1: "Nationwide Integrated Virtual Learning",
+      visionPoint2: "AI-Driven Personalized Learning Paths",
+      visionPoint3: "Bridging Digital Divide Across Institutions",
+
+      // Roadmap Header
+      roadmapBadge: "DEVELOPMENT ROADMAP",
+      roadmapHeaderTitle: "EduBari 2025–2030 | Bangladesh Education Development Plan",
+      roadmapHeaderSub: "From Digital Foundation to an Integrated AI-Powered Education Ecosystem",
+      
+      item2025Year: "2025",
+      item2025Title: "Digital Foundation",
+      item2025Badge: "ERP, Single Teacher Software complete",
+      item2025Desc: "Development & complete deployment of core ERP system and software for individual teachers & coaching centers.",
+
+      item2026Year: "2026-27",
+      item2026Title: "Digital School",
+      item2026Badge: "School Digitalization Drive",
+      item2026Desc: "Onboarding and transforming thousands of registered schools nationwide into fully digital smart institutions.",
+
+      item2028Year: "2028",
+      item2028Title: "AI-Enabled Teacher",
+      item2028Badge: "AI Teacher Assistance",
+      item2028Desc: "Empowering teachers with automatic question generators, slide makers, and intelligent assistant tools.",
+
+      item2029Year: "2029",
+      item2029Title: "AI Integrated Online School",
+      item2029Badge: "Smart Virtual Schooling",
+      item2029Desc: "Smart virtual classrooms, real-time tracking, and AI-driven online school management infrastructure.",
+
+      item2030Year: "2030",
+      item2030Title: "AI Education Ecosystem",
+      item2030Badge: "Unified AI Education Ecosystem",
+      item2030Desc: "A complete nationwide, unified, and AI-driven smart education ecosystem powering all institutions.",
     },
     // Global / Common
     global: {
