@@ -4,7 +4,7 @@ import Pricing from "@/components/Home/Pricing";
 import HowWorks from "@/components/Home/HowWorks";
 import TrustedClients from "@/components/Home/TrustedClients";
 import Feature from "@/components/Home/Feature";
-import WorkProof from "@/components/Home/WorkProof";
+import VideoTutorials from "@/components/Home/VideoTutorials";
 import WhyShouldChoose from "@/components/Home/WhyShouldChoose";
 import GetInTouch from "@/components/Home/GetInTouch";
 
@@ -16,7 +16,7 @@ export default function HomePage() {
       <HowWorks />
       <TrustedClients />
       <Feature />
-      <WorkProof />
+      <VideoTutorials />
       <WhyShouldChoose />
       <GetInTouch />
     </div>

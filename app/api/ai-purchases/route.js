@@ -10,6 +10,7 @@ import {
 } from "@/lib/ai-database";
 import { requireAdmin } from "@/lib/auth";
 import { cleanDomain } from "@/lib/safe-redirect";
+import { sendOrderNotificationEmail } from "@/lib/email";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -84,6 +85,23 @@ export async function POST(request) {
       transactionId: transactionId.slice(0, 100),
       status: "pending",
     });
+
+    // Notify Admin & CC via Email
+    sendOrderNotificationEmail({
+      institutionName: domain,
+      fullName: body.userName || "Customer",
+      email: body.email || "",
+      phone: body.userPhone || "",
+      preferredDomain: domain,
+      selectedPlanName: `${pkg.name} (${pkg.credits} AI Credits)`,
+      selectedPlanDuration: `${pkg.validityDays || 30} Days`,
+      selectedPlanPrice: pkg.price,
+      paymentMethod: `${body.paymentMethod || "Gateway"} (TrxID: ${transactionId})`,
+      subscriptionId: newRequest?.id || transactionId,
+    }).catch((emailErr) => {
+      console.error("AI purchase email send error:", emailErr);
+    });
+
     return NextResponse.json(newRequest, { status: 201 });
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {

@@ -4,6 +4,7 @@ import { queryOne } from "@/lib/db";
 import { createAiPurchaseRequest, updatePurchaseRequestStatus, getAiPackages } from "@/lib/ai-database";
 import { getAdmin } from "@/lib/auth";
 import { cleanDomain, safeRedirectUrl, withParams } from "@/lib/safe-redirect";
+import { sendPaymentNotificationEmail } from "@/lib/email";
 
 /**
  * AI credit payment callbacks.
@@ -42,6 +43,19 @@ async function creditOnce({ domain, pkg, transactionId, paymentMethod, userName,
     status: "pending",
   });
   await updatePurchaseRequestStatus(req.id, "approved");
+
+  sendPaymentNotificationEmail({
+    invoice: req.id,
+    trxId: transactionId,
+    method: paymentMethod,
+    amount: pkg.price,
+    domain,
+    planName: `${pkg.name} (${pkg.credits} AI Credits)`,
+    status: "approved",
+  }).catch((mailErr) => {
+    console.error("AI payment callback email error:", mailErr.message);
+  });
+
   return { duplicate: false, request: { ...req, status: "approved" } };
 }
 

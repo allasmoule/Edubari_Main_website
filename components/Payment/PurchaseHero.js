@@ -12,14 +12,14 @@ const PurchaseHero = () => {
 
             <div className="relative z-10 max-w-3xl mx-auto text-center">
                 {/* Badge */}
-                <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-tertiary/10 text-tertiary text-xs font-bold tracking-wide uppercase mb-5 border border-tertiary/15 backdrop-blur-sm">
-                    💳 Payment & Purchase
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold tracking-wide uppercase mb-5 border border-slate-200">
+                    Payment & Purchase
                 </div>
 
                 {/* Headline */}
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-[54px] font-black tracking-tighter text-dark leading-[1.1]">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-[54px] font-black tracking-tighter text-slate-900 leading-[1.1]">
                     Choose Your Plan &{" "}
-                    <span className="bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
+                    <span className="text-blue-600">
                         Get Started
                     </span>
                 </h1>

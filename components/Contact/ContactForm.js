@@ -122,9 +122,9 @@ const ContactForm = () => {
   };
 
   const inputBase =
-    "w-full rounded-xl border bg-slate-50/70 focus:bg-white pl-10 pr-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium outline-none transition-all duration-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 shadow-2xs";
+    "w-full rounded-xl border bg-slate-50 focus:bg-white pl-10 pr-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium outline-none transition-all duration-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500";
   const inputNormal = "border-slate-200 hover:border-slate-300";
-  const inputError = "border-red-400 focus:ring-red-400/30 focus:border-red-500";
+  const inputError = "border-red-400 focus:ring-red-400/20 focus:border-red-500";
 
   return (
     <section id="contact-form-section" className="w-full px-4 sm:px-6 md:px-12 py-12 lg:py-16">
@@ -132,19 +132,16 @@ const ContactForm = () => {
         <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-stretch">
           
           {/* Left Column — Support Features & Direct Assurance */}
-          <div className="flex flex-col justify-between bg-linear-to-br from-indigo-900 via-slate-900 to-slate-950 text-white rounded-3xl p-7 sm:p-9 lg:p-10 shadow-2xl relative overflow-hidden">
-            {/* Background Blob */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-
+          <div className="flex flex-col justify-between bg-slate-900 text-white rounded-2xl p-7 sm:p-9 lg:p-10 border border-slate-800">
             <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6">
-                <FiHeadphones className="w-3.5 h-3.5 text-amber-400" />
-                <span>{isBn ? "কাস্টমার সাপোর্ট ডেস্কে লিখুন" : "Direct Support Desk"}</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold uppercase tracking-wider mb-6">
+                <FiHeadphones className="w-3.5 h-3.5 text-blue-400" />
+                <span>{isBn ? "কাস্টমার সাপোর্ট ডেস্ক" : "Direct Support Desk"}</span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
                 {isBn ? "আমরা আপনার প্রশ্নের উত্তর দিতে তৈরি" : "Let's Build Something "}
-                <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-400 via-indigo-300 to-purple-300">
+                <span className="text-blue-400 block mt-1">
                   {isBn ? "একসাথে কাজ করি" : "Great Together"}
                 </span>
               </h2>
@@ -161,21 +158,21 @@ const ContactForm = () => {
                   {
                     title: isBn ? "২৪ ঘণ্টার মধ্যে সমাধান" : "Guaranteed Fast Response",
                     desc: isBn ? "আপনার যেকোনো প্রশ্নের দ্রুত সমাধান দেওয়া আমাদের অঙ্গীকার।" : "We guarantee a response within 24 hours max.",
-                    icon: <FiClock className="w-5 h-5 text-indigo-400" />,
+                    icon: <FiClock className="w-5 h-5 text-slate-300" />,
                   },
                   {
                     title: isBn ? "১০০% নিরাপদ ও গোপনীয়" : "100% Confidential Support",
                     desc: isBn ? "আপনার প্রতিষ্ঠানের তথ্য আমাদের কাছে সম্পূর্ণ নিরাপদ।" : "Your school details & data are kept strictly private.",
-                    icon: <FiShield className="w-5 h-5 text-emerald-400" />,
+                    icon: <FiShield className="w-5 h-5 text-slate-300" />,
                   },
                   {
                     title: isBn ? "ফ্রি ডেমো ও সেটআপ গাইড" : "Free Personalized Onboarding",
                     desc: isBn ? "আমাদের এক্সপার্ট আপনাকে সফটওয়্যার ব্যবহারে সম্পূর্ণ সাহায্য করবে।" : "Step-by-step guidance on how to launch your ERP.",
-                    icon: <FiCheckCircle className="w-5 h-5 text-amber-400" />,
+                    icon: <FiCheckCircle className="w-5 h-5 text-slate-300" />,
                   },
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                    <div className="p-2 rounded-xl bg-white/10 shrink-0">
+                  <div key={idx} className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-800/60 border border-slate-800">
+                    <div className="p-2 rounded-lg bg-slate-800 shrink-0">
                       {item.icon}
                     </div>
                     <div>
@@ -190,13 +187,12 @@ const ContactForm = () => {
             {/* Support Manager Card */}
             <div className="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-extrabold text-sm border-2 border-white/20 shadow-md">
+                <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-bold text-sm">
                   EB
                 </div>
                 <div>
                   <p className="text-sm font-bold text-white">EduBari Support Desk</p>
-                  <p className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
+                  <p className="text-xs text-slate-400 font-medium">
                     {isBn ? "অনলাইনে উপস্থিত" : "Online & Active"}
                   </p>
                 </div>
@@ -206,15 +202,15 @@ const ContactForm = () => {
                 href="https://wa.me/8801754958008"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition-all"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors"
               >
-                {isBn ? "জরুরি কল" : "Urgent?"}
+                {isBn ? "হোয়াটসঅ্যাপ কল" : "WhatsApp"}
               </a>
             </div>
           </div>
 
-          {/* Right Column — Premium Glass Form */}
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-7 sm:p-9 lg:p-10 shadow-xl shadow-slate-200/50 flex flex-col justify-between">
+          {/* Right Column — Clean Form */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-7 sm:p-9 lg:p-10 shadow-sm flex flex-col justify-between">
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               
               <div>
@@ -229,7 +225,7 @@ const ContactForm = () => {
               {/* Subject Tags Selection */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <FiTag className="w-3.5 h-3.5 text-indigo-600" />
+                  <FiTag className="w-3.5 h-3.5 text-slate-500" />
                   <span>{isBn ? "বিষয় নির্বাচন করুন" : "Select Topic"}</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -241,10 +237,10 @@ const ContactForm = () => {
                         type="button"
                         key={opt.id}
                         onClick={() => handleSelectSubject(labelText)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border ${
                           isSelected
-                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 scale-[1.02]"
-                            : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
+                            ? "bg-slate-900 border-slate-900 text-white"
+                            : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                         }`}
                       >
                         {labelText}
@@ -346,7 +342,7 @@ const ContactForm = () => {
                     placeholder={isBn ? "আপনার মেসেজের বিষয়" : "Subject title"}
                     value={form.subject}
                     onChange={handleChange}
-                    className={`w-full rounded-xl border bg-slate-50/70 focus:bg-white px-4 py-3 text-sm text-slate-900 font-medium outline-none transition-all duration-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 ${errors.subject ? inputError : inputNormal}`}
+                    className={`w-full rounded-xl border bg-slate-50 focus:bg-white px-4 py-3 text-sm text-slate-900 font-medium outline-none transition-all duration-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${errors.subject ? inputError : inputNormal}`}
                   />
                   {errors.subject && (
                     <p className="mt-1 text-xs text-red-500 font-semibold flex items-center gap-1">
@@ -371,7 +367,7 @@ const ContactForm = () => {
                     placeholder={isBn ? "আপনার প্রতিষ্ঠানের বিস্তারিত বিবরণ বা প্রশ্ন লিখুন..." : "Tell us about your institution or inquiry details..."}
                     value={form.message}
                     onChange={handleChange}
-                    className={`w-full rounded-xl border bg-slate-50/70 focus:bg-white pl-10 pr-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium outline-none transition-all duration-300 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 resize-none ${errors.message ? inputError : inputNormal}`}
+                    className={`w-full rounded-xl border bg-slate-50 focus:bg-white pl-10 pr-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium outline-none transition-all duration-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${errors.message ? inputError : inputNormal}`}
                   />
                 </div>
                 {errors.message && (
@@ -386,7 +382,7 @@ const ContactForm = () => {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-indigo-600 via-indigo-700 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold text-sm py-4 px-6 shadow-xl shadow-indigo-600/25 hover:shadow-indigo-600/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer border-none disabled:opacity-60"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3.5 px-6 shadow-sm transition-colors duration-200 cursor-pointer border-none disabled:opacity-60"
               >
                 {status === "sending" ? (
                   <>
@@ -395,8 +391,8 @@ const ContactForm = () => {
                   </>
                 ) : status === "success" ? (
                   <>
-                    <FiCheck className="w-5 h-5 text-emerald-300" />
-                    <span>{isBn ? "মেসেজ সফলভাবে পাঠানো হয়েছে!" : "Message Sent Successfully!"}</span>
+                    <FiCheck className="w-4 h-4" />
+                    <span>{isBn ? "মেসেজ সফলভাবে পাঠানো হয়েছে" : "Message Sent Successfully"}</span>
                   </>
                 ) : (
                   <>
@@ -409,15 +405,15 @@ const ContactForm = () => {
 
             {/* Status Notifications */}
             {status === "success" && (
-              <div className="mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold flex items-center gap-2.5 animate-[fadeInUp_0.3s_ease-out]">
-                <FiCheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold flex items-center gap-2.5">
+                <FiCheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>{isBn ? "ধন্যবাদ! আমরা খুব শীঘ্রই আপনার সাথে যোগাযোগ করব।" : "Thank you! We have received your message and will respond shortly."}</span>
               </div>
             )}
 
             {status === "error" && (
-              <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-bold flex items-center gap-2.5 animate-[fadeInUp_0.3s_ease-out]">
-                <FiAlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+              <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-semibold flex items-center gap-2.5">
+                <FiAlertCircle className="w-4 h-4 text-red-600 shrink-0" />
                 <span>{isBn ? "মেসেজ পাঠানো সম্ভব হয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।" : "Failed to send message. Please try again or call us directly."}</span>
               </div>
             )}

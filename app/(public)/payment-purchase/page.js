@@ -82,9 +82,10 @@ function PurchaseContent() {
             
             <button 
               onClick={() => setShowRegistrationPopup(true)}
-              className="mt-8 bg-gradient-to-r from-tertiary to-[#8B5CF6] text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="mt-8 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-8 rounded-xl shadow-sm transition-colors flex items-center gap-2 text-sm cursor-pointer"
             >
-              Complete Registration
+              <span>Complete Order (অর্ডার সম্পন্ন করুন)</span>
+              <span>→</span>
             </button>
           </div>
         </section>

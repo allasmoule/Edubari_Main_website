@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendOrderNotificationEmail } from "@/lib/email";
 
 const HARDCODED_GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw1mIEzNBLv6YLZpYwhewI5S7MITs1a8BYqId3QQhk30rn6VAN5sbYc8zOZ3cctoiJu/exec";
 
@@ -98,6 +99,14 @@ export async function POST(request) {
         console.error("Google Sheets WebApp fetch error:", gsErr);
       }
     }
+
+    // 3. Send Email Notification to Admin & CC (+ confirmation to customer)
+    sendOrderNotificationEmail({
+      ...mappedSubscription,
+      subscriptionId: createdRecordId || `SUB-${Date.now()}`
+    }).catch((emailErr) => {
+      console.error("Background order email send error:", emailErr);
+    });
 
     return NextResponse.json({ 
       message: "Order submitted successfully", 

@@ -30,24 +30,24 @@ const OrderSummary = ({ selectedPlan }) => {
     return (
         <div className="rounded-[24px] border border-white/30 bg-white/60 backdrop-blur-sm overflow-hidden shadow-lg shadow-dark/5">
             {/* Header */}
-            <div className="bg-linear-to-r from-tertiary to-[#8B5CF6] px-6 py-4">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white px-6 py-4 flex items-center justify-between border-b border-slate-200">
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    Order Summary
+                    অর্ডার সামারি (Order Summary)
                 </h3>
             </div>
 
-            <div className="p-6">
+            <div className="p-6 bg-white">
                 {/* Selected plan */}
-                <div className="flex items-center justify-between pb-4 border-b border-dark/8">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-200">
                     <div>
-                        <p className="text-sm font-bold text-dark">{selectedPlan.name} Plan</p>
-                        <p className="text-xs text-dark/50 mt-0.5">{selectedPlan.duration} {selectedPlan.duration_days ? `(${selectedPlan.duration_days} Days)` : ""}</p>
+                        <p className="text-sm font-bold text-slate-900">{selectedPlan.name} Plan</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{selectedPlan.duration} {selectedPlan.duration_days ? `(${selectedPlan.duration_days} Days)` : ""}</p>
                     </div>
                     {selectedPlan.badge && (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-linear-to-r from-tertiary to-[#8B5CF6] text-white">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-slate-900 text-white">
                             {selectedPlan.badge}
                         </span>
                     )}
@@ -56,24 +56,24 @@ const OrderSummary = ({ selectedPlan }) => {
                 {/* Price breakdown */}
                 <div className="mt-4 space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-dark/60">Subtotal</span>
-                        <span className="font-semibold text-dark">
+                        <span className="text-slate-600">Subtotal</span>
+                        <span className="font-semibold text-slate-900">
                             ৳{originalPrice.toLocaleString()}
                         </span>
                     </div>
 
                     {discount > 0 && (
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-green-600">Discount</span>
-                            <span className="font-semibold text-green-600">
+                            <span className="text-slate-600">Discount</span>
+                            <span className="font-semibold text-slate-900">
                                 -৳{discount.toLocaleString()}
                             </span>
                         </div>
                     )}
 
-                    <div className="pt-3 border-t border-dark/8 flex items-center justify-between">
-                        <span className="text-base font-bold text-dark">Total</span>
-                        <span className="text-2xl font-black bg-clip-text text-transparent bg-linear-to-r from-tertiary to-[#8B5CF6]">
+                    <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+                        <span className="text-base font-bold text-slate-900">Total</span>
+                        <span className="text-2xl font-black text-slate-900">
                             ৳{price.toLocaleString()}
                         </span>
                     </div>

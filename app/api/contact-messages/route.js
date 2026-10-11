@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { requireAdmin } from "@/lib/auth";
+import { sendContactMessageNotificationEmail } from "@/lib/email";
 
 export async function GET(request) {
   const auth = await requireAdmin(request);
@@ -40,7 +41,10 @@ export async function POST(request) {
 
     if (error) throw error;
     
-    // In next phase, SMTP or SendGrid/Resend can be added easily here
+    // Send email notification to Admin & CC (+ auto-acknowledgment to sender)
+    sendContactMessageNotificationEmail(mappedMessage).catch((mailErr) => {
+      console.error("Background contact email send error:", mailErr);
+    });
     
     return NextResponse.json({ message: "Contact message received", contactMessageId: data[0].id }, { status: 201 });
   } catch (error) {

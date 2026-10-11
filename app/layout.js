@@ -1,4 +1,11 @@
+import { Raleway } from "next/font/google";
 import "./globals.css";
+
+const raleway = Raleway({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
 export const metadata = {
   title: "EduBari | Smart Digital Learning Platform",
@@ -20,7 +27,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-white text-dark antialiased" suppressHydrationWarning>
+      <body className={`${raleway.className} min-h-screen bg-white text-dark antialiased`} suppressHydrationWarning>
         {children}
       </body>
     </html>
