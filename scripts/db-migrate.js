@@ -28,7 +28,9 @@ function readMigrations() {
     .sort()
     .map((file) => {
       const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), "utf8");
-      return { version: file.slice(0, 4), name: file, sql, checksum: crypto.createHash("sha256").update(sql).digest("hex") };
+      // Hash with LF line endings so a Windows (CRLF) checkout and the Linux container agree
+      const checksum = crypto.createHash("sha256").update(sql.replace(/\r\n/g, "\n")).digest("hex");
+      return { version: file.slice(0, 4), name: file, sql, checksum };
     });
 }
 
