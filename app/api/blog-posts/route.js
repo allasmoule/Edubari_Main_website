@@ -1,23 +1,22 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
-import { requireAdmin } from "@/lib/auth";
-
+import { query, isUniqueViolation } from "@/lib/db";
+import { getAdmin, requireAdmin } from "@/lib/auth";
 import { SAMPLE_BLOG_POSTS } from "@/lib/blogData";
+import { BLOG_POST_ALIASES, BLOG_POST_FIELDS, insertRow, normalizeKeys, pickFields, slugify } from "@/lib/crud";
 
-export async function GET() {
+/**
+ * Public: active posts (the sample posts when there are none yet).
+ * A signed-in admin gets every post from the database, hidden ones included.
+ */
+export async function GET(request) {
+  const admin = await getAdmin(request).catch(() => null);
   try {
-    const { data, error } = await supabaseAdmin
-      .from("blog_posts")
-      .select("*")
-      .eq("active", true)
-      .order("created_at", { ascending: false });
-
-    if (!error && Array.isArray(data) && data.length > 0) {
-      return NextResponse.json(data);
-    }
+    const data = await query(`SELECT * FROM blog_posts ${admin ? "" : "WHERE active"} ORDER BY created_at DESC`);
+    if (admin || data.length > 0) return NextResponse.json(data);
     return NextResponse.json(SAMPLE_BLOG_POSTS);
   } catch (error) {
     console.warn("Falling back to sample blog posts due to error:", error?.message);
+    if (admin) return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     return NextResponse.json(SAMPLE_BLOG_POSTS);
   }
 }
@@ -27,26 +26,18 @@ export async function POST(request) {
   if (auth.response) return auth.response;
 
   try {
-    const body = await request.json();
-    const mappedPost = {
-      title: body.title,
-      slug: body.slug || body.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""),
-      content: body.content,
-      excerpt: body.excerpt || null,
-      cover_image: body.cover_image || body.coverImage || null,
-      author_name: body.author_name || body.authorName || "Admin",
-      active: typeof body.active === "boolean" ? body.active : true
-    };
-
-    const { data, error } = await supabaseAdmin
-      .from("blog_posts")
-      .insert([mappedPost])
-      .select();
-
-    if (error) throw error;
-    return NextResponse.json({ message: "Blog post created", blogPostId: data[0].id }, { status: 201 });
+    const fields = pickFields(normalizeKeys(await request.json(), BLOG_POST_ALIASES), BLOG_POST_FIELDS);
+    if (!fields.title || !fields.content) {
+      return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
+    }
+    fields.slug = slugify(fields.slug || fields.title) || crypto.randomUUID();
+    const created = await insertRow("blog_posts", { id: crypto.randomUUID(), ...fields });
+    return NextResponse.json({ ...created, message: "Blog post created", blogPostId: created.id }, { status: 201 });
   } catch (error) {
-    console.error("Error creating blog post:", error);
+    if (isUniqueViolation(error)) {
+      return NextResponse.json({ error: "A post with this slug already exists" }, { status: 409 });
+    }
+    console.error("Error creating blog post:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

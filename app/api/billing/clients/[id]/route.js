@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { query, queryOne, execute } from "@/lib/db";
+import { queryOne, execute, withTransaction, isUniqueViolation, isCheckViolation } from "@/lib/db";
+import { cleanDomain } from "@/lib/safe-redirect";
 import { requireAdmin } from "@/lib/auth";
 
 export async function PATCH(request, { params }) {
@@ -24,8 +25,10 @@ export async function PATCH(request, { params }) {
       values.push(client_name);
     }
     if (domain !== undefined) {
+      const cleaned = cleanDomain(domain);
+      if (!cleaned) return NextResponse.json({ error: "Enter a valid domain" }, { status: 400 });
       updates.push("domain = ?");
-      values.push(domain);
+      values.push(cleaned);
     }
     if (status !== undefined) {
       updates.push("status = ?");
@@ -40,21 +43,25 @@ export async function PATCH(request, { params }) {
       values.push(logo_url);
     }
 
-    if (updates.length > 0) {
+    const updated = await withTransaction(async (tx) => {
+      if (updates.length === 0) return tx.queryOne("SELECT * FROM clients WHERE id = ?", [id]);
       values.push(id);
-      await execute(
-        `UPDATE clients SET ${updates.join(", ")} WHERE id = ?`,
-        values
-      );
-    }
-
-    const updated = await queryOne("SELECT * FROM clients WHERE id = ?", [id]);
+      const row = await tx.queryOne(`UPDATE clients SET ${updates.join(", ")} WHERE id = ? RETURNING *`, values);
+      // The ERP connection row keeps its own copy of the domain
+      if (domain !== undefined) {
+        await tx.execute("UPDATE erp_connections SET domain = ? WHERE client_id = ?", [row.domain, id]);
+      }
+      return row;
+    });
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating client:", error.message);
-    if (error.message && error.message.includes("ER_DUP_ENTRY")) {
+    if (isUniqueViolation(error)) {
       return NextResponse.json({ error: "Domain already registered" }, { status: 400 });
     }
+    if (isCheckViolation(error)) {
+      return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
+    }
+    console.error("Error updating client:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -66,8 +73,7 @@ export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
 
-    // Delete associated subscriptions first to maintain integrity
-    await execute("DELETE FROM subscriptions WHERE client_id = ?", [id]);
+    // Subscriptions, payments and the ERP connection are removed with it (ON DELETE CASCADE)
     await execute("DELETE FROM clients WHERE id = ?", [id]);
 
     return NextResponse.json({ message: "Client deleted successfully" });

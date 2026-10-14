@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
-import { requireAdmin } from "@/lib/auth";
+import { query } from "@/lib/db";
+import { getAdmin, requireAdmin } from "@/lib/auth";
+import { WORK_PROOF_ALIASES, WORK_PROOF_FIELDS, insertRow, normalizeKeys, pickFields } from "@/lib/crud";
 
-export async function GET() {
+/** Public: active work proofs. A signed-in admin also sees the hidden ones. */
+export async function GET(request) {
   try {
-    const { data } = await supabaseAdmin
-      .from("work_proofs")
-      .select("*")
-      .eq("active", true)
-      .order("order_index", { ascending: true });
-
-    return NextResponse.json(data || []);
+    const admin = await getAdmin(request);
+    const data = await query(
+      `SELECT * FROM work_proofs ${admin ? "" : "WHERE active"} ORDER BY order_index ASC, created_at ASC`
+    );
+    return NextResponse.json(data);
   } catch (error) {
     console.warn("Error fetching work proofs:", error?.message);
     return NextResponse.json([]);
@@ -22,26 +22,15 @@ export async function POST(request) {
   if (auth.response) return auth.response;
 
   try {
-    const body = await request.json();
-    const mappedProof = {
-      title: body.title,
-      description: body.description || null,
-      image_url: body.image_url || body.imageUrl || null,
-      client_name: body.client_name || body.clientName || null,
-      project_url: body.project_url || body.projectUrl || null,
-      order_index: Number(body.order_index || body.orderIndex || 1),
-      active: typeof body.active === "boolean" ? body.active : true
-    };
-
-    const { data, error } = await supabaseAdmin
-      .from("work_proofs")
-      .insert([mappedProof])
-      .select();
-
-    if (error) throw error;
-    return NextResponse.json({ message: "Work proof created", workProofId: data[0].id }, { status: 201 });
+    const body = normalizeKeys(await request.json(), WORK_PROOF_ALIASES);
+    const fields = pickFields(body, WORK_PROOF_FIELDS);
+    if (!fields.title) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+    const created = await insertRow("work_proofs", { id: crypto.randomUUID(), ...fields });
+    return NextResponse.json({ ...created, message: "Work proof created", workProofId: created.id }, { status: 201 });
   } catch (error) {
-    console.error("Error creating work proof:", error);
+    console.error("Error creating work proof:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

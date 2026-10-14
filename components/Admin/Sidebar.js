@@ -21,8 +21,6 @@ import {
   FiLayers,
   FiServer,
 } from "react-icons/fi";
-import { supabase } from "@/lib/supabase";
-
 const navItems = [
   { path: "/admin/dashboard", label: "Dashboard", icon: FiGrid, end: true },
   { path: "/admin/dashboard/billing", label: "Single Teacher Subscriptions", icon: FiLayers },
@@ -82,7 +80,11 @@ const Sidebar = ({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "logout" }),
+      });
       setMobileOpen(false);
       router.replace("/admin/login");
     } catch (error) {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { queryOne, execute } from "@/lib/db";
+import { query, queryOne, execute } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 
 /**
@@ -33,8 +33,7 @@ export async function POST(request) {
        SET last_ping_at = NOW(), 
            connection_status = 'connected',
            laravel_version = COALESCE(?, laravel_version),
-           erp_version = COALESCE(?, erp_version),
-           updated_at = NOW()
+           erp_version = COALESCE(?, erp_version)
        WHERE erp_api_token = ?`,
       [laravel_version || null, erp_version || null, token]
     );
@@ -58,20 +57,19 @@ export async function GET(request) {
   if (auth.response) return auth.response;
 
   try {
-    const { query } = await import("@/lib/db");
     const rows = await query(
       `SELECT ec.*, c.client_name, c.domain, c.status AS client_status,
               s.end_date AS subscription_end_date, s.grace_end_date AS subscription_grace_end_date,
               p.plan_name, p.price AS plan_price
        FROM erp_connections ec
        LEFT JOIN clients c ON ec.client_id = c.id
-       LEFT JOIN subscriptions s ON s.client_id = ec.client_id AND s.is_current = 1
+       LEFT JOIN subscriptions s ON s.client_id = ec.client_id AND s.is_current
        LEFT JOIN plans p ON p.id = s.plan_id
-       ORDER BY ec.last_ping_at DESC`
+       ORDER BY ec.last_ping_at DESC NULLS LAST`
     );
     return NextResponse.json(rows || []);
   } catch (error) {
     console.error("[ERP Ping GET] Error:", error.message);
-    return NextResponse.json([]);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

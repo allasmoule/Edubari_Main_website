@@ -14,7 +14,7 @@ export async function GET() {
       `SELECT c.id, c.client_name, c.domain, c.logo_url, c.client_type, c.status,
               s.start_date, s.end_date, s.grace_end_date, p.plan_name
        FROM clients c
-       LEFT JOIN subscriptions s ON s.client_id = c.id AND s.is_current = 1
+       LEFT JOIN subscriptions s ON s.client_id = c.id AND s.is_current
        LEFT JOIN plans p ON p.id = s.plan_id
        ORDER BY c.client_name`
     );

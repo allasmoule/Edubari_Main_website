@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { queryOne, execute } from "@/lib/db";
+import { queryOne, execute, isUniqueViolation } from "@/lib/db";
 import { hashPassword, requireAdmin } from "@/lib/auth";
 
 /**
@@ -33,6 +33,9 @@ export async function POST(request) {
 
     return NextResponse.json({ message: "User created successfully", user: { id, email, user_metadata: { name } } }, { status: 201 });
   } catch (error) {
+    if (isUniqueViolation(error)) {
+      return NextResponse.json({ error: "A user with this email already exists" }, { status: 409 });
+    }
     console.error("Error creating user:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }

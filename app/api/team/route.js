@@ -1,22 +1,14 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { query } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { TEAM_MEMBER_FIELDS, insertRow, pickFields } from "@/lib/crud";
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from("team_members")
-      .select("*")
-      .order("order_index", { ascending: true });
-
-    if (error) {
-      console.error("GET team_members Error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
+    const data = await query("SELECT * FROM team_members ORDER BY order_index ASC, created_at ASC");
     return NextResponse.json(data);
   } catch (err) {
-    console.error("Unexpected GET team_members Error:", err);
+    console.error("Unexpected GET team_members Error:", err.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -26,31 +18,14 @@ export async function POST(request) {
   if (auth.response) return auth.response;
 
   try {
-    const body = await request.json();
-    const { name, description, image_url, order_index, active } = body;
-
-    const { data, error } = await supabase
-      .from("team_members")
-      .insert([
-        {
-          name,
-          description,
-          image_url,
-          order_index: order_index || 1,
-          active: active !== undefined ? active : true,
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      console.error("POST team_members Error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    const fields = pickFields(await request.json(), TEAM_MEMBER_FIELDS);
+    if (!fields.name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
-
-    return NextResponse.json(data, { status: 201 });
+    const created = await insertRow("team_members", { id: crypto.randomUUID(), ...fields });
+    return NextResponse.json(created, { status: 201 });
   } catch (err) {
-    console.error("Unexpected POST team_members Error:", err);
+    console.error("Unexpected POST team_members Error:", err.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

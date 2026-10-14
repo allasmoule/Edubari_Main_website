@@ -1,16 +1,46 @@
 services:
+  db:
+    image: postgres:17-alpine
+    container_name: edubari_postgres
+    environment:
+      POSTGRES_USER: ${PGUSER:-edubari}
+      POSTGRES_PASSWORD: ${PGPASSWORD:?Set PGPASSWORD in .env}
+      POSTGRES_DB: ${PGDATABASE:-edubari}
+    volumes:
+      - edubari_pgdata:/var/lib/postgresql/data
+    # Not published to the host: only the app container can reach the database.
+    # For a one-off admin session use: docker exec -it edubari_postgres psql -U <user> <db>
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - foster_network
+    restart: unless-stopped
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: edubari_app
+    container_name: edubari_app_website
     ports:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      # The app talks to the db service above (overrides any PGHOST in .env)
+      PGHOST: db
+      PGPORT: "5432"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - foster_network
     restart: unless-stopped
+
+volumes:
+  edubari_pgdata:
 
 networks:
   foster_network:

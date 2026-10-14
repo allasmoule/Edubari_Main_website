@@ -67,9 +67,8 @@ export async function POST(request) {
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
-    const errorMsg = error?.message || error?.sqlMessage || error?.code || "Internal Server Error";
-    console.error("Auth API Error:", errorMsg, error);
-    return NextResponse.json({ error: errorMsg }, { status: 500 });
+    console.error("Auth API Error:", error?.message || error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 

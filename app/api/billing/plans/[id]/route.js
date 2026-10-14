@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { execute, queryOne, isForeignKeyViolation, isCheckViolation } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { invalidatePlansCache } from "@/lib/plansCache";
 
 export async function PATCH(request, { params }) {
   const auth = await requireAdmin(request);
@@ -9,60 +10,52 @@ export async function PATCH(request, { params }) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { 
-      plan_name, 
-      duration_days, 
-      max_students, 
-      max_instructors, 
-      price, 
-      features,
-      plan_tier,
-      max_batches,
-      monthly_ai_credits,
-      show_branding,
-      is_active,
-      sort_order,
-      feature_gates,
-      old_price,
-      price_label,
-      duration,
-      description,
-      popular,
-      badge
+    const {
+      plan_name, duration_days, max_students, max_instructors, price, features,
+      plan_tier, plan_type, max_batches, monthly_ai_credits, show_branding, is_active,
+      sort_order, feature_gates, old_price, price_label, duration, description,
+      popular, badge,
     } = body;
 
-    const updates = {};
-    if (plan_name !== undefined) updates.plan_name = plan_name;
-    if (duration_days !== undefined) updates.duration_days = Number(duration_days);
-    if (max_students !== undefined) updates.max_students = Number(max_students);
-    if (max_instructors !== undefined) updates.max_instructors = Number(max_instructors);
-    if (price !== undefined) updates.price = Number(price);
-    if (features !== undefined) updates.features = features;
-    if (plan_tier !== undefined) updates.plan_tier = plan_tier;
-    if (max_batches !== undefined) updates.max_batches = Number(max_batches);
-    if (monthly_ai_credits !== undefined) updates.monthly_ai_credits = Number(monthly_ai_credits);
-    if (show_branding !== undefined) updates.show_branding = show_branding;
-    if (is_active !== undefined) updates.is_active = is_active;
-    if (sort_order !== undefined) updates.sort_order = Number(sort_order);
-    if (feature_gates !== undefined) updates.feature_gates = feature_gates;
-    if (old_price !== undefined) updates.old_price = old_price !== null ? Number(old_price) : null;
-    if (price_label !== undefined) updates.price_label = price_label;
-    if (duration !== undefined) updates.duration = duration;
-    if (description !== undefined) updates.description = description;
-    if (popular !== undefined) updates.popular = popular;
-    if (badge !== undefined) updates.badge = badge;
+    const setClauses = [];
+    const values = [];
 
-    const { data, error } = await supabaseAdmin
-      .from("plans")
-      .update(updates)
-      .eq("id", id)
-      .select()
-      .single();
+    if (plan_name !== undefined) { setClauses.push("plan_name = ?"); values.push(plan_name); }
+    if (duration_days !== undefined) { setClauses.push("duration_days = ?"); values.push(Number(duration_days)); }
+    if (max_students !== undefined) { setClauses.push("max_students = ?"); values.push(Number(max_students)); }
+    if (max_instructors !== undefined) { setClauses.push("max_instructors = ?"); values.push(Number(max_instructors)); }
+    if (price !== undefined) { setClauses.push("price = ?"); values.push(Number(price)); }
+    if (features !== undefined) { setClauses.push("features = ?"); values.push(JSON.stringify(Array.isArray(features) ? features : [])); }
+    if (plan_tier !== undefined) { setClauses.push("plan_tier = ?"); values.push(plan_tier); }
+    if (plan_type !== undefined) { setClauses.push("plan_type = ?"); values.push(plan_type); }
+    if (max_batches !== undefined) { setClauses.push("max_batches = ?"); values.push(Number(max_batches)); }
+    if (monthly_ai_credits !== undefined) { setClauses.push("monthly_ai_credits = ?"); values.push(Number(monthly_ai_credits)); }
+    if (show_branding !== undefined) { setClauses.push("show_branding = ?"); values.push(Boolean(show_branding)); }
+    if (is_active !== undefined) { setClauses.push("is_active = ?"); values.push(Boolean(is_active)); }
+    if (sort_order !== undefined) { setClauses.push("sort_order = ?"); values.push(Number(sort_order)); }
+    if (feature_gates !== undefined) { setClauses.push("feature_gates = ?"); values.push(JSON.stringify(feature_gates || {})); }
+    if (old_price !== undefined) { setClauses.push("old_price = ?"); values.push(old_price !== null && old_price !== "" ? Number(old_price) : null); }
+    if (price_label !== undefined) { setClauses.push("price_label = ?"); values.push(price_label); }
+    if (duration !== undefined) { setClauses.push("duration = ?"); values.push(duration); }
+    if (description !== undefined) { setClauses.push("description = ?"); values.push(description); }
+    if (popular !== undefined) { setClauses.push("popular = ?"); values.push(Boolean(popular)); }
+    if (badge !== undefined) { setClauses.push("badge = ?"); values.push(badge); }
 
-    if (error) throw error;
-    return NextResponse.json(data);
+    if (setClauses.length === 0) {
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
+    }
+
+    values.push(id);
+    const updated = await queryOne(`UPDATE plans SET ${setClauses.join(", ")} WHERE id = ? RETURNING *`, values);
+    if (!updated) return NextResponse.json({ error: "Plan not found" }, { status: 404 });
+
+    invalidatePlansCache();
+    return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating plan:", error);
+    if (isCheckViolation(error)) {
+      return NextResponse.json({ error: "Invalid plan value" }, { status: 400 });
+    }
+    console.error("Error updating plan:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -73,23 +66,16 @@ export async function DELETE(request, { params }) {
 
   try {
     const { id } = await params;
-
-    const { error } = await supabaseAdmin
-      .from("plans")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      if (error.code === "23503") {
-        return NextResponse.json({
-          error: "This plan cannot be deleted because active client subscriptions reference it. Please suspend subscriptions or change their plan first."
-        }, { status: 400 });
-      }
-      throw error;
-    }
+    await execute("DELETE FROM plans WHERE id = ?", [id]);
+    invalidatePlansCache();
     return NextResponse.json({ message: "Plan deleted successfully" });
   } catch (error) {
-    console.error("Error deleting plan:", error);
+    if (isForeignKeyViolation(error)) {
+      return NextResponse.json({
+        error: "This plan cannot be deleted because active client subscriptions reference it. Please suspend subscriptions or change their plan first.",
+      }, { status: 400 });
+    }
+    console.error("Error deleting plan:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

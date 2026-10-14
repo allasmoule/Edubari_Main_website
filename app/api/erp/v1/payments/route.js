@@ -125,7 +125,7 @@ export async function POST(request) {
   // A school cannot open unlimited unpaid attempts
   const recent = await queryOne(
     `SELECT COUNT(*) AS n FROM subscription_payments
-      WHERE client_id = ? AND status = 'initiated' AND created_at > (NOW() - INTERVAL 10 MINUTE)`,
+      WHERE client_id = ? AND status = 'initiated' AND created_at > NOW() - INTERVAL '10 minutes'`,
     [client.id]
   );
   if (Number(recent?.n) >= 10) {

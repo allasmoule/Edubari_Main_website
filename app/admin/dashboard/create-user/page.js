@@ -10,7 +10,7 @@ import {
   FiUser,
   FiUserPlus,
 } from "react-icons/fi";
-import { supabase } from "@/lib/supabase";
+
 
 export default function AdminCreateUserPage() {
   // Create user state
@@ -125,11 +125,13 @@ export default function AdminCreateUserPage() {
     setIsResetSubmitted(false);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), {
-        redirectTo: `${window.location.origin}/admin/login`,
+      const res = await fetch("/api/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_reset_email", email: resetEmail.trim() }),
       });
-
-      if (error) throw error;
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to send reset email.");
 
       setResetTargetEmail(resetEmail.trim());
       setIsResetSubmitted(true);
@@ -183,7 +185,7 @@ export default function AdminCreateUserPage() {
 
           <div className="rounded-xl bg-tertiary/10 text-tertiary px-3 py-2 text-xs font-semibold inline-flex items-center gap-2">
             <FiUserPlus className="w-3.5 h-3.5" />
-            Supabase Auth
+            Admin Auth
           </div>
         </div>
 

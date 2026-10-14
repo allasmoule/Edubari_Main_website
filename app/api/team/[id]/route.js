@@ -1,39 +1,29 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { execute } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { TEAM_MEMBER_FIELDS, pickFields, updateRow } from "@/lib/crud";
 
 export async function PATCH(request, context) {
   const auth = await requireAdmin(request);
   if (auth.response) return auth.response;
 
   try {
-    const params = await context.params;
-    const { id } = params;
-    const body = await request.json();
-    
-    // Create an object with only defined keys
-    const updateData = {};
-    if (body.name !== undefined) updateData.name = body.name;
-    if (body.description !== undefined) updateData.description = body.description;
-    if (body.image_url !== undefined) updateData.image_url = body.image_url;
-    if (body.order_index !== undefined) updateData.order_index = body.order_index;
-    if (body.active !== undefined) updateData.active = body.active;
+    const { id } = await context.params;
+    const fields = pickFields(await request.json(), TEAM_MEMBER_FIELDS);
 
-    const { data, error } = await supabase
-      .from("team_members")
-      .update(updateData)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("PATCH team_members Error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (Object.keys(fields).length === 0) {
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
+    }
+    if (fields.name === null || fields.name === "") {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    return NextResponse.json(data);
+    const updated = await updateRow("team_members", id, fields);
+    if (!updated) return NextResponse.json({ error: "Record not found" }, { status: 404 });
+
+    return NextResponse.json(updated);
   } catch (err) {
-    console.error("Unexpected PATCH team_members Error:", err);
+    console.error("Unexpected PATCH team_members Error:", err.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -43,22 +33,11 @@ export async function DELETE(request, context) {
   if (auth.response) return auth.response;
 
   try {
-    const params = await context.params;
-    const { id } = params;
-
-    const { error } = await supabase
-      .from("team_members")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      console.error("DELETE team_members Error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
+    const { id } = await context.params;
+    await execute("DELETE FROM team_members WHERE id = ?", [id]);
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("Unexpected DELETE team_members Error:", err);
+    console.error("Unexpected DELETE team_members Error:", err.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

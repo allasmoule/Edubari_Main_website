@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { queryOne } from "@/lib/db";
+import { queryOne, isUniqueViolation } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { completePayment, createPaymentRow, getSchoolBilling, listPayments } from "@/lib/subscription-billing";
 
@@ -91,7 +91,7 @@ export async function POST(request) {
       { status: 201 }
     );
   } catch (error) {
-    if (error.code === "ER_DUP_ENTRY") {
+    if (isUniqueViolation(error)) {
       return NextResponse.json({ error: "This transaction ID is already recorded" }, { status: 409 });
     }
     console.error("[billing/payments POST]", error.message);

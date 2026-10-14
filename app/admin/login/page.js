@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -25,10 +25,10 @@ export default function AdminLoginPage() {
   // Redirect if already logged in
   useEffect(() => {
     async function checkSession() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.replace("/admin/dashboard");
-      }
+      try {
+        const res = await fetch("/api/auth", { method: "GET", cache: "no-store" });
+        if (res.ok) router.replace("/admin/dashboard");
+      } catch (_) {}
     }
     checkSession();
   }, [router]);
@@ -65,14 +65,13 @@ export default function AdminLoginPage() {
     }
     setStatus("loading");
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: form.email,
-        password: form.password,
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "login", email: form.email, password: form.password }),
       });
-
-      if (error) throw error;
-
-      console.log("Login successful:", data.user);
+      const json = await res.json();
+      if (json.error) throw new Error(typeof json.error === "string" ? json.error : "Invalid credentials. Please try again.");
       setStatus("idle");
       router.replace("/admin/dashboard");
     } catch (error) {

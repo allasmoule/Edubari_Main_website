@@ -1,22 +1,20 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { query, execute } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { sendContactMessageNotificationEmail } from "@/lib/email";
+
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const text = (value, max) => (value === undefined || value === null ? null : String(value).trim().slice(0, max)) || null;
 
 export async function GET(request) {
   const auth = await requireAdmin(request);
   if (auth.response) return auth.response;
 
   try {
-    const { data, error } = await supabaseAdmin
-      .from("contact_messages")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
+    const data = await query("SELECT * FROM contact_messages ORDER BY created_at DESC");
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching contact messages:", error);
+    console.error("Error fetching contact messages:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -24,31 +22,33 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    
+
     const mappedMessage = {
-      name: body.name,
-      email: body.email,
-      phone: body.phone || null,
-      subject: body.subject || null,
-      message: body.message,
-      read: false
+      id: crypto.randomUUID(),
+      name: text(body.name, 255),
+      email: text(body.email, 255),
+      phone: text(body.phone, 50),
+      subject: text(body.subject, 255),
+      message: text(body.message, 10000),
+      read: false,
     };
+    if (!mappedMessage.name || !mappedMessage.message || !mappedMessage.email || !EMAIL.test(mappedMessage.email)) {
+      return NextResponse.json({ error: "Name, a valid email and a message are required" }, { status: 400 });
+    }
 
-    const { data, error } = await supabaseAdmin
-      .from("contact_messages")
-      .insert([mappedMessage])
-      .select();
+    await execute(
+      "INSERT INTO contact_messages (id, name, email, phone, subject, message, read) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [mappedMessage.id, mappedMessage.name, mappedMessage.email, mappedMessage.phone, mappedMessage.subject, mappedMessage.message, mappedMessage.read]
+    );
 
-    if (error) throw error;
-    
     // Send email notification to Admin & CC (+ auto-acknowledgment to sender)
     sendContactMessageNotificationEmail(mappedMessage).catch((mailErr) => {
       console.error("Background contact email send error:", mailErr);
     });
-    
-    return NextResponse.json({ message: "Contact message received", contactMessageId: data[0].id }, { status: 201 });
+
+    return NextResponse.json({ message: "Contact message received", contactMessageId: mappedMessage.id }, { status: 201 });
   } catch (error) {
-    console.error("Error creating contact message:", error);
+    console.error("Error creating contact message:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

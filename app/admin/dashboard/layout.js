@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Admin/Sidebar";
 import DashboardHeader from "@/components/Admin/DashboardHeader";
-import { supabase } from "@/lib/supabase";
+
 
 export default function AdminDashboardLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -14,40 +14,28 @@ export default function AdminDashboardLayout({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check initial session
+    let mounted = true;
+
     const checkUser = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
+        const res = await fetch("/api/auth", { method: "GET", cache: "no-store" });
+        if (!mounted) return;
+        if (!res.ok) {
           router.replace("/admin/login");
         } else {
-          setUser(session.user);
+          const json = await res.json();
+          setUser(json.data?.user || null);
           setLoading(false);
         }
       } catch (err) {
         console.error("Auth check failed:", err);
-        router.replace("/admin/login");
+        if (mounted) router.replace("/admin/login");
       }
     };
 
     checkUser();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "SIGNED_OUT" || !session) {
-          setUser(null);
-          router.replace("/admin/login");
-        } else {
-          setUser(session.user);
-          setLoading(false);
-        }
-      }
-    );
-
-    return () => {
-      subscription?.unsubscribe();
-    };
+    return () => { mounted = false; };
   }, [router]);
 
   if (loading) {

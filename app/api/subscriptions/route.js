@@ -1,22 +1,25 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { query, queryOne, execute } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { sendOrderNotificationEmail } from "@/lib/email";
 
 const HARDCODED_GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw1mIEzNBLv6YLZpYwhewI5S7MITs1a8BYqId3QQhk30rn6VAN5sbYc8zOZ3cctoiJu/exec";
 
-/**
- * GET /api/subscriptions
- * List all subscription requests, newest first.
- */
-export async function GET() {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from("subscription_requests")
-      .select("*")
-      .order("submitted_at", { ascending: false });
+const text = (value, max) => {
+  const v = value === undefined || value === null ? "" : String(value).trim();
+  return v && v.toUpperCase() !== "N/A" ? v.slice(0, max) : null;
+};
 
-    if (error) throw error;
-    return NextResponse.json(data || []);
+/**
+ * GET /api/subscriptions — admin only: every order (names, phones, emails), newest first.
+ */
+export async function GET(request) {
+  const auth = await requireAdmin(request);
+  if (auth.response) return auth.response;
+
+  try {
+    const data = await query("SELECT * FROM subscription_requests ORDER BY submitted_at DESC");
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching subscriptions:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -31,37 +34,50 @@ export async function POST(request) {
   try {
     const body = await request.json();
 
+    const price = Number(body.selectedPlanPrice ?? body.price ?? 0);
     const mappedSubscription = {
-      institution_name: body.institutionName || body.domain || "N/A",
-      full_name: body.fullName || body.name || "N/A",
-      email: body.email || "N/A",
-      phone: body.phone || "N/A",
-      preferred_domain: body.preferredDomain || body.domain || "N/A",
-      address: body.address || "N/A",
-      payment_method: body.paymentMethod || "Direct Order (No Payment)",
-      transaction_id: body.transactionId || "N/A",
-      selected_plan_id: body.selectedPlanId || body.packageId || null,
-      selected_plan_name: body.selectedPlanName || body.packageName || null,
-      selected_plan_duration: body.selectedPlanDuration ? String(body.selectedPlanDuration) : null,
-      selected_plan_price: body.selectedPlanPrice || body.price ? Number(body.selectedPlanPrice || body.price) : 0,
-      verified: false
+      institution_name: text(body.institutionName || body.domain, 255) || "N/A",
+      full_name: text(body.fullName || body.name, 255) || "N/A",
+      email: text(body.email, 255) || "N/A",
+      phone: text(body.phone, 50),
+      preferred_domain: text(body.preferredDomain || body.domain, 255) || "N/A",
+      address: text(body.address, 2000),
+      payment_method: text(body.paymentMethod, 50) || "Direct Order (No Payment)",
+      // The order forms send "N/A" when there is no payment; store NULL so the UNIQUE column
+      // does not reject every order after the first one
+      transaction_id: text(body.transactionId, 100),
+      selected_plan_id: null,
+      selected_plan_name: text(body.selectedPlanName || body.packageName, 255),
+      // Forms send "Monthly" or "30 Days (5 AI Credits)"; keep the day count when there is one
+      selected_plan_duration: Number.parseInt(String(body.selectedPlanDuration ?? ""), 10) || null,
+      selected_plan_price: Number.isFinite(price) && price >= 0 ? price : 0,
+      verified: false,
     };
 
-    // 1. Save to Supabase DB (if table available)
+    // Link the order to a plan only when it is a real plan (the AI checkout sends a package id)
+    const planId = text(body.selectedPlanId || body.packageId, 36);
+    if (planId) {
+      const plan = await queryOne("SELECT id FROM plans WHERE id = ?", [planId]).catch(() => null);
+      if (plan) mappedSubscription.selected_plan_id = plan.id;
+    }
+
+    // 1. Save to PostgreSQL (columns are fixed here — never taken from the request)
     let createdRecordId = null;
     try {
-      const { data, error } = await supabaseAdmin
-        .from("subscription_requests")
-        .insert([mappedSubscription])
-        .select();
-
-      if (!error && data && data.length > 0) {
-        createdRecordId = data[0].id;
-      } else if (error) {
-        console.warn("Supabase insert notice:", error.message);
-      }
+      const id = crypto.randomUUID();
+      const m = mappedSubscription;
+      await execute(
+        `INSERT INTO subscription_requests
+           (id, institution_name, full_name, email, phone, preferred_domain, address, payment_method, transaction_id,
+            selected_plan_id, selected_plan_name, selected_plan_duration, selected_plan_price, verified)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, m.institution_name, m.full_name, m.email, m.phone, m.preferred_domain, m.address, m.payment_method,
+          m.transaction_id, m.selected_plan_id, m.selected_plan_name, m.selected_plan_duration, m.selected_plan_price, m.verified]
+      );
+      createdRecordId = id;
     } catch (dbErr) {
-      console.warn("Supabase connection warning:", dbErr.message);
+      // Still forward the order to Google Sheets / email below, but make the failure visible
+      console.error("Order could not be saved to the database:", dbErr.message);
     }
 
     // 2. Post to Google Sheets Web App Endpoint (Hardcoded Fallback guarantees 100% execution on production hosting)

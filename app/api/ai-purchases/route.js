@@ -11,6 +11,7 @@ import {
 import { requireAdmin } from "@/lib/auth";
 import { cleanDomain } from "@/lib/safe-redirect";
 import { sendOrderNotificationEmail } from "@/lib/email";
+import { isUniqueViolation } from "@/lib/db";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -104,7 +105,7 @@ export async function POST(request) {
 
     return NextResponse.json(newRequest, { status: 201 });
   } catch (error) {
-    if (error.code === "ER_DUP_ENTRY") {
+    if (isUniqueViolation(error)) {
       return NextResponse.json({ error: "This transaction ID has already been submitted" }, { status: 409 });
     }
     console.error("Error in POST /api/ai-purchases:", error.message);

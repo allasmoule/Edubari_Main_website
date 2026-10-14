@@ -1,4 +1,5 @@
-FROM node:20-alpine AS base
+# Node 20 reached end-of-life in April 2026; 22 is the supported LTS line
+FROM node:22-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -35,8 +36,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/seed.js ./seed.js
-COPY --from=builder --chown=nextjs:nodejs /app/schema_mysql.sql ./schema_mysql.sql
+# Database tooling: schema migrations run on every start, plus seed / admin / import scripts
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
+COPY --from=builder --chown=nextjs:nodejs /app/migrations ./migrations
 
 USER nextjs
 
@@ -45,4 +47,6 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+# Apply pending migrations first (safe to run on every start; a lock stops two containers racing),
+# then start the app. If a migration fails the container stops instead of serving a half-updated schema.
+CMD ["sh", "-c", "node scripts/db-migrate.js && exec node server.js"]

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
-import { query, queryOne, execute } from "@/lib/db";
+import { queryOne, execute, withTransaction, isUniqueViolation } from "@/lib/db";
 import crypto from "crypto";
 import { requireAdmin } from "@/lib/auth";
-import { createPaymentRow } from "@/lib/subscription-billing";
+import { cleanDomain } from "@/lib/safe-redirect";
+import { GRACE_DAYS, newInvoice } from "@/lib/subscription-billing";
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * GET /api/subscriptions/:id
@@ -34,7 +37,8 @@ export async function GET(request, { params }) {
 /**
  * PATCH /api/subscriptions/:id
  * Approve/verify a subscription request.
- * On approval, auto-creates or renews the client + active subscription.
+ * On approval, auto-creates or renews the client + active subscription — all in one transaction,
+ * so a failure half way never leaves a school without a current subscription.
  */
 export async function PATCH(request, { params }) {
   const auth = await requireAdmin(request);
@@ -46,157 +50,108 @@ export async function PATCH(request, { params }) {
 
     const isApprove = body.verified === true || body.adminStatus === "reviewed";
 
-    if (isApprove) {
-      // 1. Fetch subscription request
-      const reqData = await queryOne("SELECT * FROM subscription_requests WHERE id = ?", [id]);
-      if (!reqData) {
-        return NextResponse.json({ error: "Subscription request not found" }, { status: 404 });
+    const result = await withTransaction(async (tx) => {
+      // Lock the request: two admins approving at once cannot create two schools/subscriptions
+      const reqData = await tx.queryOne("SELECT * FROM subscription_requests WHERE id = ? FOR UPDATE", [id]);
+      if (!reqData) return { status: 404, body: { error: "Subscription request not found" } };
+
+      if (!isApprove || reqData.verified) {
+        if (reqData.verified) {
+          return { body: { message: "Subscription request already verified", subscription: reqData } };
+        }
+        const updated = await tx.queryOne("UPDATE subscription_requests SET verified = TRUE WHERE id = ? RETURNING *", [id]);
+        return { body: { message: "Subscription request marked as reviewed", subscription: updated } };
       }
 
-      // If already verified, just return current state
-      if (reqData.verified) {
-        return NextResponse.json({
-          message: "Subscription request already verified",
-          subscription: { ...reqData, _id: reqData.id, adminStatus: "reviewed" },
-        });
-      }
-
-      // 2. Get associated plan
-      let plan = null;
-      if (reqData.selected_plan_id) {
-        plan = await queryOne("SELECT * FROM plans WHERE id = ?", [reqData.selected_plan_id]);
-      }
-
-      // If no plan found by ID, try matching by name (fallback)
+      // Plan: by id, else by name (older orders only stored the name)
+      let plan = reqData.selected_plan_id
+        ? await tx.queryOne("SELECT * FROM plans WHERE id = ?", [reqData.selected_plan_id])
+        : null;
       if (!plan && reqData.selected_plan_name) {
-        plan = await queryOne("SELECT * FROM plans WHERE plan_name = ? LIMIT 1", [reqData.selected_plan_name]);
+        plan = await tx.queryOne("SELECT * FROM plans WHERE plan_name = ? LIMIT 1", [reqData.selected_plan_name]);
       }
 
       if (!plan) {
-        // Create subscription without plan — just mark verified (manual approval)
-        await execute("UPDATE subscription_requests SET verified = 1 WHERE id = ?", [id]);
-        const updated = await queryOne("SELECT * FROM subscription_requests WHERE id = ?", [id]);
-        return NextResponse.json({
-          message: "Subscription marked as reviewed (no matching plan found)",
-          subscription: { ...updated, _id: updated.id, adminStatus: "reviewed" },
-        });
+        // No plan to activate — just mark it reviewed (manual follow-up)
+        const updated = await tx.queryOne("UPDATE subscription_requests SET verified = TRUE WHERE id = ? RETURNING *", [id]);
+        return { body: { message: "Subscription marked as reviewed (no matching plan found)", subscription: updated } };
       }
 
       // Only School ERP schools are added from here (single-teacher sign-ups are no longer created)
       if (plan.plan_type !== "school_erp") {
-        return NextResponse.json({ error: "Only School ERP plans can be approved here" }, { status: 400 });
+        return { status: 400, body: { error: "Only School ERP plans can be approved here" } };
       }
 
-      const domain = reqData.preferred_domain?.trim().toLowerCase();
+      const domain = cleanDomain(reqData.preferred_domain);
+      if (!domain || domain === "n/a") {
+        return { status: 400, body: { error: "This request has no valid domain" } };
+      }
 
-      // 3. Check if client with this domain already exists
-      const existingClient = await queryOne("SELECT * FROM clients WHERE domain = ?", [domain]);
-
-      let clientId = null;
+      const existingClient = await tx.queryOne("SELECT * FROM clients WHERE domain = ? FOR UPDATE", [domain]);
       const start = new Date();
-      let durationDays = plan.duration_days || 30;
-      let activeSubToRestore = null;
+      let durationDays = Number(plan.duration_days) || 30;
+      let clientId;
 
       if (existingClient) {
-        // --- RENEWAL / EXTENSION FLOW ---
+        // --- RENEWAL / EXTENSION: carry over the remaining days of the current term ---
         clientId = existingClient.id;
-
-        // Carry over remaining days from active subscription
-        const activeSub = await queryOne(
-          "SELECT * FROM subscriptions WHERE client_id = ? AND is_current = 1 LIMIT 1",
+        const activeSub = await tx.queryOne(
+          "SELECT * FROM subscriptions WHERE client_id = ? AND is_current LIMIT 1 FOR UPDATE",
           [clientId]
         );
-
         if (activeSub) {
-          activeSubToRestore = activeSub;
-          const activeEnd = new Date(activeSub.end_date);
-          const now = new Date();
-          if (now < activeEnd) {
-            const remainingMs = activeEnd.getTime() - now.getTime();
-            const remainingDays = Math.max(0, Math.ceil(remainingMs / (1000 * 60 * 60 * 24)));
-            durationDays += remainingDays;
-          }
-          // Deactivate old subscription
-          await execute("UPDATE subscriptions SET is_current = 0 WHERE client_id = ?", [clientId]);
+          const remainingMs = new Date(activeSub.end_date).getTime() - start.getTime();
+          if (remainingMs > 0) durationDays += Math.ceil(remainingMs / DAY_MS);
+          await tx.execute("UPDATE subscriptions SET is_current = FALSE WHERE client_id = ? AND is_current", [clientId]);
         }
-
-        // Ensure client is active
-        await execute("UPDATE clients SET status = 'active' WHERE id = ?", [clientId]);
+        await tx.execute("UPDATE clients SET status = 'active' WHERE id = ?", [clientId]);
       } else {
-        // --- NEW CLIENT REGISTRATION FLOW ---
         // --- NEW SCHOOL ERP: same credentials as a school added from the admin panel ---
         clientId = crypto.randomUUID();
         const erpToken = crypto.randomBytes(32).toString("hex");
         const erpSecret = crypto.randomBytes(32).toString("hex");
-        await execute(
+        await tx.execute(
           `INSERT INTO clients (id, client_name, domain, phone, status, client_type, erp_api_token, erp_secret)
            VALUES (?, ?, ?, ?, 'active', 'school_erp', ?, ?)`,
           [clientId, reqData.institution_name, domain, reqData.phone || null, erpToken, erpSecret]
         );
-        await execute(
+        await tx.execute(
           `INSERT INTO erp_connections (id, client_id, domain, erp_api_token, connection_status)
            VALUES (?, ?, ?, ?, 'pending')`,
           [crypto.randomUUID(), clientId, domain, erpToken]
-        ).catch(() => {}); // non-blocking if duplicate key
-      }
-
-      // 4. Calculate dates
-      const end = new Date(start.getTime() + durationDays * 24 * 60 * 60 * 1000);
-      const grace = new Date(end.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-      // 5. Create active subscription
-      const subId = crypto.randomUUID();
-      try {
-        await execute(
-          `INSERT INTO subscriptions (id, client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status)
-           VALUES (?, ?, ?, ?, ?, ?, 1, 'paid')`,
-          [subId, clientId, plan.id, start, end, grace]
         );
-      } catch (subErr) {
-        // Rollback: re-activate old subscription or delete new client
-        if (!existingClient && clientId) {
-          await execute("DELETE FROM clients WHERE id = ?", [clientId]).catch(() => {});
-        } else if (existingClient && activeSubToRestore) {
-          await execute("UPDATE subscriptions SET is_current = 1 WHERE id = ?", [activeSubToRestore.id]).catch(() => {});
-        }
-        throw subErr;
       }
+
+      const end = new Date(start.getTime() + durationDays * DAY_MS);
+      const grace = new Date(end.getTime() + GRACE_DAYS * DAY_MS);
+      const subId = crypto.randomUUID();
+      await tx.execute(
+        `INSERT INTO subscriptions (id, client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status)
+         VALUES (?, ?, ?, ?, ?, ?, TRUE, 'paid')`,
+        [subId, clientId, plan.id, start, end, grace]
+      );
 
       // Keep the approval in the school's payment history (the admin checked the payment)
-      await createPaymentRow({
-        client_id: clientId,
-        plan_id: plan.id,
-        subscription_id: subId,
-        method: "manual",
-        source: "admin",
-        channel: "request_approval",
-        amount: Number(plan.price) || 0,
-        recorded_by: auth.user.id,
-        note: `Subscription request ${id} approved`,
-      })
-        .then((row) =>
-          execute(
-            `UPDATE subscription_payments SET status = 'completed', period_start = ?, period_end = ?, completed_at = NOW()
-              WHERE id = ?`,
-            [start, end, row.id]
-          )
-        )
-        .catch((e) => console.error("Approval payment record failed:", e.message));
-    }
+      await tx.execute(
+        `INSERT INTO subscription_payments
+           (id, client_id, plan_id, subscription_id, method, source, channel, periods, amount, currency, status,
+            merchant_invoice, recorded_by, note, period_start, period_end, completed_at)
+         VALUES (?, ?, ?, ?, 'manual', 'admin', 'request_approval', 1, ?, 'BDT', 'completed', ?, ?, ?, ?, ?, NOW())`,
+        [crypto.randomUUID(), clientId, plan.id, subId, (Number(plan.price) || 0).toFixed(2), newInvoice(), auth.user.id,
+          `Subscription request ${id} approved`, start, end]
+      );
 
-    // 6. Update the subscription_requests record
-    await execute("UPDATE subscription_requests SET verified = 1 WHERE id = ?", [id]);
-
-    const updated = await queryOne("SELECT * FROM subscription_requests WHERE id = ?", [id]);
-    if (!updated) {
-      return NextResponse.json({ error: "Subscription request not found after update" }, { status: 404 });
-    }
-
-    return NextResponse.json({
-      message: "Subscription approved and activated successfully",
-      subscription: { ...updated, _id: updated.id, adminStatus: "reviewed" },
+      const updated = await tx.queryOne("UPDATE subscription_requests SET verified = TRUE WHERE id = ? RETURNING *", [id]);
+      return { body: { message: "Subscription approved and activated successfully", subscription: updated } };
     });
+
+    const { subscription } = result.body;
+    if (subscription) result.body.subscription = { ...subscription, _id: subscription.id, adminStatus: "reviewed" };
+    return NextResponse.json(result.body, { status: result.status || 200 });
   } catch (error) {
+    if (isUniqueViolation(error)) {
+      return NextResponse.json({ error: "This domain or ERP token is already registered" }, { status: 409 });
+    }
     console.error("Error updating subscription:", error.message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }

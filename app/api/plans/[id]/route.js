@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { query, queryOne, execute } from "@/lib/db";
+import { queryOne, execute, isForeignKeyViolation } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { invalidatePlansCache } from "@/lib/plansCache";
 
@@ -71,7 +71,7 @@ export async function GET(request, { params }) {
     return NextResponse.json(mapPlanFromDb(row));
   } catch (error) {
     console.error("Error fetching plan:", error.message);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -183,7 +183,7 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ message: "Plan updated", plan: mapPlanFromDb(updatedRow) });
   } catch (error) {
     console.error("Error updating plan:", error.message);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -197,7 +197,13 @@ export async function DELETE(request, { params }) {
     invalidatePlansCache();
     return NextResponse.json({ message: "Plan deleted" });
   } catch (error) {
+    if (isForeignKeyViolation(error)) {
+      return NextResponse.json(
+        { error: "This plan is used by client subscriptions. Move them to another plan first." },
+        { status: 400 }
+      );
+    }
     console.error("Error deleting plan:", error.message);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

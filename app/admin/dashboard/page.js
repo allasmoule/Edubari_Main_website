@@ -18,7 +18,6 @@ import {
   FiLoader,
 } from "react-icons/fi";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 
 export default function AdminDashboardPage() {
   const [statsData, setStatsData] = useState({

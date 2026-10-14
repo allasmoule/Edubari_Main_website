@@ -18,8 +18,16 @@ export async function GET(request) {
   const refId = searchParams.get("payment_ref_id") || "";
   const status = (searchParams.get("status") || "").toLowerCase();
 
-  const payment = invoice ? await getPayment("invoice", invoice) : null;
-  const client = payment ? await queryOne("SELECT domain FROM clients WHERE id = ?", [payment.client_id]) : null;
+  let payment = null;
+  let client = null;
+  try {
+    payment = invoice ? await getPayment("invoice", invoice) : null;
+    client = payment ? await queryOne("SELECT domain FROM clients WHERE id = ?", [payment.client_id]) : null;
+  } catch (error) {
+    // Database unreachable: nothing was changed, the customer can retry from the status page
+    console.error("[Nagad callback] lookup failed:", error.message);
+    return NextResponse.redirect(withParams(returnTarget(null), { payment: "error" }), 303);
+  }
   const back = (result, extra = {}) =>
     NextResponse.redirect(withParams(returnTarget(payment, client?.domain), { payment: result, invoice: payment?.merchant_invoice, ...extra }), 303);
 

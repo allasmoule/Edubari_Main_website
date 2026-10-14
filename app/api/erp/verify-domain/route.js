@@ -56,7 +56,7 @@ export async function GET(request) {
               p.price, p.duration_days, p.plan_tier
        FROM subscriptions s
        JOIN plans p ON s.plan_id = p.id
-       WHERE s.client_id = ? AND s.is_current = 1
+       WHERE s.client_id = ? AND s.is_current
        ORDER BY s.created_at DESC
        LIMIT 1`,
       [client.id]
@@ -101,7 +101,7 @@ export async function GET(request) {
               sp.period_start, sp.period_end, sp.completed_at, p.plan_name
          FROM subscription_payments sp LEFT JOIN plans p ON p.id = sp.plan_id
         WHERE sp.client_id = ? AND sp.status = 'completed'
-        ORDER BY sp.completed_at DESC LIMIT 24`,
+        ORDER BY sp.completed_at DESC NULLS LAST LIMIT 24`,
       [client.id]
     ).catch(() => []);
 

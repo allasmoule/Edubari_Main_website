@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { query, queryOne, execute } from "@/lib/db";
 import crypto from "crypto";
 import { requireAdmin } from "@/lib/auth";
+import { invalidatePlansCache } from "@/lib/plansCache";
 
 function parseRowJsonFields(row) {
   if (!row) return row;
@@ -30,7 +31,7 @@ export async function GET(request) {
     return NextResponse.json(parsed);
   } catch (error) {
     console.error("Error fetching billing plans:", error.message);
-    return NextResponse.json([]);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -48,6 +49,7 @@ export async function POST(request) {
       price,
       features,
       plan_tier = "free",
+      plan_type = "single_teacher",
       max_batches = 1,
       monthly_ai_credits = 0,
       show_branding = true,
@@ -72,11 +74,12 @@ export async function POST(request) {
 
     await execute(
       `INSERT INTO plans 
-       (id, plan_name, duration_days, max_students, max_instructors, price, features, plan_tier, max_batches, monthly_ai_credits, show_branding, is_active, sort_order, feature_gates, old_price, price_label, duration, description, popular, badge) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (id, plan_name, plan_type, duration_days, max_students, max_instructors, price, features, plan_tier, max_batches, monthly_ai_credits, show_branding, is_active, sort_order, feature_gates, old_price, price_label, duration, description, popular, badge) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         planId,
         plan_name,
+        plan_type === "school_erp" ? "school_erp" : "single_teacher",
         Number(duration_days),
         Number(max_students || 100),
         Number(max_instructors || 10),
@@ -98,10 +101,11 @@ export async function POST(request) {
       ]
     );
 
+    invalidatePlansCache();
     const created = await queryOne("SELECT * FROM plans WHERE id = ?", [planId]);
     return NextResponse.json(parseRowJsonFields(created), { status: 201 });
   } catch (error) {
     console.error("Error creating plan:", error.message);
-    return NextResponse.json({ error: error.message || "Failed to create plan" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create plan" }, { status: 500 });
   }
 }

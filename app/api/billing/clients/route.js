@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { query, queryOne, execute } from "@/lib/db";
+import { query, queryOne, withTransaction, isUniqueViolation } from "@/lib/db";
 import crypto from "crypto";
 import { requireAdmin } from "@/lib/auth";
+import { cleanDomain } from "@/lib/safe-redirect";
 
 export async function GET(request) {
   const auth = await requireAdmin(request);
@@ -9,7 +10,7 @@ export async function GET(request) {
 
   try {
     const clients = await query("SELECT * FROM clients ORDER BY created_at DESC");
-    const subscriptions = await query("SELECT * FROM subscriptions WHERE is_current = 1");
+    const subscriptions = await query("SELECT * FROM subscriptions WHERE is_current");
     const plans = await query("SELECT * FROM plans");
 
     const plansMap = {};
@@ -33,7 +34,7 @@ export async function GET(request) {
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error fetching clients:", error.message);
-    return NextResponse.json([]);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -60,32 +61,36 @@ export async function POST(request) {
     const erpToken = crypto.randomBytes(32).toString("hex");
     const erpSecret = crypto.randomBytes(32).toString("hex");
 
-    const clientId = crypto.randomUUID();
-    await execute(
-      "INSERT INTO clients (id, client_name, domain, phone, logo_url, status, client_type, erp_api_token, erp_secret) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [clientId, client_name, domain, phone || null, logo_url || null, status || "active", resolvedType, erpToken, erpSecret]
-    );
+    const cleanedDomain = cleanDomain(domain);
+    if (!cleanedDomain) {
+      return NextResponse.json({ error: "Enter a valid domain" }, { status: 400 });
+    }
 
-    const start = new Date();
-    const end = new Date(start.getTime() + (plan.duration_days || 30) * 24 * 60 * 60 * 1000);
-    const grace = new Date(end.getTime() + 7 * 24 * 60 * 60 * 1000);
+    // Client, first subscription and ERP connection are created together or not at all
+    const createdClient = await withTransaction(async (tx) => {
+      const clientId = crypto.randomUUID();
+      const client = await tx.queryOne(
+        `INSERT INTO clients (id, client_name, domain, phone, logo_url, status, client_type, erp_api_token, erp_secret)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`,
+        [clientId, client_name, cleanedDomain, phone || null, logo_url || null, status || "active", resolvedType, erpToken, erpSecret]
+      );
 
-    const subId = crypto.randomUUID();
-    await execute(
-      `INSERT INTO subscriptions (id, client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status)
-       VALUES (?, ?, ?, ?, ?, ?, 1, 'paid')`,
-      [subId, clientId, plan.id, start, end, grace]
-    );
+      const start = new Date();
+      const end = new Date(start.getTime() + (plan.duration_days || 30) * 24 * 60 * 60 * 1000);
+      const grace = new Date(end.getTime() + 7 * 24 * 60 * 60 * 1000);
+      await tx.execute(
+        `INSERT INTO subscriptions (id, client_id, plan_id, start_date, end_date, grace_end_date, is_current, payment_status)
+         VALUES (?, ?, ?, ?, ?, ?, TRUE, 'paid')`,
+        [crypto.randomUUID(), clientId, plan.id, start, end, grace]
+      );
 
-    // Create tracking row in erp_connections table
-    const erpConnId = crypto.randomUUID();
-    await execute(
-      `INSERT INTO erp_connections (id, client_id, domain, erp_api_token, connection_status)
-       VALUES (?, ?, ?, ?, 'pending')`,
-      [erpConnId, clientId, domain, erpToken]
-    ).catch(() => {}); // non-blocking if duplicate key
-
-    const createdClient = await queryOne("SELECT * FROM clients WHERE id = ?", [clientId]);
+      await tx.execute(
+        `INSERT INTO erp_connections (id, client_id, domain, erp_api_token, connection_status)
+         VALUES (?, ?, ?, ?, 'pending')`,
+        [crypto.randomUUID(), clientId, cleanedDomain, erpToken]
+      );
+      return client;
+    });
     return NextResponse.json({
       ...createdClient,
       erp_api_token: createdClient?.erp_api_token || erpToken,
@@ -94,7 +99,10 @@ export async function POST(request) {
       erpSecret: createdClient?.erp_secret || erpSecret,
     }, { status: 201 });
   } catch (error) {
+    if (isUniqueViolation(error)) {
+      return NextResponse.json({ error: "This domain is already registered" }, { status: 409 });
+    }
     console.error("Error creating client:", error.message);
-    return NextResponse.json({ error: error.message || "Failed to create client" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create client" }, { status: 500 });
   }
 }

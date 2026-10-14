@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { queryOne } from "@/lib/db";
+import { queryOne, isUniqueViolation } from "@/lib/db";
 import { createAiPurchaseRequest, updatePurchaseRequestStatus, getAiPackages } from "@/lib/ai-database";
 import { getAdmin } from "@/lib/auth";
 import { cleanDomain, safeRedirectUrl, withParams } from "@/lib/safe-redirect";
@@ -29,19 +29,27 @@ function validWebhookSignature(rawBody, signature) {
 async function creditOnce({ domain, pkg, transactionId, paymentMethod, userName, userPhone }) {
   const existing = await queryOne("SELECT id, status FROM ai_purchase_requests WHERE transaction_id = ?", [transactionId]);
   if (existing) return { duplicate: true, request: existing };
-  const req = await createAiPurchaseRequest({
-    domain,
-    userName: userName || "Automated Gateway",
-    userPhone: userPhone || "N/A",
-    packageId: pkg.id,
-    packageName: pkg.name,
-    credits: pkg.credits,
-    price: pkg.price,
-    currency: pkg.currency || "BDT",
-    paymentMethod,
-    transactionId,
-    status: "pending",
-  });
+  let req;
+  try {
+    req = await createAiPurchaseRequest({
+      domain,
+      userName: userName || "Automated Gateway",
+      userPhone: userPhone || "N/A",
+      packageId: pkg.id,
+      packageName: pkg.name,
+      credits: pkg.credits,
+      price: pkg.price,
+      currency: pkg.currency || "BDT",
+      paymentMethod,
+      transactionId,
+      status: "pending",
+    });
+  } catch (error) {
+    // Two deliveries of the same webhook at once: the unique transaction_id lets only one through
+    if (!isUniqueViolation(error)) throw error;
+    const winner = await queryOne("SELECT id, status FROM ai_purchase_requests WHERE transaction_id = ?", [transactionId]);
+    return { duplicate: true, request: winner };
+  }
   await updatePurchaseRequestStatus(req.id, "approved");
 
   sendPaymentNotificationEmail({

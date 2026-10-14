@@ -11,7 +11,7 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+
 
 const DashboardHeader = ({ onMenuClick }) => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -23,10 +23,13 @@ const DashboardHeader = ({ onMenuClick }) => {
 
   useEffect(() => {
     async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user && user.email) {
-        setUserEmail(user.email);
-      }
+      try {
+        const res = await fetch("/api/auth", { method: "GET", cache: "no-store" });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data?.user?.email) setUserEmail(json.data.user.email);
+        }
+      } catch (_) {}
     }
     getUser();
   }, []);
@@ -44,7 +47,11 @@ const DashboardHeader = ({ onMenuClick }) => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "logout" }),
+      });
       setProfileOpen(false);
       router.replace("/admin/login");
     } catch (error) {
